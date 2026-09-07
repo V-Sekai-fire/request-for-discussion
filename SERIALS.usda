@@ -607,6 +607,30 @@ def Scope "Serials"
                 custom uniform token kind = "satellite"
                 custom string primaryKey = "serial"
 
+                def "S1024"
+                {
+                    custom int recorded_in = 1070
+                }
+                def "S1032"
+                {
+                    custom int recorded_in = 1070
+                }
+                def "S1068"
+                {
+                    custom int recorded_in = 1070
+                }
+                def "S1069"
+                {
+                    custom int recorded_in = 1064
+                }
+                def "S1071"
+                {
+                    custom int recorded_in = 1064
+                }
+                def "S1072"
+                {
+                    custom int recorded_in = 1064
+                }
             }
 
             def "Rfd"
@@ -750,30 +774,6 @@ def Scope "Serials"
                 def "S1166"
                 {
                     custom string slug = "scoring-the-accelerator-candidates"
-                }
-                def "S1024"
-                {
-                    custom int recorded_in = 1070
-                }
-                def "S1032"
-                {
-                    custom int recorded_in = 1070
-                }
-                def "S1068"
-                {
-                    custom int recorded_in = 1070
-                }
-                def "S1069"
-                {
-                    custom int recorded_in = 1064
-                }
-                def "S1071"
-                {
-                    custom int recorded_in = 1064
-                }
-                def "S1072"
-                {
-                    custom int recorded_in = 1064
                 }
             }
         }
