@@ -33,6 +33,20 @@ jobs:
 
       - uses: quarto-dev/quarto-actions/setup@v2
 
+      # Quarto's project index and freeze store carry over between runs, keyed on
+      # the sources that feed them; a partial key match restores the last run's
+      # store so only changed documents re-render. actions/cache stores with zstd
+      # on ubuntu runners, which is the compression this workspace accepts.
+      - name: Quarto render cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .quarto
+            _freeze
+          key: quarto-site-${{ runner.os }}-${{ hashFiles('_quarto.yml', 'rfd-sheet.scss', 'rfd/**', 'logbook/**', 'pages/**', 'scripts/render_site.py', 'scripts/render_flight_level_pages.py') }}
+          restore-keys: |
+            quarto-site-${{ runner.os }}-
+
       - run: quarto render
 
       - name: Deploy site to GitHub Pages
@@ -57,6 +71,17 @@ jobs:
         run: python scripts/render_site.py
 
       - uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Quarto render cache (book)
+        uses: actions/cache@v4
+        with:
+          path: |
+            .quarto
+            _freeze
+            ~/.TinyTeX
+          key: quarto-book-${{ runner.os }}-${{ hashFiles('_quarto.yml', 'rfd/**', 'logbook/**', 'scripts/render_site.py') }}
+          restore-keys: |
+            quarto-book-${{ runner.os }}-
 
       - name: TeX for the PDF build
         uses: quarto-dev/quarto-actions/setup@v2
