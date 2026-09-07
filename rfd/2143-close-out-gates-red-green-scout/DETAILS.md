@@ -1,6 +1,6 @@
 # RFD 2143 details: the reference case
 
-The gates were first run — and backfilled — on the account.chibifire.com
+The gates were first run, and backfilled, on the account.chibifire.com
 DNS rollout. `logbook-taskweft-planned-dns-traces.md` holds the full
 record; this file keeps the shape each gate takes.
 
@@ -25,7 +25,7 @@ the reference case: an MCP `initialize` probe reported the same
 serverInfo for v0.5.3 and v0.5.4, so it stayed green while a stale
 v0.5.3 process held the port and the v0.5.4 launch died on
 eaddrinuse into /dev/null. The qualifying probe plans a DSL domain
-over MCP — an operation only the fixed build performs.
+over MCP, an operation only the fixed build performs.
 
 ## Scout gate
 
@@ -47,8 +47,10 @@ rather than worked around locally.
 
 ## What stays out of an RFD
 
-Machine-local facts — ports, cache paths on one desk, credential
-store contents, tokens — belong to the desk that produced them, not
+Machine-local facts, ports, cache paths on one desk, credential
+store contents, tokens, belong to the desk that produced them, not
 to this record. The gate shapes above are the published part; the
 values flow through a logbook entry when they are measurements, and
 through nothing at all when they are secrets.
+
+This RFD was drafted by an AI and read by a human before it shipped.

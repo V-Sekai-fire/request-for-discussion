@@ -1,18 +1,8 @@
-# RFD 2143: Close-out gates — red control, green, scout
+# RFD 2143: Close-out gates: red control, green, scout
 
 **State:** prediscussion
 **Feature:** three gates every piece of work records at close-out
 **Scope:** logbook entries, all projects
-
-## Problem
-
-A gate recorded only passing is decoration: it has never shown it
-can detect the broken state, and a pass without its command cannot
-be re-run. Sessions also shed side effects — stray processes, /tmp
-files, caches, credentials — that no gate inspects, and a defect can
-hide inside them. The first inventory run found a stale server
-holding a port behind a probe that reported the same identity for
-the broken and the fixed build.
 
 ## Decision
 
@@ -31,3 +21,13 @@ requirement, not the timing.
    cleanup and empty after, plus what was improved beyond the task.
 
 `DETAILS.md` carries the reference case with its measurements.
+## Problem
+
+A gate recorded only passing is decoration: it has never shown it
+can detect the broken state, and a pass without its command cannot
+be re-run. Sessions also shed side effects, stray processes, /tmp
+files, caches, credentials, that no gate inspects, and a defect can
+hide inside them. The first inventory run found a stale server
+holding a port behind a probe that reported the same identity for
+the broken and the fixed build.
+

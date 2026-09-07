@@ -29,8 +29,8 @@ The v0.5.3 binary fails its own bundled DSL example with
 v0.5.4 on 0f61a28 to release the fix; 332 tests pass locally.
 
 Two release-binary defects found on the way: the standalone MCP
-server is HTTP-only, so `claude mcp add taskweft -- taskweft mcp`
-(stdio) times out — `--transport http` with a URL is the working
+server is HTTP-only, so `claude mcp add taskweft, taskweft mcp`
+(stdio) times out, `--transport http` with a URL is the working
 form; and the binary complains about a stale
 `.burrito/parqview_erts-17.0.5_0.1.0` metadata file from a sibling
 app's cache, which is noise, not the load failure.
@@ -40,7 +40,7 @@ app's cache, which is noise, not the load failure.
 The plan's last three actions are the gates, and the first two are
 still open: `gate_verify_dns` (dig both records) and
 `gate_verify_cert` (Fly cert issuance) block on the Cloudflare
-records not yet existing — the dashboard fetch path is CSP-blocked
+records not yet existing, the dashboard fetch path is CSP-blocked
 from the console, so the records go in by hand from the open DNS
 page. `gate_write_logbook` is this entry.
 
@@ -68,7 +68,7 @@ three records went in through the dashboard API in the logged-in
 session: zone `f7e3538886b9874fc7837b22cf2f160e`, responses
 `[["A",true,[]],["AAAA",true,[]],["CNAME",true,[]]]`.
 
-`gate_verify_dns` then passed at the authoritative nameserver — A
+`gate_verify_dns` then passed at the authoritative nameserver, A
 37.16.15.168, AAAA 2a09:8280:1::17f:86e8:0, the ACME CNAME to
 `account.chibifire.com.d669rdg.flydns.net.`, and the negative control
 (a name that must not resolve) empty. 1.1.1.1 held a cached negative
@@ -82,15 +82,14 @@ check lied while the authoritative one told the truth.
 negative check, Let's Encrypt issued for account.chibifire.com at
 21:43:14 GMT (CN=account.chibifire.com, valid to 2026-11-29). Over
 the live domain: `/health` returns ok, the landing page serves 9600
-bytes with TLS verify 0, and `/v1/sys/seal-status` returns 401 —
-the bao proxy refusing an unauthenticated caller, which is the
+bytes with TLS verify 0, and `/v1/sys/seal-status` returns 401, the bao proxy refusing an unauthenticated caller, which is the
 auth gate demonstrating itself. All seven planned actions ran;
 the plan in the dataset row is the plan that executed.
 
 ## Red and green gates, with apparatus (backfilled)
 
-Each gate below is two measurements: the red control gate — the
-command shown failing on the broken state — then the green gate, the
+Each gate below is two measurements: the red control gate, the
+command shown failing on the broken state, then the green gate, the
 same check shown passing on the fixed one. A gate seen only green is
 decoration; a green without its command cannot be re-run.
 
@@ -119,7 +118,7 @@ cached from a dig made before the records existed; the authoritative
 server is the truth.
 
     dig +short _acme-challenge.account.chibifire.com CNAME @1.1.1.1
-    (empty — SOA minimum 1800 s, about the length of a sitcom episode)
+    (empty, SOA minimum 1800 s, about the length of a sitcom episode)
 
     dig +short _acme-challenge.account.chibifire.com CNAME @chloe.ns.cloudflare.com
     account.chibifire.com.d669rdg.flydns.net.
@@ -150,7 +149,7 @@ server is the truth.
 
 ## Scout gate: the place left better than we arrived (backfilled)
 
-The inventory before cleanup — the red side — and what it caught.
+The inventory before cleanup, the red side, and what it caught.
 Apparatus: pgrep for the session's processes, ls the /tmp paths
 touched, ls the burrito cache.
 
@@ -162,20 +161,20 @@ touched, ls the burrito cache.
                                     guessed metadata file), taskweft_..._0.5.3
 
 The catch: port 3001 was still owned by the **v0.5.3** beam. The
-earlier `pkill -f "taskweft mcp"` matched nothing — the process
-cmdline is `beam.smp ... -extra mcp` — so the v0.5.4 launch died on
+earlier `pkill -f "taskweft mcp"` matched nothing, the process
+cmdline is `beam.smp ... -extra mcp`, so the v0.5.4 launch died on
 eaddrinuse into /dev/null, and the serverInfo probe reported the
 same name and version for both builds. That green gate had passed on
-the broken state, which is the exact failure rule 2 names.
+the broken state, which is the failure rule 2 names.
 
-After cleanup — the green side:
+After cleanup, the green side:
 
     pgrep -fl "fly proxy"                    →  (nothing)
     pgrep -fl "cf_browser"                   →  (nothing)
     ls /tmp/ff_cookies.sqlite /tmp/chibifire-com  →  (nothing)
     ls ~/Library/.../\.burrito/              →  taskweft_erts-16.4.0.5_0.5.4
 
-And a probe that can tell the two builds apart — DSL planning over
+And a probe that can tell the two builds apart, DSL planning over
 MCP, which 0.5.3 cannot do and 0.5.4 can:
 
     POST /mcp tools/call plan {format: dsl, blocks_world_dsl.ex}
