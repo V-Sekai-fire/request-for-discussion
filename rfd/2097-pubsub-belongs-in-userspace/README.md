@@ -10,3 +10,5 @@ None recorded. The serial was allocated and the apparatus (`fdbpub.c`) was writt
 ## Problem
 
 A directory with code and no README reads as a document that was deleted rather than one that was never written. This page names which it is.
+
+This RFD was drafted by an AI and read by a human before it shipped.
