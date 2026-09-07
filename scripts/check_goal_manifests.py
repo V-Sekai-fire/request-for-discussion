@@ -85,12 +85,21 @@ def check(text=None):
 
 def self_test():
     """Each control must make `check` fail. A gate with none certifies whatever it is given."""
+    global archived_repos
     real = CLAUDE_MD.read_text(encoding="utf-8")
     archived, err = archived_repos()
     if archived is None:
         print(f"  FAIL UNCHECKED: {err[0]}")
         return 1
-    victim = sorted(archived)[0]
+    # An organisation with nothing archived still has to prove the gate can fire, so
+    # the victim is planted into the archived set the controls read.
+    real_archived_repos = archived_repos
+    if archived:
+        victim = sorted(archived)[0]
+    else:
+        victim = "planted-archived-goal-manifest"
+        print(f"  note {ORG} has no archived repository; planting {victim} for the controls")
+        archived_repos = lambda: ({victim}, None)  # noqa: E731
 
     controls = [
         ("an archived manifest is named as live",
@@ -118,6 +127,7 @@ def self_test():
         else:
             print(f"  BAD  {label}: passed, so this gate certifies the defect")
             bad.append(label)
+    archived_repos = real_archived_repos
     if bad:
         print(f"\n{len(bad)} control(s) did not fire. The gate is decoration until they do.")
         return 1

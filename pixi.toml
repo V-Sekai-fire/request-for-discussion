@@ -11,11 +11,11 @@ channels = ["conda-forge"]
 # The gate feature would run anywhere; it is not offered elsewhere yet because
 # nothing has asked, and a platform nobody runs is a platform nobody tests.
 #
-# win-64 was tried on 2026-08-29 and reverted the same hour: the litert feature
-# pins `ai-edge-litert` and `litert-torch` against each other and neither builds
-# for win-64, so declaring the platform makes every environment here
-# unsolvable rather than one of them portable.
-platforms = ["osx-arm64"]
+# win-64 was tried on 2026-08-29 and reverted the same hour because the litert
+# feature (since dropped, 2026-09-07) could not solve there. Declared again on
+# 2026-09-07; the ane feature restricts itself to osx-arm64 below, so win-64
+# solves the gates and nothing else.
+platforms = ["osx-arm64", "win-64"]
 
 # THE GATES, PINNED THE WAY `scripts/requirements.txt` ALREADY PINS THEM.
 # That file stays: it is what CI reads and it carries the reasoning for each
@@ -53,6 +53,9 @@ starvote = "*"
 # numpy. An environment that may silently return wrong numbers is not a rig
 # for an RFD about numbers, and KMP_DUPLICATE_LIB_OK would hide it rather than
 # fix it. One index, one OpenMP.
+[feature.ane]
+platforms = ["osx-arm64"]
+
 [feature.ane.dependencies]
 python = "3.11.*"
 
@@ -103,16 +106,6 @@ torch = { version = ">=2.6", index = "https://download.pytorch.org/whl/cpu" }
 #
 # NUMPY FROM PyPI, NOT conda-forge -- the OMP Error #15 the ane feature documents
 # is a property of mixing conda numpy with a PyPI torch, not of coremltools.
-[feature.litert.dependencies]
-python = "3.12.*"
-
-[feature.litert.pypi-dependencies]
-numpy = ">=1.26,<3"
-ai-edge-litert = ">=2.2"
-litert-torch = ">=0.9"
-torch = { version = ">=2.6,<2.14", index = "https://download.pytorch.org/whl/cpu" }
-
 [environments]
 gate = { features = ["gate"], no-default-feature = true }
 ane = { features = ["ane"], no-default-feature = true }
-litert = { features = ["litert"], no-default-feature = true }
