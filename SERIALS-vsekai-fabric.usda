@@ -936,6 +936,14 @@ def Scope "Serials"
                     custom string slug = "drop-webgpu-use-vulkan"
                     custom string flight_level = "L3"
                 }
+                def "S2143"
+                {
+                    custom string slug = "close-out-gates-red-green-scout"
+                }
+                def "S2169"
+                {
+                    custom string slug = "abandon-strangler-fig-studio-core"
+                }
             }
         }
     }
