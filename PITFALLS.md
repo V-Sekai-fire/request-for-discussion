@@ -229,11 +229,12 @@ failed run ended in a timeout standing in for a state nobody had read:
 2. bao's listener answered `tls: certificate required`. The state was "no client
    certificate presented": the script carried three of the credential helper's four
    variables.
-3. flyctl on Windows exits 1 after a clean `ssh console -C`. Under `pipefail` the script
-   stopped after the leaf was minted, and its cleanup trap deleted the material, silently.
-4. `fly secrets set` triggered a deploy that ended in `timeout reached waiting for health
-   checks`. The state was a crash loop on a priv path resolved at compile time, written in
-   the log as `max restart count of 10`.
+3. flyctl on Windows exits 1 after a clean `ssh console -C`. Under `pipefail` the
+   script stopped after the leaf was minted, and its cleanup trap deleted the
+   material, silently.
+4. `fly secrets set` triggered a deploy whose health checks never passed. The state
+   was a crash loop on a priv path resolved at compile time, which the log states
+   plainly as `max restart count of 10`.
 
 A fifth, while measuring: a log poll matched `BENCH-DONE` in the line that echoed the
 command it was waiting for, and reported done before the download had finished.
