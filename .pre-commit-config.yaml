@@ -292,6 +292,23 @@ repos:
         files: '^[0-9]{4}-.*\.exs?$'
         pass_filenames: false
 
+      # RFD 2232: an RFD with an rfd.exs source is rendered from it, and a README or
+      # DETAILS that no longer matches the source is refused rather than merged.
+      - id: rfd-dsl-check
+        name: rendered RFDs match their rfd.exs source
+        entry: sh -c 'cd rfd_dsl && mix rfd.check'
+        language: system
+        files: '^(rfd/[0-9]{4}-[^/]+/(rfd\.exs|README\.md|DETAILS\.md)|rfd_dsl/.*)$'
+        pass_filenames: false
+
+      # The DSL's own controls: six known-broken documents must be refused.
+      - id: rfd-dsl-test
+        name: the RFD DSL still refuses known-broken documents
+        entry: sh -c 'cd rfd_dsl && MIX_ENV=test mix test'
+        language: system
+        files: '^rfd_dsl/.*$'
+        pass_filenames: false
+
       - id: elixir-parses
         name: elixir parses (taskweft domains)
         description: >-
