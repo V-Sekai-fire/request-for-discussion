@@ -15,15 +15,15 @@ Measured this session:
 
 **OmniGen2 is 65× slower than Lumina2** for the workspace's actual need
 (image editing per MaskScore's methodology). Both are Lumina2-family
-architectures (verified in this session — OmniGen2 imports
+architectures (verified in this session, OmniGen2 imports
 `block_lumina2` primitives), so a distillation from teacher to student
 inside the same family is at least architecturally plausible.
 
 The workspace has none of the obvious speedup paths open:
-- FLUX.1-Kontext (fast edit model) — CLAUDE.md blocklists it (licence)
-- Qwen-Image-Edit — CLAUDE.md blocklists it (corrupts under quantisation)
-- calcuis's OmniGen2 GGUF — ComfyUI-only, days of integration
-- stable-diffusion.cpp port of OmniGen2 (RFD 2184) — days, and even
+- FLUX.1-Kontext (fast edit model), CLAUDE.md blocklists it (licence)
+- Qwen-Image-Edit, CLAUDE.md blocklists it (corrupts under quantisation)
+- calcuis's OmniGen2 GGUF, ComfyUI-only, days of integration
+- stable-diffusion.cpp port of OmniGen2 (RFD 2184), days, and even
   ported the DiT still runs iterative diffusion; no reason to expect
   <60 s per 1024² edit
 
@@ -44,7 +44,7 @@ Pre-generate a small cache of `(source, instruction, teacher_edit)`
 triples using OmniGen2 as teacher on real sources from
 `EditScore-Reward-Data`'s shard 00.
 
-- **n = 10 triples** (probe only — see "What is NOT in this RFD")
+- **n = 10 triples** (probe only, see "What is NOT in this RFD")
 - Sources: stratified across the 10 non-parked task_types the pilot
   already uses (`background`, `color_alter`, `material_alter`,
   `motion_change`, `ps_human`, `style`, `subject_add`, `subject_remove`,
@@ -58,18 +58,18 @@ triples using OmniGen2 as teacher on real sources from
 ### Stage 2: Lumina2+LoRA training on the teacher cache
 
 - **Teacher:** cached triples from Stage 1 (no OmniGen2 loaded during
-  training — VRAM budget wouldn't fit both)
+  training, VRAM budget wouldn't fit both)
 - **Student:** Lumina2 nf4 (bnb `load_in_4bit`) + LoRA rank 64
   (higher rank than RFD 2185's 32 because we're adding a NEW capability,
   not merely accelerating an existing one)
 - **Loss framing:** SDEdit-shaped image editing
-  - VAE-encode source → source_latent
-  - Add flow-matching noise at t=0.5 to source_latent → x_0.5
-  - Student's LoRA-modified Lumina2 denoises from x_0.5 conditioned on
+ , VAE-encode source → source_latent
+ , Add flow-matching noise at t=0.5 to source_latent → x_0.5
+ , Student's LoRA-modified Lumina2 denoises from x_0.5 conditioned on
     instruction
-  - MSE loss between student's denoised latent and
+ , MSE loss between student's denoised latent and
     VAE-encode(teacher_edit)
-- **Epochs:** 10 (n=10 triples × 10 = 100 gradient steps — enough to
+- **Epochs:** 10 (n=10 triples × 10 = 100 gradient steps, enough to
   see loss trend, not enough to converge)
 - Wall clock: ~30 min
 
@@ -81,9 +81,9 @@ of three configs and score:
 
 | Config | Steps | Expected wall | Expected EditScore.overall |
 |---|---|---|---|
-| OmniGen2 (teacher) | 50 | 12 min | (measure — this IS the reference) |
-| Lumina2 nf4 + this LoRA (student) | 8 | ~15 s | (measure — the gate) |
-| Lumina2 nf4 NO LoRA baseline | 8 | ~11 s | (measure — negative control per rule 2) |
+| OmniGen2 (teacher) | 50 | 12 min | (measure, this IS the reference) |
+| Lumina2 nf4 + this LoRA (student) | 8 | ~15 s | (measure, the gate) |
+| Lumina2 nf4 NO LoRA baseline | 8 | ~11 s | (measure, negative control per rule 2) |
 
 **Pass criterion:** student's mean `overall` reaches ≥ 50% of teacher's,
 AND the student meaningfully outperforms the no-LoRA control. If yes,
@@ -93,13 +93,13 @@ is closed and RFD 2184's sdcpp port remains the OmniGen2 speedup plan.
 
 ## Verification
 
-- Stage 1 counts triples generated vs 10 targeted (rule 3 — silent
+- Stage 1 counts triples generated vs 10 targeted (rule 3, silent
   skip is a fail). Any generation failure names the task_type + source.
 - Stage 2 emits a loss curve to `losses.txt`. Monotone decrease over
   100 steps is the plumbing check.
 - Stage 3 reports the three-row table above. A CI that crosses the
   teacher's mean is written as "student not distinguishable from
-  teacher within noise" — good if the teacher was strong.
+  teacher within noise", good if the teacher was strong.
 
 ## Related
 

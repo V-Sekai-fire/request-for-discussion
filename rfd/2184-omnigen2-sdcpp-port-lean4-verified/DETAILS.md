@@ -14,7 +14,7 @@ Session 2026-09-02 measured OmniGen2 on the 3090:
   `hidden_size=2520` isn't a multiple of the fast kernel's blocksize=64.
   Measured 10+ min without completing one denoising step.
 
-The community demonstrably runs OmniGen2 at Q4_K_M — `calcuis/omnigen2-gguf`
+The community demonstrably runs OmniGen2 at Q4_K_M, `calcuis/omnigen2-gguf`
 ships the weights, `ComfyUI-GGUF` loads them. But that runtime is
 ComfyUI-specific and drags a large Python stack; the workspace prefers
 ggml through a headless C++ path (llama.cpp, stable-diffusion.cpp) so
@@ -28,8 +28,8 @@ FLUX.2, Chroma, Qwen Image, plus image-edit models Flux-Kontext / Qwen
 Image Edit / Boogu / Mage-Flow-Edit) **does not include OmniGen2's
 architecture family**.
 
-Session 2026-09-02 also verified — from `transformer_omnigen2.py` in
-the OmniGen2 checkout — that OmniGen2 is a **Lumina2-family DiT**, not
+Session 2026-09-02 also verified, from `transformer_omnigen2.py` in
+the OmniGen2 checkout, that OmniGen2 is a **Lumina2-family DiT**, not
 a FLUX descendant:
 
 ```python
@@ -39,7 +39,7 @@ from .block_lumina2 import LuminaLayerNormContinuous, LuminaRMSNormZero,
 
 Single `OmniGen2TransformerBlock`, not FLUX's `DoubleStreamBlock` +
 `SingleStreamBlock` split. Custom `OmniGen2RotaryPosEmbed`, not
-`FluxPosEmbed`. RMS norm + SwiGLU + fused attention — LLaMA-family
+`FluxPosEmbed`. RMS norm + SwiGLU + fused attention, LLaMA-family
 primitives Lumina2 inherits. So stable-diffusion.cpp's existing FLUX
 loader is not adaptable to OmniGen2 with a few weight-remap tweaks.
 The port needs the Lumina2 block family added first.
@@ -53,20 +53,20 @@ maps `calcuis/omnigen2-gguf`'s Q4_K_M safetensors to ggml tensors.
 **Lean4 as an assist** (not a substitute for measurement): the ggml
 graph code is easy to write and hard to check numerically at scale.
 Each ggml block that gets added is paired with a Lean4 spec of the same
-block's mathematical semantics — the reduction axes of an RMSNorm, the
+block's mathematical semantics, the reduction axes of an RMSNorm, the
 shape law of `axes_lens=[1024,1664,1664]` RoPE, the modulation gating
 formula. The proofs certify the ggml graph performs the intended
 composition of operations before we numerically diff against the
 PyTorch reference. This is the same shape `formal/rfdetr_proofs/` uses
-today for the RF-DETR backward primitives — the pattern transfers.
+today for the RF-DETR backward primitives, the pattern transfers.
 
 The two artefacts that verify each block:
 
-1. **Lean4 spec** — the block's operation as a total function, typed
+1. **Lean4 spec**, the block's operation as a total function, typed
    in tensor shape + dtype (`LuminaRMSNormZero.apply` etc.), with the
    composition lemmas that let a `TransformerBlock` reduce to a
    sequence of primitive-block calls.
-2. **ggml graph test** — `test_lumina_rmsnorm_zero.cpp` builds the
+2. **ggml graph test**, `test_lumina_rmsnorm_zero.cpp` builds the
    block with ggml, runs it on synthetic input, diffs against
    PyTorch. Bound: whatever `test_backbone`-style tolerance the port's
    own gate later settles on.
@@ -90,21 +90,21 @@ it demonstrably runs a real reference.
    spec and numeric diff against `block_lumina2.py`'s reference.
    Standalone gated test.
 3. **Land `LuminaFeedForward` (SwiGLU MLP)** with the same pair.
-4. **Land `OmniGen2RotaryPosEmbed`** — the axes_lens=[1024,1664,1664]
+4. **Land `OmniGen2RotaryPosEmbed`**, the axes_lens=[1024,1664,1664]
    3D positional encoding, with Lean4 spec of the axis-alignment law.
    This is where FLUX-family RoPE code helps as reference but does not
    directly apply.
-5. **Compose `OmniGen2TransformerBlock`** from the primitives — one
+5. **Compose `OmniGen2TransformerBlock`** from the primitives, one
    Lean4 lemma that reduces the composite to the sequence, and one
    ggml graph test that diffs against upstream.
-6. **Compose full `OmniGen2Transformer2DModel`** — 32 layers stacked,
+6. **Compose full `OmniGen2Transformer2DModel`**, 32 layers stacked,
    plus `Lumina2CombinedTimestepCaptionEmbedding` for the input path.
    End-to-end forward-pass diff against the fp32 PyTorch model on one
    canonical (image, instruction) pair.
-7. **GGUF weight loader** — map `calcuis/omnigen2-gguf` Q4_K_M
+7. **GGUF weight loader**, map `calcuis/omnigen2-gguf` Q4_K_M
    safetensors keys to ggml tensor names, verify inference matches the
    ComfyUI-GGUF reference on the same input.
-8. **Integration with stable-diffusion.cpp's driver** — the CLI accepts
+8. **Integration with stable-diffusion.cpp's driver**, the CLI accepts
    `--model omnigen2-fp32-q4_k_m.gguf --edit --input source.png
    --prompt "..."` and writes the edit to disk.
 9. **Ship a PR upstream to leejet/stable-diffusion.cpp** adding the
@@ -118,8 +118,8 @@ heavy GPU time.
 
 ## Verification
 
-Every ggml block that lands carries the pair — Lean4 spec + numeric
-diff — described above. Rungs 5 and 6 additionally carry:
+Every ggml block that lands carries the pair, Lean4 spec + numeric
+diff, described above. Rungs 5 and 6 additionally carry:
 
 - **A negative control** (rule 2): a block wired with the wrong RoPE
   axis assignment MUST fail the numeric diff, and the Lean4 spec's
@@ -128,7 +128,7 @@ diff — described above. Rungs 5 and 6 additionally carry:
   compile-skipped because a dependency isn't landed FAILS the port's
   CI job by name. No "green" summaries with 4 of 5 blocks tested.
 
-The gate that decides RFD closure is not "the port compiles" — it is
+The gate that decides RFD closure is not "the port compiles", it is
 **the fp32 forward-pass diff at milestone 6 is below the tolerance set
 in `test_omnigen2_forward.cpp`, and the Q4_K_M inference at milestone 7
 produces images within the sha256-region-match of ComfyUI-GGUF on the
@@ -136,10 +136,10 @@ same seeded (image, instruction) pair.**
 
 ## Related
 
-- **RFD 2158 (abandoned)** — Lean 4 FBD compiler self-host, whose Stage
+- **RFD 2158 (abandoned)**, Lean 4 FBD compiler self-host, whose Stage
   0-1 work established the Lean-writes-real-bytes pattern this RFD
   reuses at a different target (ggml tensor semantics vs RISC-V ELF).
-- **`formal/rfdetr_proofs/`** in `3-interactor/rf-detr-cpp/` — the
+- **`formal/rfdetr_proofs/`** in `3-interactor/rf-detr-cpp/`, the
   working template for Lean4 proofs alongside a ggml port.
 - Upstream: `github.com/leejet/stable-diffusion.cpp`,
   `github.com/OmniGen2/OmniGen2`, `github.com/city96/ComfyUI-GGUF`,
@@ -172,8 +172,8 @@ match to OmniGen2's config:
 | `num_double_stream_layers` | 8 | (n/a in OmniGen2 config) | needs check |
 | mllm text encoder | qwen_image | Qwen2.5-VL slice | different integration |
 
-So the LOAD-BEARING work — `LuminaRMSNormZero`, `LuminaFeedForward`,
-3D RoPE with `axes_dim = {40, 40, 40}`, AdaLN modulation — is already
+So the LOAD-BEARING work, `LuminaRMSNormZero`, `LuminaFeedForward`,
+3D RoPE with `axes_dim = {40, 40, 40}`, AdaLN modulation, is already
 implemented and shipping. The port is **adapt Boogu's implementation to
 OmniGen2's config + integrate OmniGen2's specific text-encoder path**,
 not build the Lumina2 blocks from scratch.
@@ -205,7 +205,7 @@ numerically-identical outputs to `OmniGen2TransformerBlock.forward()` in
 the diffusers reference, given the same weights? If yes, the port is
 config-mostly. If no, some Boogu-specific choice (adaLN split, gating,
 residual placement) differs from OmniGen2 and warrants a per-difference
-audit — still much less work than a from-scratch block family.
+audit, still much less work than a from-scratch block family.
 
 The Lumina2 upstream benchmark (`Alpha-VLLM/Lumina-Image-2.0`, fired
 2026-09-03 as `bu8k6yvbc`) will settle the reference-speed baseline that
@@ -217,7 +217,7 @@ milestones 6 and 7 must meet.
   `enable_model_cpu_offload`) is out of scope; that path proceeds
   regardless and produces pilot data while this port is landing.
 - Video-family DiTs (Wan-VACE etc.) are not scoped even though
-  stable-diffusion.cpp lists them — the workspace's current need is
+  stable-diffusion.cpp lists them, the workspace's current need is
   image editing, and video would double the surface.
 - The `mllm/` half of OmniGen2 (Qwen2.5-VL slice) is not ported here —
   it runs through the standard llama.cpp mtmd path that this

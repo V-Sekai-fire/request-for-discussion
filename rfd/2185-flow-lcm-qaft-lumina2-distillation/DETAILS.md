@@ -15,13 +15,13 @@ nf4 cuts VRAM by 3.86 GB at the cost of 2.3 seconds. It does NOT reduce
 step count. Independently, a Lightning-style distill LoRA
 (`qpqpqpqpqpqp/Lumina_Image_2.0_Distill_Lora`) exists in the community
 but is trained against a DMD checkpoint (`heziiiii/lu2_lightning_test`)
-whose loading isn't drop-in — a `noise_refiner` module in the DMD base
+whose loading isn't drop-in, a `noise_refiner` module in the DMD base
 that vanilla Lumina2 doesn't have. Neither knob, alone, satisfies the
 combined constraint the workspace actually wants: **fewer steps, smaller
 weights, one artefact**.
 
-Doing the two sequentially — distill first at bf16, then quantize to
-nf4 — has a known failure mode: the quantization noise is applied AFTER
+Doing the two sequentially, distill first at bf16, then quantize to
+nf4, has a known failure mode: the quantization noise is applied AFTER
 the LoRA has learned to correct for bf16 noise levels, so the LoRA does
 not correct for the nf4-specific rounding error. QAT literature (QLoRA
 et al.) demonstrates that co-training LoRA against a QUANTIZED base is
@@ -39,18 +39,18 @@ Combined **Flow-LCM + QAFT-nf4** training loop, one artefact:
   is 64-aligned; measured this session at 1.13 s/step). A fresh LoRA
   (rank 32, targeting `to_q`/`to_k`/`to_v`/`to_out.0`) sits on top; only
   the LoRA trains.
-- **Both share** the bf16 text encoder and VAE — those components are
+- **Both share** the bf16 text encoder and VAE, those components are
   frozen in both roles, no reason to duplicate.
 - **Loss:** endpoint-consistency in flow-matching parameterization.
   For sampled `(t, dt)`:
 
   ```
-  x_t   = (1 - t)   * x_0 + t   * noise
-  x_tdt = (1 - tdt) * x_0 + tdt * noise           # tdt = t + dt
+  x_t   = (1, t)   * x_0 + t   * noise
+  x_tdt = (1, tdt) * x_0 + tdt * noise           # tdt = t + dt
   v_teacher = teacher(x_tdt, tdt)   # stopgrad
   v_student = student(x_t,   t)
-  x0_teacher = x_tdt - tdt * v_teacher
-  x0_student = x_t   - t   * v_student
+  x0_teacher = x_tdt, tdt * v_teacher
+  x0_student = x_t  , t   * v_student
   loss = huber(x0_student, stopgrad(x0_teacher))
   ```
 
@@ -85,7 +85,7 @@ single VRAM cost; if training OOMs, first cut is to move teacher to
   a LoRA that reduces step count from 30 to ~8 at nf4 with acceptable
   quality vs the bf16-30-step baseline.
 
-Not a shippable LoRA — the smoke uses random-latent `x_0` as a proxy for
+Not a shippable LoRA, the smoke uses random-latent `x_0` as a proxy for
 real image latents. A shippable LoRA needs real image latents from the
 same pipeline's VAE encoder (see "Follow-up" below).
 
@@ -112,7 +112,7 @@ same pipeline's VAE encoder (see "Follow-up" below).
 
 ## Related
 
-- **RFD 2184** (sdcpp port): orthogonal — that RFD lands OmniGen2 into a
+- **RFD 2184** (sdcpp port): orthogonal, that RFD lands OmniGen2 into a
   ggml-native runtime; this RFD lands a distilled+quantized LoRA over
   vanilla Lumina2 in diffusers. Complementary if we choose to also port
   the distilled artefact through sdcpp, but neither depends on the other.
@@ -129,7 +129,7 @@ same pipeline's VAE encoder (see "Follow-up" below).
   real-image dataset (LAION-COCO, X2I2, or workspace-owned renders) plus
   ~24-hour training. Comes after the smoke lands.
 - **Full LCM formulation with boundary conditions.** The smoke's loss
-  is the middle piece — proper LCM adds constraints at `t=0` (student
+  is the middle piece, proper LCM adds constraints at `t=0` (student
   must be an identity) and typically uses an EMA teacher instead of the
   fixed base. Both improve convergence but aren't necessary to measure
   whether the plumbing runs.

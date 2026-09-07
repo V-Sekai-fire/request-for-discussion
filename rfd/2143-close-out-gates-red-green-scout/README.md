@@ -30,4 +30,3 @@ files, caches, credentials, that no gate inspects, and a defect can
 hide inside them. The first inventory run found a stale server
 holding a port behind a probe that reported the same identity for
 the broken and the fixed build.
-
