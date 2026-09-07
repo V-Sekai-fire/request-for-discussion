@@ -1,3 +1,5 @@
+# RFD 2028 details: Hexagonal core ports adapters
+
 ## Context and problem statement
 
 Components in the stack span several languages (C, C++, Python,
@@ -25,7 +27,7 @@ Each component takes a uniform `entities/` + `repositories/` +
 `datasources/` layout, in the Netflix formulation of the pattern.
 Components compose into a service, as RFD 2111 defines a service.
 
-### entities/ — the objects, and the interactors that act on them
+### entities/: the objects, and the interactors that act on them
 
 An entity is an object the component works on, and it knows nothing
 about where it is stored. An interactor performs the actions on
@@ -34,7 +36,7 @@ framework. They carry their own `entities/spec/` of tests that run in
 isolation against recorded data. A transport layer never reaches
 inside them.
 
-### repositories/ — interfaces to the entities
+### repositories/: interfaces to the entities
 
 A repository is an interface that gets, creates, and changes entities.
 The interactor declares it and a data source implements it.
@@ -44,7 +46,7 @@ language can implement: a C-ABI struct of function pointers where a
 service crosses languages, a language-native interface where it does
 not. One header then binds C, C++, and Python data sources alike.
 
-### datasources/ — the implementations, outside the interactor
+### datasources/: the implementations, outside the interactor
 
 A data source implements a repository against the real world: a serial
 device, a UDP socket, a recorded fixture for CI, a GPU compute host, a

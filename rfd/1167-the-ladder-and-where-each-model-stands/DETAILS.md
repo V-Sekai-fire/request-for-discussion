@@ -1,4 +1,4 @@
-# RFD 1167 details: one table per rung, and the evidence for each place
+# RFD 1167 details: The ladder, and which rung each model is on
 
 Ranks in brackets are RFD 1166's, carried so the two can be read
 together without being confused for each other.
@@ -6,7 +6,7 @@ together without being confused for each other.
 The rungs run low to high, which is also early to late: a model
 climbs, so the document is read in the order the work happens.
 
-## Rung 0 -- assessed, never exported
+## Rung 0: assessed, never exported
 
     model                    [1166]  what the score rests on
 
@@ -26,7 +26,7 @@ Nine of eleven. Four carry runtime measurements, which is not
 nothing, but a model that runs on a 3090 has said nothing about
 whether it compiles for a dataflow part.
 
-## Rung 1 -- exports to ONNX
+## Rung 1: exports to ONNX
 
     model                  [1166]  evidence
 
@@ -49,11 +49,11 @@ projects that are not candidates at all. Ten of the eleven others
 have no export site of any kind.
 
 Rung 1 is empty because nobody has written the export, not because
-everybody sprinted past it. The rung is still the cheap one -- no
-weights, no device, no rented card -- and that is now an argument
+everybody sprinted past it. The rung is still the cheap one, no
+weights, no device, no rented card, and that is now an argument
 about work not yet started rather than work that left no trace.
 
-## Rung 2 -- the operator set is known
+## Rung 2: the operator set is known
 
 **MoGe's rung-2 entry is about v1, and RFD 1171 has since taken v3.**
 The export targets `dinov2_vitb14`, which is v1's encoder; v2 and v3 are
@@ -64,7 +64,7 @@ The measurement stands as made.
     model                  [1166]  evidence
 
     VoxHammer, DINOv2 stage  [12]  22 operators, every one inside
-                                   `DEVICE_OPS` -- the same allowlist
+                                   `DEVICE_OPS`, the same allowlist
                                    rf-detr's device half carried
                                    through DFC 5.3.0 at 825 nodes.
                                    Nothing refused, so rung 3 is the
@@ -88,7 +88,7 @@ therefore rests on a number nobody here can re-derive, and re-earning
 it means writing the export that should have been committed the first
 time.
 
-## Rung 3 -- the Dataflow Compiler accepts the graph
+## Rung 3: the Dataflow Compiler accepts the graph
 
     model              [1166]  evidence
 
@@ -99,7 +99,7 @@ time.
 One model. It is also the only row in RFD 1166 whose scores rest on
 something run rather than read.
 
-## Rung 4 -- quantises
+## Rung 4: quantises
 
     model    evidence
 
@@ -109,13 +109,13 @@ Quantization-Aware Fine-Tuning exhausted the 3090's 24 GiB at the
 default batch and again at `batch_size=1, epochs=1` over 64 frames.
 RFD 1165 carries that retraction.
 
-## Rung 5 -- runs on the device
+## Rung 5: runs on the device
 
     model    evidence
 
 Empty. No HEF has executed on `usb/004:013` from this workspace. The
-device itself is measured -- HAILO10H, firmware 5.3.2, 2.27 ms
-hardware latency on a zoo classifier -- but nothing of ours has
+device itself is measured, HAILO10H, firmware 5.3.2, 2.27 ms
+hardware latency on a zoo classifier, but nothing of ours has
 reached it.
 
 ## `torch.onnx.export` was the convenient proxy, and it understated
@@ -152,7 +152,7 @@ label hides two kinds of row that can never climb as written.
 `server.py` and nothing else: every path outside `WEFTSPUN_STUB=1`
 raises `NotImplementedError`, so what is checked out is an HTTP
 contract, not a network. `cyclegan_style_transfer` is the same shape
-with a checkpoint path in it -- one file, no `nn.Module` anywhere.
+with a checkpoint path in it, one file, no `nn.Module` anywhere.
 For these three, rung 1 is not the next step; acquiring the model is.
 
 **Two rows are not neural networks at all.** MuJoCo MJX is a physics
@@ -164,8 +164,8 @@ question and it is a different one, so the honest entry is `not on
 this ladder` rather than a rung.
 
 That leaves **eight rows the ladder actually measures**: rf-detr,
-OmniGen2, EditScore, MoGe, Pixal3D/TRELLIS.2, VoxHammer and -- once it
-has a model -- CycleGAN. Six of the seven hold real module and
+OmniGen2, EditScore, MoGe, Pixal3D/TRELLIS.2, VoxHammer and, once it
+has a model, CycleGAN. Six of the seven hold real module and
 checkpoint code, so for them rung 1 is genuinely the next thing rather
 than a placeholder.
 
@@ -179,11 +179,11 @@ needs no weights and so has no rung.
 
 The ranking's top three have never been exported and its eleventh has
 been further up the ladder than any of them. That is not a fault in
-the ranking -- RFD 1166 asks what is worth doing -- but it is why the
+the ranking, RFD 1166 asks what is worth doing, but it is why the
 two tables are separate documents.
 
 That was written with rung 1 empty, and the cheapest thing that would
-change the picture was said to be an export of anything -- VoxHammer's
+change the picture was said to be an export of anything, VoxHammer's
 DINOv2 stage being the shortest, a stock checkpoint at a fixed
 resolution in a family already cleared at rung 3.
 

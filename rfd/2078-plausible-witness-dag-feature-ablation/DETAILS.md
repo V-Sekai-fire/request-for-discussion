@@ -1,3 +1,5 @@
+# RFD 2078 details: Plausible witness dag feature ablation
+
 ## Problem
 
 Building an MMO is expensive. Every feature is a bet:
@@ -49,7 +51,7 @@ search either:
 - **Finds a witness** (a state trace that violates a remaining
   invariant when F is absent) → F is load-bearing. Building it wrong
   or omitting it causes a cascade of invariant violations. This is
-  speculator debt — build it correctly or pay twice.
+  speculator debt, build it correctly or pay twice.
 
 - **Finds no witness** → F's invariants are independent of the rest.
   The feature can be safely deferred (unspent dollars preserved) or
@@ -87,14 +89,14 @@ must be built first (high risk if wrong).
 
 | Feature         | Impl cost      | Load-bearing?                            | Defer? | Rationale                         |
 | --------------- | -------------- | ---------------------------------------- | ------ | --------------------------------- |
-| SlotmapGenIDs   | Low (~100 LoC) | Yes — breaks CastSpell, Ghost, Migration | No     | Cheap, foundational, do first     |
-| ZoneTick        | Medium         | Yes — breaks ZoneSplit, CastSpell        | No     | Core loop, can't defer            |
-| SessionExpiry   | Low            | Yes — breaks RateLimit, security         | No     | Cheap, security-critical          |
-| CastSpell       | High           | No — independent of ZoneSplit            | Yes    | Complex, defer until tick works   |
-| GhostRelevance  | Medium         | No — independent of ZoneSplit            | Yes    | Can stub with full-mesh initially |
-| ZoneSplit       | Medium         | No — independent of CastSpell            | Yes    | Only needed at scale              |
-| EntityMigration | Medium         | Yes — breaks on slotmap absence          | No     | Needed for correctness at scale   |
-| RateLimit       | Low            | No — independent of game logic           | Yes    | Can add after launch              |
+| SlotmapGenIDs   | Low (~100 LoC) | Yes, breaks CastSpell, Ghost, Migration | No     | Cheap, foundational, do first     |
+| ZoneTick        | Medium         | Yes, breaks ZoneSplit, CastSpell        | No     | Core loop, can't defer            |
+| SessionExpiry   | Low            | Yes, breaks RateLimit, security         | No     | Cheap, security-critical          |
+| CastSpell       | High           | No, independent of ZoneSplit            | Yes    | Complex, defer until tick works   |
+| GhostRelevance  | Medium         | No, independent of ZoneSplit            | Yes    | Can stub with full-mesh initially |
+| ZoneSplit       | Medium         | No, independent of CastSpell            | Yes    | Only needed at scale              |
+| EntityMigration | Medium         | Yes, breaks on slotmap absence          | No     | Needed for correctness at scale   |
+| RateLimit       | Low            | No, independent of game logic           | Yes    | Can add after launch              |
 
 ## plausible-witness-dag integration
 
@@ -183,13 +185,13 @@ seconds, L2 in minutes. Most ablation results are determined at L0.
   ZoneSplit, EntityMigration).
 
 - **RFD 2017** (slotmap): SlotmapGenIDs is the first feature to
-  verify — it's foundational and cheap. The ablation matrix confirms
+  verify, it's foundational and cheap. The ablation matrix confirms
   it must be built before CastSpell and GhostRelevance.
 
 - **RFD 2018** (security): SessionExpiry and RateLimit are security
   features that can be ablated independently of game logic. The matrix
   shows they're load-bearing for security invariants but not for game
-  logic invariants — so they can be built in parallel with game logic.
+  logic invariants, so they can be built in parallel with game logic.
 
 ## Economics
 

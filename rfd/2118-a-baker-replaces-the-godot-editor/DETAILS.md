@@ -1,3 +1,5 @@
+# RFD 2118 details: A baker replaces the godot editor
+
 ## What requires the editor today
 
 | Step   | Mechanism                                                         | Available in a template |

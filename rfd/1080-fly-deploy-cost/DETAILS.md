@@ -1,4 +1,4 @@
-# RFD 1080 details: the numbers, and where they came from
+# RFD 1080 details: What the three Fly deploys cost
 
 ## Source prices
 
@@ -9,7 +9,7 @@ breakdown uses directly:
 | ---------------------- | ----------- | --------- |
 | `shared-cpu-1x`, 256MB | $0.00000078 | $2.02     |
 | `shared-cpu-1x`, 512MB | $0.00000128 | $3.32     |
-| Volume storage         | —           | $0.15/GB  |
+| Volume storage         |,           | $0.15/GB  |
 
 Hourly = per-second × 3600. Yearly = per-month × 12, the number Fly
 itself bills against, not hourly × 8760 (the two differ slightly

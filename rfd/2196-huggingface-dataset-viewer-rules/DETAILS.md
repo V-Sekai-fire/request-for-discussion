@@ -1,4 +1,4 @@
-# HuggingFace dataset viewer rules — how to author, how to fix
+# RFD 2196 details: HuggingFace dataset viewer rules
 
 ## The viewer's contract, verbatim from what it enforces
 
@@ -11,7 +11,7 @@
 | Whole-commit under HF's job limits | Auto-convert job dies | `JobManagerCrashedError` |
 | LFS-backed for >10 GB pushes | Xet finalize times out | `RuntimeError: Internal error: timed out reading request body` |
 
-## Rule 1 — one wide row per example (denormalize)
+## Rule 1: one wide row per example (denormalize)
 
 The HF viewer paginates one wide table per split. Split into satellite
 tables (Hermes / ETNF / 6NF style) and the viewer's `train[0..N]`
@@ -19,17 +19,17 @@ browsing collapses. Rules:
 
 - One row per logical example. NULLs are fine.
 - Nested lists and structs are fine (multiple images per row,
-  conversation turns) — one row per example still.
+  conversation turns), one row per example still.
 - Do NOT emit `entity`, `entity_score`, `entity_conversation` as
   separate parquet files thinking the viewer will join them.
 
 Companion skill: `hf-datasets-no-etnf`.
 
-## Rule 2 — row groups ≤ 300 MB
+## Rule 2: row groups ≤ 300 MB
 
 The viewer scans one row group at a time when the reader requests a
 page. Above 300 MB it hard-fails. With images embedded (~1 MB each), a
-1000-row shard is one 1 GB row group by pyarrow default — always
+1000-row shard is one 1 GB row group by pyarrow default, always
 oversized.
 
 Write with:
@@ -43,7 +43,7 @@ pq.write_table(tbl, path,
 `row_group_size` is the maximum number of rows per group. Set it so
 `rows_per_group × avg_row_bytes < 200 MB` (30 % safety margin).
 
-For an already-published shard, rewrite in place — no re-extraction
+For an already-published shard, rewrite in place, no re-extraction
 needed:
 
 ```python
@@ -53,7 +53,7 @@ pq.write_table(tbl, path_tmp, compression="zstd",
 path_tmp.replace(path)
 ```
 
-## Rule 3 — shards ~500 MB, named `data/train-XXXXX-of-YYYYY.parquet`
+## Rule 3: shards ~500 MB, named `data/train-XXXXX-of-YYYYY.parquet`
 
 The auto-indexer scans `data/` for files matching that name pattern and
 groups them into splits. Bigger shards (up to ~1 GB) work but slow the
@@ -66,7 +66,7 @@ data/train-...  data/validation-...   # multiple splits, same config
 default/train-... other/train-...     # multiple configs (put configs at top)
 ```
 
-## Rule 4 — image column = `struct<bytes:binary, path:string>`
+## Rule 4: image column = `struct<bytes:binary, path:string>`
 
 Exact Arrow type:
 
@@ -89,7 +89,7 @@ What does NOT work:
 - `{"path": "images/x.png"}` referencing a file elsewhere in the repo
 - gzipping/zstd-ing the image bytes yourself (parquet's zstd handles it)
 
-## Rule 5 — LFS + hf_transfer for large pushes
+## Rule 5: LFS + hf_transfer for large pushes
 
 `huggingface_hub`'s default xet path stalls on multi-GB commits: the
 CDN endpoint sits ESTABLISHED but transmits nothing, then the client
@@ -113,7 +113,7 @@ Notes:
 - `upload-large-folder` doesn't accept `--path-in-repo`. Structure
   `LOCAL_DIR` so its tree already matches the repo (put parquet under
   `LOCAL_DIR/data/`) and pass `LOCAL_DIR` itself.
-- Symlinks are not followed — move or copy real files in.
+- Symlinks are not followed, move or copy real files in.
 - Per-file resume state is in `LOCAL_DIR/.cache/huggingface/`. An
   interrupted run resumes without re-hashing.
 - Do NOT run two `upload-large-folder` processes against the same
@@ -150,12 +150,12 @@ with S.get(url, stream=True) as r:
 local_path.unlink()
 ```
 
-For repeated reads, let the cache do its job — the doubling pays for
+For repeated reads, let the cache do its job, the doubling pays for
 retry and dedup.
 
 Companion skill: `hf-download-streaming`.
 
-## Pitfall — shared images across rows
+## Pitfall: shared images across rows
 
 If your metadata references the same image path from multiple rows
 (observed in `chibifire/editscore-reward-train`: `images/0_0.png`
@@ -166,19 +166,19 @@ silently at the end.
 
 Fix: `img2rows: dict[str, list[int]]` with `defaultdict(list)`, and on
 each tar member deliver the bytes to every interested row. Bytes are
-shared by reference — no memory blowup.
+shared by reference, no memory blowup.
 
-## Pitfall — auto-viewer job crash on legacy `.arrow` shards
+## Pitfall: auto-viewer job crash on legacy `.arrow` shards
 
 A dataset saved with `datasets.save_to_disk` publishes as `.arrow`
 shards plus `dataset_info.json` / `state.json`. HF tries to
-auto-convert those to parquet in a job that has resource limits — it
+auto-convert those to parquet in a job that has resource limits, it
 died with `JobManagerCrashedError` on the ~5 GB `chibifire/editreward-bench`
 input, leaving the viewer stuck as "Preview". Fix: convert to parquet
 yourself, push under `data/`, and delete the `.arrow` shards and
 `dataset_info.json` / `state.json` in the same commit.
 
-## Rule 6 — `dataset_info.features` must match the on-disk Arrow shape
+## Rule 6: `dataset_info.features` must match the on-disk Arrow shape
 
 An earlier draft of this document listed "explicit `datasets.Features`
 definition" as a non-goal, on the argument that an unambiguous Arrow
@@ -187,13 +187,13 @@ schema was enough. Observed 2026-09-03 on
 `list<struct<slot, damage, damage_image, damage_location>>` (list of
 struct); the README's `dataset_info.features` block declared
 
-    - name: damage
+   , name: damage
       sequence:
-        - name: slot ...
+       , name: slot ...
 
 which HF-datasets' YAML loader reads as `Sequence(dict(...))`, and
 that translates to `struct<slot: list, damage: list, ...>` (**struct
-of lists**) in Arrow — the historical tfds convention. The viewer
+of lists**) in Arrow, the historical tfds convention. The viewer
 tried to cast on-disk list-of-struct to declared struct-of-lists and
 died with `UnexpectedError` on that split, viewer red.
 
@@ -217,17 +217,17 @@ correct-by-construction when the parquet was already list-of-struct.
 
 - **Dataset card / README frontmatter** other than `dataset_info` (task
   category, language, licence tags).
-- **PII gating** — HF's access-control settings are per-repo, out of scope here.
-- **Splits & configs directory conventions** — the auto-detector handles
+- **PII gating**, HF's access-control settings are per-repo, out of scope here.
+- **Splits & configs directory conventions**, the auto-detector handles
   the common cases; a dedicated RFD if we hit an ambiguous layout.
 
 ## Related RFDs
 
-- RFD 2183 — retrain OmniGen for layer decomposition (consumer of these datasets)
-- RFD 2193 — editscore as reproducibility bar (consumer)
+- RFD 2183, retrain OmniGen for layer decomposition (consumer of these datasets)
+- RFD 2193, editscore as reproducibility bar (consumer)
 
 ## Reference commit set
 
-- `chibifire/editreward-bench` — commit `057671b9…`, `.arrow` → parquet, viewer restored.
-- `chibifire/editscore-rl-train` — post-fix commit (row_group_size=100), 110 shards under `data/`.
-- `chibifire/editscore-reward-train` — post-fix commit, 97,256 rows written, no silent drops.
+- `chibifire/editreward-bench`, commit `057671b9…`, `.arrow` → parquet, viewer restored.
+- `chibifire/editscore-rl-train`, post-fix commit (row_group_size=100), 110 shards under `data/`.
+- `chibifire/editscore-reward-train`, post-fix commit, 97,256 rows written, no silent drops.

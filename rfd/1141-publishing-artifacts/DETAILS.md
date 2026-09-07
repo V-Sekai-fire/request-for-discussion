@@ -1,4 +1,4 @@
-# RFD 1141 details: what is not published, and the numbers behind the rules
+# RFD 1141 details: Publishing artifacts
 
 ## The size measurement that drives the weights rule
 
@@ -31,7 +31,7 @@ others is the same failure wearing a smaller mask.
 ## What must not be published
 
 **Quantised output.** CLAUDE.md's condition 5. NF4 outputs are device evidence. Measured
-here, four bits also bought no speed on this card -- 133 s against 131 s -- so there is
+here, four bits also bought no speed on this card, 133 s against 131 s, so there is
 nothing to trade.
 
 **Blinded-holdout derivatives.** `coco_person_commercial_val2017` is 523 licence-filtered
@@ -82,7 +82,7 @@ happened, so the record says whether the mirror came from the cache or from a fe
 ## Verifying a mirror, and where the hub cannot help
 
 `repo_info(..., files_metadata=True)` exposes `sha256` for **LFS objects only**. On this
-mirror that is 15 of 41 files -- every weight, and none of the configs.
+mirror that is 15 of 41 files, every weight, and none of the configs.
 
 So the first verification reported "15 compared by sha256, 0 differing" and left 26 files
 checked only for presence. Presence and identity are different claims, and the gap matters
@@ -95,7 +95,7 @@ seconds and closed it: **26 small files hashed, 0 differing**.
 ## Absolute paths, and the one that hid in prose
 
 Three staged files named a home directory after the first rewrite pass, and a fourth survived
-a second pass. The first three were path *fields* -- `source_frame` in the measurement JSONs.
+a second pass. The first three were path *fields*, `source_frame` in the measurement JSONs.
 The fourth was inside a sentence:
 
     "no person detected in C:\Users\...\az045_A.png at threshold 0.3"
@@ -111,5 +111,5 @@ no backslash at all, so a drive-letter path sailed through a check that reported
 
 Hugging Face upload throughput, LFS behaviour on files above 5 GB, and whether the hub's own
 licence detector agrees with a dual `Apache-2.0 OR MIT` pair. The last of those has a known
-answer on GitHub -- two `LICENSE-*` files at the root read as "Other" until one is on the
-default branch -- and nothing here has checked the hub.
+answer on GitHub, two `LICENSE-*` files at the root read as "Other" until one is on the
+default branch, and nothing here has checked the hub.

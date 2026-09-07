@@ -1,3 +1,5 @@
+# RFD 2002 details: Taskweft value narrowing primitives and refs
+
 ## Summary
 
 `taskweft/nif` (the C++ core behind the `taskweft/taskweft` Elixir host,
@@ -15,7 +17,7 @@ value type instead of one shared, narrow value representation.
 ## Background
 
 Earlier work this session read `taskweft/taskweft`'s own RFD 2004
-("KHR_interactivity Tier 2 -- embed libriscv, compile behavior graphs to
+("KHR_interactivity Tier 2, embed libriscv, compile behavior graphs to
 riscv64") for a different reason, and carried forward a working
 assumption that its value system split into "primitives and refs" as two
 separate, peer kinds. A direct source read for this RFD found that
@@ -42,7 +44,7 @@ convention covers references without a second tagged-union arm.
 
 Second, `mud_kv.c`'s own turn-history keyspace
 (`zf/mud/turn/{session_id}/{turn}`) already stores a plain string value
-(the narration text) with no packed struct at all -- it already,
+(the narration text) with no packed struct at all, it already,
 independently, arrived at the same "some values are just strings" shape
 `TwValue` uses, without deliberately copying it. That is a real signal
 the pattern fits this project's own data, not just taskweft's.
@@ -81,12 +83,12 @@ private:
     std::unique_ptr<Dict>       _dct;
 ```
 
-A hand-written tagged union, not `std::variant` -- deep-copying copy
+A hand-written tagged union, not `std::variant`, deep-copying copy
 constructor, a `stable_hash()` used for planner memoization (sorted dict
 keys, `NaN` and `-0.0` normalized), and structural `operator==`/`<`.
 `Dict` uses `tsl::ordered_map` specifically so key iteration order
 matches Python dict insertion order, for determinism against a reference
-implementation -- stated directly in the file's own header comment, not
+implementation, stated directly in the file's own header comment, not
 inferred.
 
 ### References are `STRING`s shaped as JSON Pointers, not a distinct kind
@@ -94,7 +96,7 @@ inferred.
 `standalone/tw_loader.hpp`:
 
 ```cpp
-// RFC 6901 -- parse a JSON Pointer into decoded reference tokens.
+// RFC 6901, parse a JSON Pointer into decoded reference tokens.
 // Empty string -> {} (whole-document reference).
 inline std::vector<std::string> parse_rfc6901(const std::string &ptr) { ... }
 
@@ -150,7 +152,7 @@ typedef enum {
     ZF_VAL_STRING,
     ZF_VAL_BYTES,   /* the existing xr_grid_entity_packet_t-style packed
                         wire structs stay valid as one more "kind" here,
-                        not replaced -- see Open questions below */
+                        not replaced, see Open questions below */
 } zf_value_kind_t;
 ```
 
@@ -161,14 +163,14 @@ own existing FDB key-builder outputs (`zf_kv_entity_key`,
 the point of use, mirroring `parse_pointer`'s own resolve-at-use-time
 shape rather than eagerly dereferencing.
 
-This is a real, scoped design proposal, not a decision -- see Open
+This is a real, scoped design proposal, not a decision, see Open
 questions below for what blocks moving from proposal to implementation.
 
 ## Recommendation and next steps
 
 Adopt the "primitives plus refs-as-strings" principle for **new** FDB
 value types added after this RFD, without migrating `zf_zone_val_t`,
-`zf_entity_val_t`, or `mud_session_val_t` -- those are real, tested, and
+`zf_entity_val_t`, or `mud_session_val_t`, those are real, tested, and
 already have real data behind them in every environment this project has
 deployed to. `mud_kv.c`'s own turn-history value (plain narration text,
 no struct) already follows this RFD's own recommendation by coincidence;
@@ -184,7 +186,7 @@ before treating the pattern as this project's own default.
 
 - Whether `zf_value_kind_t`'s `ZF_VAL_BYTES` escape hatch (for
   `xr_grid_entity_packet_t` and any future packed wire struct) undermines
-  the whole point of narrowing -- if most of this project's real values
+  the whole point of narrowing, if most of this project's real values
   end up as `ZF_VAL_BYTES` anyway, the narrowing buys little. Needs a
   real inventory of this project's own value types before deciding,
   not assumed either way here.
@@ -195,6 +197,6 @@ before treating the pattern as this project's own default.
   project's real entity-count scale (1400/1800 per zone).
 - `taskweft/nif`'s own `Dict` ordering guarantee (`tsl::ordered_map`,
   for cross-implementation determinism against a Python reference) has
-  no equivalent need in this project yet -- flagged so a future
+  no equivalent need in this project yet, flagged so a future
   prototype does not import that dependency without first confirming a
   real, present need for it here.

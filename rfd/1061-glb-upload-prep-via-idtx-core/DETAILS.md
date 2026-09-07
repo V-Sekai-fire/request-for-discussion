@@ -1,4 +1,4 @@
-# RFD 1061 details: what idtx_core carries, the path there, the stopgap, a bug
+# RFD 1061 details: GLB upload prep moves to idtx_core, later
 
 `thirdparty/fabric-stage-runtime/` and `thirdparty/fabric-flow-adapters/`
 are vendored as git subtrees, at `main` and `main-fabric`

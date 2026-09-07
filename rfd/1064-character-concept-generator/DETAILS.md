@@ -1,4 +1,4 @@
-# RFD 1064 details: reference links, the critical path
+# RFD 1064 details: Character Concept Generator
 
 ## The critical path
 

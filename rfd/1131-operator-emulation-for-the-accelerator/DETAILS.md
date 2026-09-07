@@ -4,7 +4,7 @@ procedure nobody reviews; an RFD is reviewed when written and `check-rfd-structu
 gates it. -->
 
 
-# RFD 1131 details: running the compiler, and rewriting what it refuses
+# RFD 1131 details: Emulating the operators an edge compiler refuses
 
 The DFC wheel is `linux_x86_64` only and this workspace is Windows. Docker Desktop and WSL
 (Fedora) are both present, so the compiler runs in a container. Most of the difficulty is not
@@ -13,14 +13,14 @@ the compiler.
 ## The traps, in the order they bite
 
 **`MSYS_NO_PATHCONV=1` on every `docker -v` and every `wsl` call.** Git Bash rewrites
-anything that looks like a POSIX path. `wsl -- cat /home/x` becomes
+anything that looks like a POSIX path. `wsl, cat /home/x` becomes
 `cat 'C:/Program Files/Git/home/x'`, and a `$VAR` inside a quoted `bash -lc` can arrive
 empty. That silently produced a systemd unit reading `-v /op_tests_deform:/w/deform`, Docker
 created four empty directories, and the emulation reported an empty table rather than an
 error. Export it once at the top of the command.
 
 It is not only paths, and the other two forms bit while this document was being moved
-into this RFD. `git show origin/main:file` becomes `origin\main;file` -- the colon is
+into this RFD. `git show origin/main:file` becomes `origin\main;file`, the colon is
 rewritten too, so a recovery command fails as though the revision were missing. And
 Python is a third case: it wants `C:\...` and does nothing useful with `/c/...`, which
 is how the write that should have created this file failed while the `rm` beside it
@@ -33,8 +33,8 @@ that added it had already merged, which is luck rather than procedure. A move is
 then a delete, in that order, with something between them that reads the destination back.
 
 **Prefer a script file to inline quoting through `wsl`.** Even with path conversion off,
-nested quotes through `wsl -d X -- bash -lc '...'` are unreliable. Write the script to
-`/c/...`, then `wsl -- bash /mnt/c/...`.
+nested quotes through `wsl -d X, bash -lc '...'` are unreliable. Write the script to
+`/c/...`, then `wsl, bash /mnt/c/...`.
 
 **Mount paths are `/mnt/c/...` from WSL and `/c/...` from Git Bash.** Both reach the same
 Windows directory; the daemon is Windows-side either way.
@@ -61,7 +61,7 @@ those call for different fixes.
 
 **A one-operator graph cannot tell "refused" from "absorbed".** Reshape-like operators are
 folded into their neighbours and emit no layer, which surfaces as
-`InvalidHNError: node name Y in end_node_names is missing in the HN` — identical to a real
+`InvalidHNError: node name Y in end_node_names is missing in the HN`, identical to a real
 refusal. Sandwich the operator between convolutions, and record any that cannot be wrapped so
 their verdict is read with that caveat.
 
@@ -69,20 +69,20 @@ their verdict is read with that caveat.
 
 WSL Fedora has systemd enabled, so a run that outlives a shell goes there:
 
-    wsl -d FedoraLinux-44 -- systemctl --user restart hailo-emulate
-    wsl -d FedoraLinux-44 -- journalctl --user -u hailo-emulate -f
+    wsl -d FedoraLinux-44, systemctl --user restart hailo-emulate
+    wsl -d FedoraLinux-44, journalctl --user -u hailo-emulate -f
 
 `Type=oneshot` with `RemainAfterExit=yes`, never `simple`: this is a measurement that ends,
 and `simple` reports success the moment docker starts.
 
 ## Rewriting a refused operator
 
-Four have been done — `GridSample`, `ScatterND`, `GatherElements`, `TopK` — and one kernel
+Four have been done, `GridSample`, `ScatterND`, `GatherElements`, `TopK`, and one kernel
 does all of them. Bilinear interpolation is a tent that vanishes beyond one pixel, so at
 integer positions it is exactly a one-hot:
 
-    tent(t)   = relu(1 - sqrt(t*t))         |t| the long way: Abs is not in the operator set
-    out[i]    = sum_k data[k] * tent(idx - k)
+    tent(t)   = relu(1, sqrt(t*t))         |t| the long way: Abs is not in the operator set
+    out[i]    = sum_k data[k] * tent(idx, k)
 
 That moves the index out of the ADDRESS and into a MULTIPLIER, which is the whole trick: the
 compiler refuses data-dependent addressing, not data-dependent arithmetic. Proved in
@@ -96,7 +96,7 @@ needed to be a tensor dimension: emit one small block per slot and `Concat`. Mor
 of them measured passing.
 
 **Watch the numerics, not just the parse.** `max(a,b) = (a+b+|a-b|)/2` cancels catastrophically
-when operands differ in magnitude -- a `-1e30` padding sentinel returned `0.0` instead of
+when operands differ in magnitude, a `-1e30` padding sentinel returned `0.0` instead of
 `3.0`, and the error is about `eps * max(|a|,|b|)` absolute, so at float32 a large sentinel
 alone costs ~1e-3. And an `eps` inside `sqrt(t*t + eps)` biases the weight by `sqrt(eps)` at
 the knot: `1e-12` cost a part per million and removing it improved agreement a millionfold.
@@ -112,5 +112,5 @@ Without one, a rewrite that agrees with whatever it is handed proves nothing.
 refuses; at 1 it is 825 nodes and clears the operator set. Cost is 1.35x wall-clock.
 
 Pair every physical measurement with a household object, per the workspace rule, and state
-what was NOT measured -- no schedule, no cycle count, no device -- rather than letting a parse
+what was NOT measured, no schedule, no cycle count, no device, rather than letting a parse
 be read as a deployment.

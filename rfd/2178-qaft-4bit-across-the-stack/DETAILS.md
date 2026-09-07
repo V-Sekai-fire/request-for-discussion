@@ -1,4 +1,4 @@
-# RFD 2178 details: per-model QAFT 4-bit position
+# RFD 2178 details: QAFT 4-bit across the model stack
 
 ## Per-model table
 
@@ -32,17 +32,17 @@ substitute. "Fits" = QAFT run fits 24 GB VRAM. "Overnight" = <12 h.
 
 Class-B QAFT rungs, cheapest first, so each result unblocks the next:
 
-1. **Voice-adjacent small models first** -- Qwen3-TTS-1.7B, wav2vec2,
+1. **Voice-adjacent small models first**, Qwen3-TTS-1.7B, wav2vec2,
    Parakeet, ipa-whisper. Overnight batch. Unblocks RFD 2167
    (voice-reward distillation) because both the reward LoRA base and
    the TTS candidate generation stop dominating inference cost.
-2. **Segmentation + inpainting** -- rf-detr-Seg, LaMa. Hours. Small
+2. **Segmentation + inpainting**, rf-detr-Seg, LaMa. Hours. Small
    in the compute budget; large in the RFD 1168 layer-decomposition
    path's per-view cost.
-3. **Motion + rigging** -- Kimodo, SkinTokens, MoGe-3. Hours each.
-4. **Mid-tier vision + audio** -- TRELLIS.2 (~8B), Voxtral (3B),
+3. **Motion + rigging**, Kimodo, SkinTokens, MoGe-3. Hours each.
+4. **Mid-tier vision + audio**, TRELLIS.2 (~8B), Voxtral (3B),
    Whisper large-v3. Overnight runs.
-5. **Class C (Wan-VACE, Pixal3D)** -- parked. Either an upstream Q4
+5. **Class C (Wan-VACE, Pixal3D)**, parked. Either an upstream Q4
    lands or the workspace acquires >24 GB training capacity.
 
 ## Compute cost of the plan

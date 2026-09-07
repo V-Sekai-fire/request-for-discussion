@@ -1,4 +1,4 @@
-# RFD 1165 details: what the two walls cost, and where each was measured
+# RFD 1165 details: Fine-tuning exhausts the desk card, and batch size is the lever
 
 The README states the walls. This carries the numbers behind them and,
 where the apparatus is incomplete, says so rather than rounding the gap
@@ -74,8 +74,8 @@ cent of the whole model's parameters. A number without a baseline is
 not a measurement, and every latency claimed for the accelerator is
 read against this row.
 
-The device measurement itself -- 2.27 ms hardware latency, 2.18 ms
-fixed overhead -- is RFD 1130's, taken on a zoo classifier rather than
+The device measurement itself, 2.27 ms hardware latency, 2.18 ms
+fixed overhead, is RFD 1130's, taken on a zoo classifier rather than
 on anything of ours. Nothing of ours has executed on the device, so
 the two rows above cannot yet be divided into a speedup.
 

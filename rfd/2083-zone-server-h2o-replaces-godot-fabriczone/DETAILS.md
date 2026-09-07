@@ -1,15 +1,17 @@
+# RFD 2083 details: Zone server h2o replaces godot fabriczone
+
 ## Context
 
 The production zone server (`zone-server`, deployed as `multiplayer-fabric-zone`
-on Fly.io) is a boot scaffold today — OpenTelemetry init only, no WebTransport
+on Fly.io) is a boot scaffold today, OpenTelemetry init only, no WebTransport
 listener, no game logic (`project/main.gd`'s own `TODO(cycle-5)` comment). The
 real entity/simulation engine, `FabricZone`/`FabricZoneJournal`/`FabricMMOGZone`,
 exists as a working Godot C++ module in `V-Sekai-fire/multiplayer-fabric-build`
 (`godot/modules/multiplayer_fabric/`) but has never been wired into a deployed
 zone server. Separately, `weftspun/h2o-bench-tpcc` designed (RFD 2002,
 `discussion` state, never implemented) a `libh2o` + FoundationDB "zonefabric"
-scenario modeling the same hub/instanced-zone shape — entity authority via a
-Hilbert-curve partition, ghost/AOI interest management — independently of this
+scenario modeling the same hub/instanced-zone shape, entity authority via a
+Hilbert-curve partition, ghost/AOI interest management, independently of this
 org's actual zone-server work.
 
 ## Consequences
@@ -21,9 +23,9 @@ org's actual zone-server work.
   directory, asset storage, and ReBAC, and still never sees per-entity data
   in the live session.
 - CockroachDB's scope stays account-level (identity, zones directory,
-  avatars). The one exception under discussion — inventory/profile commits,
+  avatars). The one exception under discussion, inventory/profile commits,
   previously headed toward CockroachDB via the progression hexagon's
-  SQLite "commit valve" — targets FDB instead, as the single write path for
+  SQLite "commit valve", targets FDB instead, as the single write path for
   everything the zone server owns.
 - The related, previously-unimplemented `weftspun/h2o-bench-tpcc` RFDs this
   decision carries forward are filed alongside this entry, dated the same day:

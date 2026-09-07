@@ -1,4 +1,4 @@
-# RFD 1039 details: the model, the interface, the UV requirement
+# RFD 1039 details: Model image for trellis2_image_mesh_painting
 
 ## The model
 

@@ -1,4 +1,4 @@
-# RFD 2143 details: entrypoint changes and the DR runbook
+# RFD 2143 details: FDB backup fans out to R2 for off-Fly durability
 
 ## What was measured on 2026-08-31
 
@@ -6,7 +6,7 @@
 restorable and continuing to
 `blobstore://...@fly.storage.tigris.dev:8443/weft?bucket=weftspun-fdb-blob`.
 The cluster's `Sum of key-value sizes` was 0 MB, so the whole 944 MB
-of FDB disk use is empty pages -- the safest possible moment to
+of FDB disk use is empty pages, the safest possible moment to
 introduce a second backup tag.
 
 Bao's PKI mount was queried with the root token: `pki/keys` lists
@@ -31,7 +31,7 @@ before Bao can serve.
 
 The layering forces this. Bao's storage backend is FDB. If the FDB
 entrypoint tried to read Bao at boot to get its R2 creds, Bao would
-not answer -- Bao needs FDB up first. So the entrypoint reads Fly
+not answer, Bao needs FDB up first. So the entrypoint reads Fly
 env, and rotation is a two-step: write the new secret to Bao, then
 `flyctl secrets set` from Bao and roll the deploy. Bao stays the
 source, Fly is the cache, and the two are in sync when the deploy
@@ -110,7 +110,7 @@ in FDB).
    inside Bao is unreachable until Bao is up. Issue the machine leaf,
    set it as `FDB_TLS_CERT_<mid>_B64` / `FDB_TLS_KEY_<mid>_B64`.
 5. `fdbrestore start -r "$(cat /etc/foundationdb/backup-url-r2)" -w`
-   -- wait, because a background restore that fails on a
+   – wait, because a background restore that fails on a
    loopback-broken stunnel does not surface until the next check.
 6. When restore finishes, `fdbcli status` reports the restored key
    ranges and Bao's mount metadata is visible in FDB. Recreate

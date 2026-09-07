@@ -1,4 +1,4 @@
-# RFD 1000 details: numbering
+# RFD 1000 details: Conventions
 
 ## The problem this rule answers
 

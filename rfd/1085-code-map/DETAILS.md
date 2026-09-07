@@ -1,4 +1,4 @@
-# RFD 1085 details: the module table, by group
+# RFD 1085 details: A code map, not a copied API reference
 
 ## React contexts
 

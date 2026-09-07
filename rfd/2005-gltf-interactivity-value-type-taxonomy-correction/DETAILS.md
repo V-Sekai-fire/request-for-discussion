@@ -1,3 +1,5 @@
+# RFD 2005 details: Gltf interactivity value type taxonomy correction
+
 ## Summary
 
 `rfd/2001-zonefabric-roadmap-vs-mas-bandwidth-fps/index.md`, item 5, described

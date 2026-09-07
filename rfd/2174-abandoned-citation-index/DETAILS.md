@@ -1,4 +1,4 @@
-# RFD 2174 details: per-pair annotations for open→abandoned citations
+# RFD 2174 details: Index of open RFDs citing abandoned RFDs
 
 Full pair list from the 2026-09-02 audit. Format: citing RFD (state)
 → cited abandoned RFD → successor to migrate to, or note.
@@ -78,9 +78,9 @@ the reasoning-core swap in RFD 2169. Cite path chain intentional.
 
 ## Categories
 
-  chain, keep    -- retraction chain; the citation IS the walk-back
-  successor RFD  -- migrate the citation on next edit
-  drop           -- reference is stale, no successor, remove on next edit
+  chain, keep   , retraction chain; the citation IS the walk-back
+  successor RFD , migrate the citation on next edit
+  drop          , reference is stale, no successor, remove on next edit
 
 Roughly 60% of the 32 pairs are legitimate retraction chains. The
 remaining ~13 pairs (marked with a successor or drop) are real drift.

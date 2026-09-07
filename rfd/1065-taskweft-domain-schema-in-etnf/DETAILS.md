@@ -1,4 +1,4 @@
-# RFD 1065 details: ETNF, its worked example, and the schema sketch
+# RFD 1065 details: Taskweft domain schema in essential tuple normal form
 
 ## The definition
 

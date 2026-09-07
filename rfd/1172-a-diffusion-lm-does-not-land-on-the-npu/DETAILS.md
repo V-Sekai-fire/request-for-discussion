@@ -1,4 +1,4 @@
-# RFD 1172 details: the candidates and the throughput numbers
+# RFD 1172 details: A diffusion LM does not land on the NPU
 
 Surveyed 2026-08-30. Claims below cite the vendor or paper that made them;
 none were reproduced on this desk. Throughput figures marked "claimed" have

@@ -1,4 +1,4 @@
-# RFD 1148 details: what the wheel ships, and what refuses to build
+# RFD 1148 details: The runtime that reaches the device
 
 ## The accelerator is a binary, and the build settles it
 
@@ -46,7 +46,7 @@ nevertheless carries `litert/vendors/nvidia/`, a TensorRT compiler plugin with
 the wheel was measured.
 
 The macOS wheel contains no file matching `webgpu`, `dawn` or `tint`, and
-`libLiteRt.dylib` holds 16 `WebGpu` strings against 0 `Dawn` — the core knows the
+`libLiteRt.dylib` holds 16 `WebGpu` strings against 0 `Dawn`, the core knows the
 enum while the plugin stays absent.
 
 ## The vendor ABI, for the Hailo work
@@ -77,7 +77,7 @@ stablehlo"; `backend/export.py` returns an `MlirLowered` carrying `.module`.
 So the Cloud TPU route is a tap one stage above the flatbuffer rather than a
 conversion. It stays deferred: no TPU is attached, and RunPod rents NVIDIA.
 
-`jax-metal` does not serve as a Metal alternative — 0.1.1, released 2024-10-08,
+`jax-metal` does not serve as a Metal alternative, 0.1.1, released 2024-10-08,
 pinning `jaxlib>=0.4.34` against a current 0.11.1, and it remains the only PJRT
 Metal plugin in existence.
 
@@ -92,9 +92,9 @@ convention, so these compose with RFD 1142's rows.
     cpu          True      12.24      0%      0.08   2.384e-07
     metal fp16   True       0.59      3%      1.56   1.687e-03
     metal f32    True       0.39     90%      2.33   2.682e-07
-    coreml       -             -       -      6.97           -    RFD 1142, fp16
+    coreml      ,            ,      ,      6.97          ,    RFD 1142, fp16
 
-**Metal takes the whole graph** — `is_fully_accelerated()` answers true on every row, so
+**Metal takes the whole graph**, `is_fully_accelerated()` answers true on every row, so
 none of this is a partitioned graph with a fast fragment. It reaches **0.33x** the figure
 Core ML's Metal path gave on the same part, and roughly thirty times CPU.
 

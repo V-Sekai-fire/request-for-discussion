@@ -1,4 +1,4 @@
-# RFD 2147 details: replicas, auto-unseal, cache, no-MITM
+# RFD 2147 details: Bao is critical infrastructure now
 
 This RFD was drafted by an AI and read by a human before it shipped.
 
@@ -137,7 +137,7 @@ this RFD nor RFD 2140 has decided.
   election on the shared FDB cluster).
 - Vault auto-unseal precedent for the KMS wrapper pattern
   (`cloud kms auto-unseal`, applies unchanged to OpenBao forks).
-- RFD 2140 (Bao on FDB — this raises its ambition), 2144 (defect
+- RFD 2140 (Bao on FDB, this raises its ambition), 2144 (defect
   #11: the without-auto-unseal failure mode), 2145 (leaf and CA
   rotation cadence this HA has to survive), 2146 (the capability
   topology this now underwrites).

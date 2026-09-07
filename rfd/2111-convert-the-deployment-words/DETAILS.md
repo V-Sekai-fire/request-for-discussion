@@ -1,3 +1,5 @@
+# RFD 2111 details: Convert the deployment words
+
 ## Context and problem statement
 
 RFD 2028 made every component a hexagon with a `core/` + `ports/` +
@@ -36,7 +38,7 @@ The article defines five terms. Each quotation below is from it.
 
 | term            | definition                                                                                               |
 | --------------- | -------------------------------------------------------------------------------------------------------- |
-| Entity          | "domain objects (e.g., a Movie or a Shooting Location) — they have no knowledge of where they're stored" |
+| Entity          | "domain objects (e.g., a Movie or a Shooting Location), they have no knowledge of where they're stored" |
 | Repository      | "interfaces to getting entities as well as creating and changing them"                                   |
 | Interactor      | "classes that orchestrate and perform domain actions"                                                    |
 | Data source     | "adapters to different storage implementations"                                                          |
@@ -229,8 +231,8 @@ it comes from upstream, and it is not the "core" of RFD 2028. Renaming it
 would fork the vocabulary of an engine this project tracks rather than owns.
 
 `fabric-interactor` is not an interactor. It holds the contract that
-interactors and transports compose against — `include/weft/interactor.h`
-declares both — and its README states the reason it is a git repository of
+interactors and transports compose against, `include/weft/interactor.h`
+declares both, and its README states the reason it is a git repository of
 its own: "a contract that lives in either side makes the other its
 dependent". A name of `interactor-anything` picks the side the git
 repository exists to avoid picking. The type is contract and the subject is

@@ -1,4 +1,4 @@
-# RFD 1106 details: the proprietary-area table and the architecture split
+# RFD 1106 details: The open/proprietary boundary, in public words
 
 ## What forking the repository does not grant
 

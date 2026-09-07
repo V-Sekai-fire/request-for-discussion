@@ -1,3 +1,5 @@
+# RFD 2076 details: Macaroon xdp security
+
 ## Rationale
 
 Directly validating a chained-HMAC Macaroon inside an XDP packet filter
@@ -79,15 +81,15 @@ that:
 - Authenticates the player (OAuth, password, device attestation)
 - Determines target zone via load balancing + spatial locality
 - Issues a Macaroon attenuated with caveats:
-  - `zone_id = N` — player is assigned to zone N
-  - `server_ip = A.B.C.D` — player must connect to this server
-  - `expires < T` — token valid until timestamp T
-  - `rate_limit = R` — max packets/sec from this player
+ , `zone_id = N`, player is assigned to zone N
+ , `server_ip = A.B.C.D`, player must connect to this server
+ , `expires < T`, token valid until timestamp T
+ , `rate_limit = R`, max packets/sec from this player
 - Generates a cryptographically random 64-bit session key
 - Returns Macaroon + session_key + server address to player
 
 The Matchmaker runs in user space with full access to crypto libraries.
-It is not in the hot path — it runs once per connection (every ~5
+It is not in the hot path, it runs once per connection (every ~5
 minutes for session renewal).
 
 ### 2. User-space orchestrator (control plane, once per session)
@@ -123,11 +125,11 @@ int zone_router(struct xdp_md *ctx) {
     struct session_info *info;
     info = bpf_map_lookup_elem(&whitelist_map, &src_ip);
     if (!info)
-        return XDP_DROP;  // unauthenticated — drop instantly
+        return XDP_DROP;  // unauthenticated, drop instantly
 
     // Validate session key
     if (info->session_key != session_key)
-        return XDP_DROP;  // wrong key — spoofed or stale
+        return XDP_DROP;  // wrong key, spoofed or stale
 
     // Check expiry
     if (bpf_ktime_get_ns() > info->expiry_ns)
@@ -166,12 +168,12 @@ is available for ZoneTick computation and FDB batch writes.
 
 A DDoS attack sends millions of spoofed packets. Without XDP, each
 packet traverses the full kernel network stack (allocation, socket
-lookup, conntrack, userspace wakeup) — ~5µs per packet, saturating
+lookup, conntrack, userspace wakeup), ~5µs per packet, saturating
 all cores.
 
 With XDP, spoofed packets are dropped at the NIC in ~50ns. A 100 Gbps
 NIC can process 150M packets/sec in XDP. At 50ns/drop, that's 7.5ms
-of CPU/sec — one core handles the entire DDoS while the other 31 cores
+of CPU/sec, one core handles the entire DDoS while the other 31 cores
 run the game simulation uninterrupted.
 
 ### Session key entropy
@@ -215,7 +217,7 @@ The user-space orchestrator verifies:
 
 The `entity_id` caveat ties the Macaroon to a specific slotmap entry.
 If the player's entity is destroyed (slot freed, generation bumped),
-the session is invalidated — the orchestrator removes the entry from
+the session is invalidated, the orchestrator removes the entry from
 WHITELIST_MAP on the next tick.
 
 ## Session lifecycle

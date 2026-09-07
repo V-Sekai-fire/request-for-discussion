@@ -1,4 +1,4 @@
-# RFD 1033 details: the algorithm table, scaling, license note
+# RFD 1033 details: Geometric algorithms in the catalog
 
 ## The algorithms
 

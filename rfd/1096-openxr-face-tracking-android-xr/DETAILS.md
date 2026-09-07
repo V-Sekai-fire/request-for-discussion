@@ -1,4 +1,4 @@
-# RFD 1096 details: references, payload contract, and mapping fidelity
+# RFD 1096 details: OpenXR face tracking, native and web, on Android XR
 
 ## Local spec copies, and why they are second choice
 

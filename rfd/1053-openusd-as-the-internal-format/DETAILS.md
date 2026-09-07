@@ -1,4 +1,4 @@
-# RFD 1053 details: layers, the boundary, the runtime, the model image contract
+# RFD 1053 details: OpenUSD as the internal format
 
 ## Why layers, and not a better mesh format
 

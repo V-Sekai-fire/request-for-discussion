@@ -1,4 +1,4 @@
-# RFD 2141 details: the rotation procedure
+# RFD 2141 details: FDB TLS rotation without data loss
 
 ## Why the old CA key is not recoverable
 

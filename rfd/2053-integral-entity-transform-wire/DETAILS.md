@@ -1,3 +1,5 @@
+# RFD 2053 details: Integral entity transform wire
+
 ## Consequences
 
 - The wire has no floating point; replication is deterministic across

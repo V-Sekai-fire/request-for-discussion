@@ -1,4 +1,4 @@
-# RFD 1123 details: the licence, the interfaces, and the 12 bit path
+# RFD 1123 details: CineForm in Godot, both directions
 
 ## What we measured before proposing this
 

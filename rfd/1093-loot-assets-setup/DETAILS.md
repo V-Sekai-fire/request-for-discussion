@@ -1,4 +1,4 @@
-# RFD 1093 details: environments, layout, and the scripts
+# RFD 1093 details: Loot assets, fetched, never committed
 
 ## What happens per environment
 

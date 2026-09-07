@@ -112,7 +112,7 @@ This is exactly the class of thing rule 3 exists to catch, an env with a
 successful `pixi install` is not evidence the code inside works.
 
 - Owed: port `_run_upstream()` from `VAST-AI-Research/SkinTokens` upstream;
-  wire the humanoid joint-map write for VRM output. RFD 0046 already
+  wire the humanoid joint-map write for VRM output. RFD 2046 already
   identifies the joint-name-order trap. Skip counted as one.
 
 ### Rung 5: mesh → tagged with See-Through partition
@@ -182,7 +182,7 @@ Pixal3D env is standing.
    memory note `windows-torch-2.6-dep-matrix`. Each 30-60 min setup.
 2. Decide the rung 1 → rung 2 handoff (mesh-to-image projector, or teach
    EditScore to score meshes). This is an RFD-level question, not code.
-3. Implement `SkinTokens._run_upstream()` per RFD 0046 to close the rung 4
+3. Implement `SkinTokens._run_upstream()` per RFD 2046 to close the rung 4
    scaffold. Half-day of porting; the upstream repo is MIT-clean.
 4. Stand up `seethrough-partseg` and write the seed-to-VRM assembler
    (rungs 5 and 6 together, they share the tag-primvar contract).

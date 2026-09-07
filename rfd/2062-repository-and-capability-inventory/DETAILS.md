@@ -1,10 +1,12 @@
+# RFD 2062 details: Repository and capability inventory
+
 ## Context and problem statement
 
 The landing page used to carry the full repository list, a
 capability-to-branch table, and a prose description of the deployment
-target. Those facts already have homes — each capability rides a
+target. Those facts already have homes, each capability rides a
 decision and an engine branch, the deployment target is a decision,
-the two-org split is a decision — so the landing page was a second
+the two-org split is a decision, so the landing page was a second
 copy that drifted every time one of those decisions changed. This
 record is the one place that owns the org-wide inventory; the landing
 page links here instead of restating it, and decided facts
@@ -45,13 +47,13 @@ these.
 | ------------------------------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | Native video playback                                                                 | Baseline         | `feat/native-media` (MediaFoundation, GStreamer)                                     | [native-media-test](https://github.com/v-sekai-multiplayer-fabric/native-media-test); `vulkan-video-godot` is archived by `rfd/0105`                                               | Working; builds on Windows and Linux.                                                 |
 | Networking transport (WebTransport / HTTP/3, `rfd/2023-webtransport-http3-transport`) | Baseline         | `feat/module-http3` (picoquic + web/wasm backends)                                   | [lean-http3-queue](https://github.com/v-sekai-multiplayer-fabric/lean-http3-queue); the server side moves to `zone-server-h2o` per `rfd/0083`                                      | Working; `WebTransportPeer`/`QUICClient`/`QUICServer`, demos, Lean termination proof. |
-| Scene baking via OpenUSD                                                              | Baseline         | —                                                                                    | [zone-baker](https://github.com/v-sekai-multiplayer-fabric/zone-baker), [idtx-flow](https://github.com/v-sekai-multiplayer-fabric/idtx-flow); `openusd-fabric` is archived         | Working; USD schema, Blender export hooks, scene validation, headless export.         |
+| Scene baking via OpenUSD                                                              | Baseline         |,                                                                                    | [zone-baker](https://github.com/v-sekai-multiplayer-fabric/zone-baker), [idtx-flow](https://github.com/v-sekai-multiplayer-fabric/idtx-flow); `openusd-fabric` is archived         | Working; USD schema, Blender export hooks, scene validation, headless export.         |
 | Spatial audio (HRTF + audio probes, `rfd/2022-spatial-audio-patched-resonance-audio`) | Baseline         | `feat/spatial-audio-server`, `feat/module-resonance-audio` (patched Resonance Audio) | [sponza-godot-audio](https://github.com/v-sekai-multiplayer-fabric/sponza-godot-audio)                                                                                             | Working; demo and benchmark scene.                                                    |
-| Speech                                                                                | Baseline         | `feat/module-speech`                                                                 | —                                                                                                                                                                                  | Working.                                                                              |
+| Speech                                                                                | Baseline         | `feat/module-speech`                                                                 |,                                                                                                                                                                                  | Working.                                                                              |
 | Pen stroke creation (codename cassie)                                                 | Proof of concept | `feat/module-cassie`                                                                 | [vsekai-materialx](https://github.com/v-sekai-multiplayer-fabric/vsekai-materialx), [materialx-shaders-lean](https://github.com/v-sekai-multiplayer-fabric/materialx-shaders-lean) | Pen stroke creation is solid; patch surface creation is buggy (loses about 90%).      |
 | Multiplayer presence (tracker orbs)                                                   | Proof of concept | `feat/module-xr-grid`                                                                | [xr-grid](https://github.com/v-sekai-multiplayer-fabric/xr-grid)                                                                                                                   | Proposed; head and hand pose orbs sent over low-level WebTransport.                   |
 
-### Repositories — `v-sekai-multiplayer-fabric`
+### Repositories: `v-sekai-multiplayer-fabric`
 
 #### Engine and client
 

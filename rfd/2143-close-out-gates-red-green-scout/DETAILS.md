@@ -1,4 +1,4 @@
-# RFD 2143 details: the reference case
+# RFD 2143 details: Close-out gates: red control, green, scout
 
 The gates were first run, and backfilled, on the account.chibifire.com
 DNS rollout. `logbook-taskweft-planned-dns-traces.md` holds the full

@@ -1,4 +1,4 @@
-# RFD 1129 details: the two stages, and what an export has to carry
+# RFD 1129 details: Which operators the Hailo-10H will not take
 
 ## Sparse submanifold convolution
 
@@ -24,8 +24,8 @@ only a README line and concludes wrongly that it is unused.
 
 It is not optional. `IMAGE_COND_CONFIGS` sets `use_naf_upsample: True`
 for three of the four conditioning models, and the projection width
-depends on the flag -- `proj_channels = embed_dim * 2 if
-use_naf_upsample` -- so the published weights were trained with it in
+depends on the flag, `proj_channels = embed_dim * 2 if
+use_naf_upsample`, so the published weights were trained with it in
 place. Turning it off mismatches the checkpoint rather than skipping a
 step.
 
@@ -48,5 +48,5 @@ The wheel is Linux-only, which is why that image exists at all.
 
 Export the attention layer before the sparse convolution. It is
 smaller, it is the dependency nobody expected, and a rejection there
-blocks the conditioning path -- which makes the convolution question
+blocks the conditioning path, which makes the convolution question
 moot until it is answered.

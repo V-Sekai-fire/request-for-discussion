@@ -1,4 +1,4 @@
-# RFD 1005 details: file references
+# RFD 1005 details: Avatar and VRM pipeline
 
 - Pipeline: `docs/AVATAR_PIPELINE.md`
 - Rig contract: `docs/API_AVATAR_RIG_CONTRACT.md`

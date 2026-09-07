@@ -1,3 +1,5 @@
+# RFD 2112 details: Lexical for the slash command interface
+
 ## Context and problem statement
 
 `fabric-store-domain/src/queen.c` is the Queen of the Gyre. Its `main()` takes

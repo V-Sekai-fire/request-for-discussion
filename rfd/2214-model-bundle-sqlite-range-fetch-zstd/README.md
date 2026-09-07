@@ -1,7 +1,6 @@
 # RFD 2214: model bundle as ZSTD-compressed SQLite on local disk
 
 **State:** discussion
-**Flight level:** L2 (coordination)
 **Feature:** how a ggml model file (e.g. 180 MB Q4 GGUF) reaches the
 native binary at runtime
 **Scope:** `2-contract/ggml`, `modules/ggml/` GDExtension loader,
@@ -29,11 +28,11 @@ release channel that ships the binary.
 
 ## Related
 
-- [RFD 2210](../2210-atelier-godot-web-shipping-surface/) — L3.
-- [RFD 2229](../2229-interchangeable-parts-consolidation/) — the
+- [RFD 2210](../2210-atelier-godot-web-shipping-surface/), L3.
+- [RFD 2229](../2229-interchangeable-parts-consolidation/), the
   SQLite+ZSTD bundle format is the shared model-delivery interface
   across ggml consumers.
-- [RFD 2230](../2230-ggml-adapters-in-godot-sandbox/) — the
+- [RFD 2230](../2230-ggml-adapters-in-godot-sandbox/), the
   `Ggml.load_model()` GDExtension surface that consumes the bundle.
 
 This RFD was drafted by an AI and read by a human before it shipped.

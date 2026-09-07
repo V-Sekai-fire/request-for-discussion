@@ -1,4 +1,4 @@
-# Details
+# RFD 2014 details: Art game loop steel thread
 
 ## Context and Problem Statement
 

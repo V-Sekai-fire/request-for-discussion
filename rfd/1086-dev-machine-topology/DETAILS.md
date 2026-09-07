@@ -1,4 +1,4 @@
-# RFD 1086 details: roles, log fields, ownership, and the sync commands
+# RFD 1086 details: Dev machine topology, and the two-machine sync rule
 
 ## Machines and roles
 
@@ -22,7 +22,7 @@ it explicitly.
 [Galaxy XR Chrome]  ?nativeFaceRelay=1&remoteLog=1  (AR/VR, relay, playback)
     ^ POST face JSON from a native face-relay app (same-origin ingest on the Surface)
 
-[DGX Spark]  SSH / API / builds, via NVIDIA Sync -- not required for headset -> Surface LAN URL
+[DGX Spark]  SSH / API / builds, via NVIDIA Sync, not required for headset -> Surface LAN URL
 ```
 
 - Headset `localhost`: `https://localhost:3000` on the headset targets the headset itself, not the Surface. Always use the Surface's own LAN IP in a headset URL.

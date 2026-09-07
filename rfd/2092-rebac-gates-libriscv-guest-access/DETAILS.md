@@ -1,3 +1,5 @@
+# RFD 2092 details: Rebac gates libriscv guest access
+
 ## Status
 
 Discussion only. No implementation exists yet. Nothing today calls
@@ -14,7 +16,7 @@ property. Setting it `true` blocks
 all external access by default, then five independent callbacks each
 grant a narrow exception:
 
-- `set_class_allowed_callback(func(sandbox, name): ...)` — gates class
+- `set_class_allowed_callback(func(sandbox, name): ...)`, gates class
   instantiation. Checked with `is_allowed_class(name)`.
 - `add_allowed_object(obj)` / `remove_allowed_object(obj)` /
   `clear_allowed_objects()`, plus `set_object_allowed_callback(func(sandbox,
@@ -24,7 +26,7 @@ obj): ...)` for anything not in the explicit list.
 - `set_property_allowed_callback(func(sandbox, obj, prop): ...)` —
   gates property reads/writes.
 - `set_resource_allowed_callback(func(sandbox, path): ...)`, checked
-  with `is_allowed_resource(path)` — gates resource loads.
+  with `is_allowed_resource(path)`, gates resource loads.
 
 Each callback returns a plain boolean, independently of the other
 four. None of them shares a subject/object model, a delegation
@@ -45,11 +47,11 @@ dependency) already implements:
   an `UNKNOWN`/string-named escape hatch for domain-specific relations.
 - A boolean expression algebra over relations: `base`, `union`,
   `intersection`, `difference`, `tuple_to_userset` (Zanzibar's own
-  "pivot through another relation" pattern) — `check_expr()`.
+  "pivot through another relation" pattern), `check_expr()`.
 - `IS_MEMBER_OF` transitive inheritance and `CONTROLS`/`DELEGATED_TO`
   inversion, both handled inside `check_base()`, not bolted on per
   caller.
-- `can()`/`rebac_can_json()` — a DFS capability search that returns
+- `can()`/`rebac_can_json()`, a DFS capability search that returns
   the actual path, not just a boolean, format:
   `{"authorized":bool,"path":[...]}`. This is the audit trail
   `godot-sandbox`'s five callbacks do not have today.

@@ -1,10 +1,12 @@
+# RFD 2070 details: Loop slice telemetry to the observability collector
+
 ## The context
 
 The loop-slice server emits OpenTelemetry through the `OpenTelemetry`
 C++ engine module: spans for the loop's phases, counters and gauges
 for grants and ticks, and log lines. Export is opt-in. The server
 reads `OTEL_EXPORTER_OTLP_ENDPOINT`, and with no endpoint set it stays
-idle — it records signals in process but exports nothing, which keeps
+idle, it records signals in process but exports nothing, which keeps
 a server that has no collector from retrying against one that is not
 there. The observability stack (`rfd/200b-observability-stack-victoriatraces`)
 runs an OTEL collector that ingests OTLP on 4318 (HTTP) and 4317
@@ -65,16 +67,16 @@ address and the protocol, not their application.
 
 ## The road not taken
 
-- Bake a default endpoint into the image — rejected; a forced default
+- Bake a default endpoint into the image, rejected; a forced default
   drives connect-retry spam against a collector that may not be
   there, and it commits the address before the deploy knows it.
 - Join the loop-slice container to the observability pod for a
-  `localhost:4318` endpoint — rejected; it couples the game server's
+  `localhost:4318` endpoint, rejected; it couples the game server's
   lifecycle and its published game port to the observability pod.
 - Run the loop-slice container on host networking for a
-  `127.0.0.1:4318` endpoint — rejected; it drops the published-port
+  `127.0.0.1:4318` endpoint, rejected; it drops the published-port
   isolation the deploy relies on.
-- Export over gRPC on 4317 — rejected; the fabric's OTLP export
+- Export over gRPC on 4317, rejected; the fabric's OTLP export
   pattern is HTTP on 4318.
 
 ## Confirmation

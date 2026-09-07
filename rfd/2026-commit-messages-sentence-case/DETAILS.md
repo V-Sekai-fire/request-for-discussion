@@ -1,3 +1,5 @@
+# RFD 2026 details: Commit messages sentence case
+
 ## Context and problem statement
 
 A commit subject is the first line a reader meets in `git log`, a
@@ -47,9 +49,9 @@ makes true of the system and why.
 
 ## Fork exception
 
-The rule scopes to **our own repos** — anything whose git remote
-points at `github.com/weftspun/...`. Forks — repos this workspace
-mirrors from an upstream that uses its own commit style — follow the
+The rule scopes to **our own repos**, anything whose git remote
+points at `github.com/weftspun/...`. Forks, repos this workspace
+mirrors from an upstream that uses its own commit style, follow the
 upstream's convention. A Conventional-Commits upstream gets
 Conventional-Commits subjects on its fork here, because the fork's
 diffs go back to the upstream one day and need to fit its history.

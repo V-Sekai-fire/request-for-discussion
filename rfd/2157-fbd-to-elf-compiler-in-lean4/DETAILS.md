@@ -1,4 +1,4 @@
-# DETAILS: Lean 4 FBD -> RISC-V ELF compiler
+# RFD 2157 details: Lean 4 FBD -> RISC-V ELF compiler
 
 ## The three MIT pieces the compiler stitches together
 

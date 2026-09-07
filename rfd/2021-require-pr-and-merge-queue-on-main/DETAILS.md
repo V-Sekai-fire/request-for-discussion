@@ -1,3 +1,5 @@
+# RFD 2021 details: Require pr and merge queue on main
+
 ## Context and problem statement
 
 The `manuals` repo had no branch protection on `main`. Changes landed
@@ -55,7 +57,7 @@ stays enabled; with the other two off it can only produce a merge commit.
 This is not a preference for more commits. A split costs CI linearly:
 every commit must pass on its own, so a branch of `n` commits is `n`
 verifications and not one, paid again on every push while the branch
-lives. Against that a split buys understandability — review reads one
+lives. Against that a split buys understandability, review reads one
 idea at a time, and `git bisect` lands on a change small enough to read
 rather than on a whole feature.
 
@@ -72,8 +74,8 @@ should have. It is who decides, and when:
 
 - Squashing at merge time decides for every branch, after review, and
   collapses the series that was deliberately kept along with the ones
-  that were not. The author already had the cheaper option — `git rebase
--i` before marking the PR ready — and it costs the same CI either way,
+  that were not. The author already had the cheaper option, `git rebase
+-i` before marking the PR ready, and it costs the same CI either way,
   because the squashed branch is verified once as one commit.
 - A squash or a rebase also gives the merge a new SHA, so the branch tip
   is not an ancestor of the default branch afterwards. The documented
@@ -105,7 +107,7 @@ few at a time, and the queue charged for capacity it never used:
   This bit two dependent repos (`taskweft/taskweft`, `taskweft/nif`).
 
 The strict `required_status_checks` policy keeps the property the queue
-was there for — a change is tested against the tip it joins — and the
+was there for, a change is tested against the tip it joins, and the
 enqueue discipline goes away with it.
 
 ## Consequences

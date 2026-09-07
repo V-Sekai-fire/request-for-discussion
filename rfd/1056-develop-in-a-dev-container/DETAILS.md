@@ -1,4 +1,4 @@
-# RFD 1056 details: the abandoned workarounds, what the container carries, volumes, what it does not do
+# RFD 1056 details: Develop in a dev container
 
 ## The abandoned workarounds
 

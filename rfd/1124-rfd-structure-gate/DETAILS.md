@@ -1,4 +1,4 @@
-# RFD 1124 details: each rule, its count, and what it repaired
+# RFD 1124 details: The RFD structure gate reads a CommonMark AST
 
 ## How the rules were chosen
 

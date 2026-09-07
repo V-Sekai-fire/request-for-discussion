@@ -1,3 +1,5 @@
+# RFD 2093 details: Compile taskweft to linear automata
+
 ## Status
 
 Discussion only. Nobody wrote a compiler, and nobody proved the two
@@ -20,7 +22,7 @@ visited set at every branch:
 ```
 std::vector<std::string> sub_path;
 std::unordered_set<std::string> sub_visited = p_visited;
-if (_rebac_dfs(p_g, e.object, p_target, sub_visited, sub_path, p_depth - 1)) {
+if (_rebac_dfs(p_g, e.object, p_target, sub_visited, sub_path, p_depth, 1)) {
 ```
 
 Each element of that set is a heap-allocated string, so each branch
@@ -149,7 +151,7 @@ _different_ subject, as `check_expr` shows:
 for (size_t idx : sit->second) {
     const TwEdge &e = p_g.edges[idx];
     if (e.rel == pivot) {
-        if (check_expr(p_g, e.object, iit->second, p_obj, p_fuel - 1)) {
+        if (check_expr(p_g, e.object, iit->second, p_obj, p_fuel, 1)) {
 ```
 
 Whether that stays regular is the open question that decides this

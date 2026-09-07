@@ -1,4 +1,4 @@
-# DETAILS: RECTGTN on OpenPLC v4, over CoAP + OSCORE
+# RFD 2150 details: RECTGTN as FBD, on OpenPLC v4 and node-graph editors
 
 ## Language ranking, with the argument behind each row
 
@@ -203,3 +203,34 @@ Constructs staged for later, matching RFD 2148's own staging:
   the pattern, not the choice.
 2. EDHOC key exchange (staged; static keys today).
 3. Compiled program versioning / rollback semantics on the runtime.
+
+## From the README, moved here on 2026-09-07
+
+## Decision
+
+Translate RECTGTN to **FBD** via RFD 2148's compact GRAFCET, emit
+PLCopen XML with an `<FBD>` body encoding the state machine as
+`SR_L` flip-flops per step and `AND` gates per transition. Compile
+with OpenPLC v4 to a shared library or RISC-V binary; a Godot game
+loads that binary through Godot Sandbox. Hand the same FBD network
+to a converter for a node-graph editor.
+
+Language ranking collapses to **FBD only**. **SFC is blocklisted**
+(new row in `CLAUDE.md`, argument in `BLOCKLIST.md`). ST and LD
+were already blocklisted; IL is deprecated.
+
+Coordination rides linking: Elixir NIF → LibGodot → Godot Sandbox
+→ OpenPLC compiled `.riscv`. One address space. No wire.
+
+## Problem
+
+Taskweft targets the BEAM. Constrained runtimes (PLC, ESP32, Godot
+Sandbox RISC-V VM) and node-graph editors (glTF Interactivity, Udon,
+Blueprint, ProtoFlux) cannot host BEAM. All those consumers speak
+the same shape; typed function blocks with dataflow wires, state
+persisted through named variables; which IEC 61131-3 calls **FBD**.
+
+## References
+
+1. OpenPLC Runtime v4 (MIT), Godot Sandbox (`libriscv/godot-sandbox`)
+2. RFD 2148, 2144, 2146 (parked), 2149

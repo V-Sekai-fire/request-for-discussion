@@ -21,14 +21,14 @@ RFD 1123.
 
 ## Related
 
-- [RFD 2211](../2211-base-tree-entities-godot-sandbox/) — base tree.
-- [RFD 2214](../2214-model-bundle-sqlite-range-fetch-zstd/) — model
+- [RFD 2211](../2211-base-tree-entities-godot-sandbox/), base tree.
+- [RFD 2214](../2214-model-bundle-sqlite-range-fetch-zstd/), model
   bundle format.
-- [RFD 2215](../2215-one-binary-two-heads/) — two-heads shape.
-- [RFD 2216](../2216-threejs-blocklist/) — three.js blocklist.
+- [RFD 2215](../2215-one-binary-two-heads/), two-heads shape.
+- [RFD 2216](../2216-threejs-blocklist/), three.js blocklist.
 - [RFD 2229](../2229-interchangeable-parts-consolidation/) —
   consolidation policy.
-- [RFD 2230](../2230-ggml-adapters-in-godot-sandbox/) — ggml as
+- [RFD 2230](../2230-ggml-adapters-in-godot-sandbox/), ggml as
   one shared module + GDScript adapters.
 - RFD 2205 (Taskweft in Bao), RFD 2206 (video-call VRM portrait),
   RFD 2207 (Nord palette), RFD 2188 (one ggml across workspace),

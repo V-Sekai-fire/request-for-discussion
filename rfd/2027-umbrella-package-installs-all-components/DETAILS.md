@@ -1,3 +1,5 @@
+# RFD 2027 details: Umbrella package installs all components
+
 ## Context and problem statement
 
 A project ships as several components, each with its own install

@@ -1,9 +1,9 @@
-# Details
+# RFD 2010 details: Maglev cycle 1 gateway handshake
 
 ## The Downsides
 
 A minimal Godot client is more work than a curl or harness ping, and
-the work cannot be skipped — a non-Godot client would not catch
+the work cannot be skipped, a non-Godot client would not catch
 Godot-specific datagram handling before it reaches a gameplay scene.
 
 ## The Road Not Taken
@@ -22,6 +22,6 @@ The loop-slice client (`godot-loop-slice/client.gd`) completes this
 handshake against the authoritative server
 (`godot-loop-slice/server.gd`). The playable-loop smoke runs four real
 Godot clients through it end to end on ENet: each connects, joins, runs
-the loop, and exits cleanly. The run on 2026-06-29 passes — all four
+the loop, and exits cleanly. The run on 2026-06-29 passes, all four
 clients complete and exactly one loot grant lands. The WebTransport/QUIC
 path is selectable with `TRANSPORT=wt` over the same handshake.

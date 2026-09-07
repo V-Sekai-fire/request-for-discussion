@@ -1,4 +1,4 @@
-# RFD 1133 details: the three kinds of exclusion
+# RFD 1133 details: Models excluded from conversion
 
 Ten model ids were carried under one heading in RFD 1132, and the heading was
 `blocklisted`. Reading each row back against what excludes it splits the ten
@@ -11,9 +11,9 @@ under each. This table restates neither, it points at them.
 
 | model id                  | goal         | entry                        | RFD      |
 | ------------------------- | ------------ | ---------------------------- | -------- |
-| qwen_q4_k_m_image_edit    | -            | Qwen-Image-Edit (2509/2511)  | RFD 1043 |
+| qwen_q4_k_m_image_edit    |,            | Qwen-Image-Edit (2509/2511)  | RFD 1043 |
 | p3sam_mesh_segmentation   | mesh-latents | P3-SAM / Hunyuan3D-Part      | RFD 1041 |
-| krea2_turbo_text_to_image | -            | Krea 2 / krea2-turbo         | RFD 1042 |
+| krea2_turbo_text_to_image |,            | Krea 2 / krea2-turbo         | RFD 1042 |
 
 Qwen-Image-Edit is 20.4B and runs here only quantised, and quantised it
 corrupts. P3-SAM carries a territory-restricted licence that excludes the EU,

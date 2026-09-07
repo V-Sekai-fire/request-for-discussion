@@ -1,4 +1,4 @@
-# DETAILS: GRAFCET static analysis in Lean 4
+# RFD 2149 details: GRAFCET static analysis in Lean 4, from Elixir
 
 ## Two analyses now, one later
 

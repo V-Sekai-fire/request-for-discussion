@@ -1,4 +1,4 @@
-# DETAILS: OR-divergence emit in PLCopen SFC
+# RFD 2152 details: OR-divergence emit in PLCopen SFC
 
 ## The PLCopen XML shape
 

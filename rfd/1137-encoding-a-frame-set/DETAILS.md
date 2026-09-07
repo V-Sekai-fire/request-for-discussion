@@ -1,4 +1,4 @@
-# RFD 1137 details: What the encode measured
+# RFD 1137 details: A frame set is delivered as one CineForm clip
 
 ## Throughput
 

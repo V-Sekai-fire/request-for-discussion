@@ -1,4 +1,4 @@
-# RFD 1128 details: the apparatus, and what each number would mean
+# RFD 1128 details: Does the cascade survive four bits
 
 ## The instrument is the card we have, and it is enough for this
 

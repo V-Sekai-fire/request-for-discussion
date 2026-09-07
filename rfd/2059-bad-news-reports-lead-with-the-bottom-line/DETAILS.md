@@ -1,3 +1,5 @@
+# RFD 2059 details: Bad news reports lead with the bottom line
+
 ## Context and problem statement
 
 A status report carries an outcome the reader acts on: a slipped date,
@@ -14,7 +16,7 @@ this project phrase an outcome the reader needs first?
 - An executive or on-call reader scans the opening line and stops; the
   rest is there for whoever needs the why.
 - The rule stays mechanical enough to apply in review without debate.
-- Urgency — a down service, a failed gate — leaves no room for a
+- Urgency, a down service, a failed gate, leaves no room for a
   warm-up.
 
 ## Considered options
@@ -34,7 +36,7 @@ after one line.
 A status report carries three parts in order:
 
 1. The bottom line comes first. The opening sentence states the
-   outcome plainly — the slip, the failure, the result — with no
+   outcome plainly, the slip, the failure, the result, with no
    buffer, no apology, and no warm-up. A reader who reads only this
    line knows where the work stands.
 2. The explanation follows. It gives the factual reason for the
@@ -58,7 +60,7 @@ result, and the rest carries the why and the next step.
   instead of scanning for it.
 - Good, because one shape covers a slip, a failed gate, and a shipped
   result alike.
-- Good, because an urgent report — a down service, a recall — leads
+- Good, because an urgent report, a down service, a recall, leads
   with the fact that drives the response.
 - Bad, because the opening reads blunt, and an author used to a buffer
   needs practice to drop it.

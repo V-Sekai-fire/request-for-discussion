@@ -1,4 +1,4 @@
-# RFD 1102 details: current task catalog on ggml
+# RFD 1102 details: The supported task catalog, one live source
 
 Every module in the atelier catalog runs on **ggml** (RFD 2188 —
 one ggml source across the workspace at `2-contract/ggml/`).
@@ -41,26 +41,26 @@ file.
 Same recipe RFD 2229 named as the interchangeable-parts consolidation
 shape, one row per consumer:
 
-1. **Q4 quantize** — QAT if we train the model, PTQ per the CLAUDE.md
+1. **Q4 quantize**, QAT if we train the model, PTQ per the CLAUDE.md
    Post-training-quantization blocklist exemption (a vendor's own
    runtime is exempt from the QAT-only rule) otherwise. Target Q4_0
    for text models, Q4_K_M for vision if the K-quant produces a
    measurable EditScore win over Q4_0 on held-out inputs.
-2. **GGUF conversion** — via llama.cpp's `convert_hf_to_gguf.py` for
+2. **GGUF conversion**, via llama.cpp's `convert_hf_to_gguf.py` for
    HF-hosted models; per-model script for non-HF checkpoints. Ports
    for `Wan-VACE`, `Pixal3D`, `MoGe-3`, `rf-detr-Seg`, `LaMa`,
    `Qwen3-TTS`, `Parakeet`, `Voxtral`, `wav2vec2`, `allosaurus`,
    `WavLM` all follow this step.
-3. **ZSTD-SQLite bundle** — RFD 2214 shape; `sqlite3_open()` on
+3. **ZSTD-SQLite bundle**, RFD 2214 shape; `sqlite3_open()` on
    local disk. One `.zstd.sqlite` per model bundle, install-time
    download via the release channel.
-4. **`Ggml.load_model()` GDExtension call** — RFD 2230 surface; the
+4. **`Ggml.load_model()` GDExtension call**, RFD 2230 surface; the
    native `modules/ggml/` module hands bytes to ggml.
-5. **GDScript adapter** — per-model `.gd` file at
+5. **GDScript adapter**, per-model `.gd` file at
    `res://adapters/<name>.gd`, extends `GgmlAdapter`, defines
    `format_prompt` / `decode_output` / `apply_lora` per model
    quirks.
-6. **Docker image** — per RFD 1036 `/health` + `/predict` shape
+6. **Docker image**, per RFD 1036 `/health` + `/predict` shape
    still applies; the container binary is now the native Godot
    binary + shared `modules/ggml/` + the model's ZSTD-SQLite
    bundle + adapter `.gd`. One model per image (packaging stays

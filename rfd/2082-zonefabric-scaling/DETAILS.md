@@ -1,3 +1,5 @@
+# RFD 2082 details: Zonefabric scaling
+
 **Scale knob:** zone count (direct, no multiplier)
 **Source:** weftspun/scenario-tpcc-bench PR #2
 
@@ -12,7 +14,7 @@ Models weft-warp-loop's hub/instanced-zone game server. Each zone has 200 entiti
 | EFFECT_ENTITY | 0 at load         | runtime-only |
 | FANOUT_TARGET | 0 at load         | runtime-only |
 
-Fixed constants: ENTITIES_PER_ZONE=200, WORLD_EXTENT=10000.0, GHOST_RANGE=150.0, AUTHORITY_CAPACITY=256, INTEREST_CAPACITY=512, SPLIT_COST_THRESHOLD=40000.0. Uniform (Flat) random for entity attributes. No skewed zone selection at load — any skew comes from runtime workload.
+Fixed constants: ENTITIES_PER_ZONE=200, WORLD_EXTENT=10000.0, GHOST_RANGE=150.0, AUTHORITY_CAPACITY=256, INTEREST_CAPACITY=512, SPLIT_COST_THRESHOLD=40000.0. Uniform (Flat) random for entity attributes. No skewed zone selection at load, any skew comes from runtime workload.
 
 ## FDB keyspace design
 
@@ -34,14 +36,14 @@ batched zone-state blob per zone per persistence tick:
 
 ```
 zf/zone_state/{z_id}                   -> zstd-compressed binary blob containing:
-                                            - zone_t header (cost, population, authority_cap, interest_cap)
-                                            - Slotmap<EntityID, entity_t>  (dense array + generation counters)
-                                            - Slotmap<EffectID, effect_entity_t> (runtime effects, if any)
-                                            - FANOUT_TARGET adjacency list (effect_id → [entity_id...])
+                                           , zone_t header (cost, population, authority_cap, interest_cap)
+                                           , Slotmap<EntityID, entity_t>  (dense array + generation counters)
+                                           , Slotmap<EffectID, effect_entity_t> (runtime effects, if any)
+                                           , FANOUT_TARGET adjacency list (effect_id → [entity_id...])
 ```
 
 This reduces 200+ FDB keys per zone to 1 key per zone. At 10,000 zones,
-that's 10,000 keys instead of 2,000,000 — a 200x reduction in FDB key
+that's 10,000 keys instead of 2,000,000, a 200x reduction in FDB key
 count and transaction conflict surface.
 
 **Generational IDs survive serialization.** The slotmap's (index, version)
@@ -49,7 +51,7 @@ pairs are stored inside the blob. On load after a crash, all
 EFFECT_ENTITY and FANOUT_TARGET references resolve correctly because the
 generation counters are part of the persisted state. A fireball aimed at
 Entity(index=12, gen=1) will safely fizzle if Entity 12 was destroyed
-(gen bumped to 2) before the fireball resolved — the slotmap lookup
+(gen bumped to 2) before the fireball resolved, the slotmap lookup
 returns NULL, no dangling reference, no hitting the wrong player.
 
 **Per-entity keyspace retained for:**
@@ -60,7 +62,7 @@ returns NULL, no dangling reference, no hitting the wrong player.
 
 Zone queries are FDB range scans over `zf/entity/{z_id}/` prefixes.
 At 200 entities/zone, each range read returns ~200 KV pairs packed as
-binary structs (RFD 2010). No SQL, no parsing — zero-copy struct cast.
+binary structs (RFD 2010). No SQL, no parsing, zero-copy struct cast.
 
 The batched `zf/zone_state/` key is used for periodic persistence
 (every 100ms = 10Hz), not per-tick writes. Per-tick computation uses
@@ -98,7 +100,7 @@ the in-memory slotmap only.
 
 ## Comparison matrix
 
-Zonefabric is a novel workload — there is no TechEmpower benchmark for
+Zonefabric is a novel workload, there is no TechEmpower benchmark for
 game server zone scaling. Each operation is mapped to its closest
 existing benchmark with the specific numbers we need to beat:
 
@@ -132,8 +134,8 @@ C API:
 | -------------------------- | ------------------ | --------------------- |
 | Reads (memory engine)      | 90,000/sec         | 5,540,000/sec         |
 | Writes (memory engine)     | 35,000/sec         | 720,000/sec           |
-| Range scans                | 3,600,000 keys/sec | —                     |
-| 90/10 mixed                | —                  | 2,390,000 ops/sec     |
+| Range scans                | 3,600,000 keys/sec |,                     |
+| 90/10 mixed                |,                  | 2,390,000 ops/sec     |
 | Read latency (<75% load)   | 0.1-1ms            | 0.1-1ms               |
 | Commit latency (<75% load) | 1.5-2.5ms          | 1.5-2.5ms             |
 
@@ -142,7 +144,7 @@ C API:
 From [abeimler/ecs_benchmark](https://github.com/abeimler/ecs_benchmark),
 EnTT iterates 10K entities with 7 systems in 350µs. Zonefabric's tick
 is 200 entities with 1 system (position+velocity update), which
-extrapolates to ~7µs — negligible compared to FDB commit latency.
+extrapolates to ~7µs, negligible compared to FDB commit latency.
 
 The entity update is NOT the bottleneck. The **network replication**
 and **FDB transaction commit** are the binding constraints.
@@ -228,8 +230,8 @@ Zonefabric IS that world database, implemented on FDB instead of Redis.
 | **Async calls** (goroutine per player, blocking on world DB)       | H2O event loop + FDB async callbacks              | fdb_future_set_callback (RFD 2073)                           |
 | **Input-driven simulation** (no global tick)                       | ZoneTick is per-zone, on-demand                   | Each zone is an independent FDB transaction                  |
 | **XDP kernel bypass** (10G NIC, 50K players/server)                | H2O HTTP/TCP (not UDP/XDP)                        | HTTP is the benchmark transport; XDP is production transport |
-| **O(N²) snapshot delivery**                                        | AOI-filtered (GHOST_RANGE=150.0 in 10000.0 world) | 0.02% of world space per zone — not full-mesh                |
-| **Static geometry, no player collision**                           | Entities have position+velocity only              | No physics engine — pure data operations                     |
+| **O(N²) snapshot delivery**                                        | AOI-filtered (GHOST_RANGE=150.0 in 10000.0 world) | 0.02% of world space per zone, not full-mesh                |
+| **Static geometry, no player collision**                           | Entities have position+velocity only              | No physics engine, pure data operations                     |
 | **8K-50K players per 32-CPU server**                               | Benchmark target: zones per core                  | FDB scales linearly with cores                               |
 
 ### What mas-bandwidth/fps has that zonefabric does not (yet)
@@ -282,7 +284,7 @@ Zonefabric IS that world database, implemented on FDB instead of Redis.
 ```
 mas-bandwidth/fps (concept)          zonefabric (measurement)
 ┌──────────────────────┐            ┌──────────────────────┐
-│ Player servers       │            │ (not modeled —       │
+│ Player servers       │            │ (not modeled,       │
 │ (XDP, 50K players)   │            │  HTTP/wrk is the     │
 │                      │            │  load generator)     │
 │ World servers        │── maps to──│ ZONE + ENTITY tables │
@@ -316,31 +318,31 @@ is what zonefabric benchmarks today.
 
 Three layers combine to form a complete blueprint for 25M CCU:
 
-### 1. Network fabric — XDP/eBPF (future RFD)
+### 1. Network fabric: XDP/eBPF (future RFD)
 
 Handles massive UDP fanout traffic at line rate (10G+), bypassing the
 OS kernel. mas-bandwidth/fps demonstrates 50K players per 32-CPU server
-with XDP. This is the transport layer — not benchmarked by zonefabric
+with XDP. This is the transport layer, not benchmarked by zonefabric
 (HTTP/wrk is the benchmark transport), but the architecture is
 XDP-ready: zonefabric's operations are transport-agnostic.
 
-### 2. Compute and storage — zstd + FDB + slotmap (RFDs 0016, 0017)
+### 2. Compute and storage: zstd + FDB + slotmap (RFDs 0016, 0017)
 
-Per-tick computation uses the in-memory slotmap (RFD 2017) — no FDB
+Per-tick computation uses the in-memory slotmap (RFD 2017), no FDB
 calls on the hot path. Persistence is batched at 10Hz: the entire zone
 state (slotmap + effects + fanout) is serialized as a contiguous buffer,
 zstd-compressed (RFD 2016), and written as a single FDB key.
 
 At 25M CCU with 200 entities/zone, that's 125,000 zones. At 10Hz
 persistence, that's 1.25M zone-state commits/sec. With 100 zones per
-FDB transaction batch, that's 12,500 commits/sec — well within FDB's
+FDB transaction batch, that's 12,500 commits/sec, well within FDB's
 single-core capacity (35K writes/sec/core on memory engine). Across
 48 cores: 600K commits/sec capacity, 48x headroom.
 
 The zstd compression drops each zone-state blob from ~8KB to ~3KB
 (2-3x), reducing FDB storage and network transfer proportionally.
 
-### 3. Memory safety — slotmap generational IDs (RFD 2017)
+### 3. Memory safety: slotmap generational IDs (RFD 2017)
 
 The slotmap's generational handles solve the dangling reference problem
 inherent in dynamic game simulations:
@@ -369,7 +371,7 @@ inherent in dynamic game simulations:
 | Bandwidth / storage size                | zstd compression (2-3x on batches)                           | 0016       |
 | O(N²) snapshot delivery                 | AOI filtering (GHOST_RANGE=150.0, 0.02% world)               | 0002       |
 | Core scaling contention                 | Per-zone independent FDB transactions, thread-local slotmaps | 0005, 0017 |
-| Transport bottleneck (kernel overhead)  | XDP/eBPF kernel bypass (future)                              | —          |
+| Transport bottleneck (kernel overhead)  | XDP/eBPF kernel bypass (future)                              |,          |
 | World database (Glenn Fiedler's gap)    | FDB as ACID async world database                             | 0006, 0011 |
 
 The three layers compose: XDP handles the packet flood, zstd + FDB +

@@ -1,4 +1,4 @@
-# RFD 1119 details: the affected-RFD queue
+# RFD 1119 details: Target hardware stays generic
 
 35 RFDs name DGX Spark, Android XR, or Galaxy XR. Each falls into
 one of three groups.

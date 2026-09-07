@@ -1,4 +1,4 @@
-# RFD 1088 details: every setup option, headset access, and troubleshooting
+# RFD 1088 details: HTTPS for local WebXR development
 
 ## Option 1: mkcert, the easiest path
 

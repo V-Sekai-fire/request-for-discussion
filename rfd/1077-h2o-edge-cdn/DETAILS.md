@@ -1,4 +1,4 @@
-# RFD 1077 details: RED, GREEN, REFACTOR
+# RFD 1077 details: An H2O edge, not yet a CDN
 
 This RFD verifies the plan before writing any code for it, the same
 discipline a test suite gives a function: state the claim, check it
@@ -22,7 +22,7 @@ any container gets built:
 2. **H2O itself has no response cache.** Checked against H2O's own
    configuration reference (`configure/proxy_directives.html`): the
    proxy module's only buffer-related directive,
-   `proxy.max-buffer-size`, is explicitly transitory — it decouples
+   `proxy.max-buffer-size`, is explicitly transitory, it decouples
    the upstream and downstream connections and then discards the
    data. No directive stores a response body for reuse. This is a
    real, structural difference from nginx's `proxy_cache` or
@@ -50,7 +50,7 @@ at runtime.
 - `usd_viewer_app/server.js` sets `Cache-Control: public,
 max-age=31536000, immutable` on every path under `dist/assets/`
   (Vite's own content-hashed filenames, such as
-  `index-797Eygc6.js` — the hash changes only when the content
+  `index-797Eygc6.js`, the hash changes only when the content
   does, so an immutable, year-long cache is correct, not stale) and
   a short `Cache-Control: public, max-age=300` on `index.html` and
   every other path, so a caption or dataset-card update still
@@ -64,7 +64,7 @@ This needs no new deployed app, no new language in the fleet, no
 multi-region cost, and it is real: a browser that already fetched
 `emHdBindings.wasm` once does not fetch it again, for free, using
 infrastructure every browser already has. RFD 1058 and RFD 1067 both
-already found no load that needs more than this — a browser cache
+already found no load that needs more than this, a browser cache
 plus a content-hashed filename is the whole fix at today's traffic.
 
 Not yet built: this RFD stops at the plan, per the user's own
@@ -98,5 +98,5 @@ shell), but the static bytes stop being this app's problem.
 
 This is still a real decision, not a code change to make in this
 pass: it retires `versitygw` and the Fly Volume it depends on, and
-needs its own RFD once a load number justifies it — the same
+needs its own RFD once a load number justifies it, the same
 reasoning RFD 1067 already applied to FoundationDB.

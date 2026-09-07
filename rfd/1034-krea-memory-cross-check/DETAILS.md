@@ -1,4 +1,4 @@
-# RFD 1034 details: the estimate table and the result
+# RFD 1034 details: Krea memory cross-check
 
 ## The estimate
 

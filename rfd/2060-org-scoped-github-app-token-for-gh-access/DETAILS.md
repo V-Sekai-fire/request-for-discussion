@@ -1,15 +1,17 @@
+# RFD 2060 details: Org scoped github app token for gh access
+
 ## Context and problem statement
 
 Repository operations against
 [`v-sekai-multiplayer-fabric`](https://github.com/v-sekai-multiplayer-fabric) —
-archiving, renaming, pushing, editing settings — run through `gh` from
+archiving, renaming, pushing, editing settings, run through `gh` from
 a working environment. `gh` was authenticated with a personal OAuth
 token (`gho_`, scopes `gist, read:org, repo, workflow`). The `repo`
 scope is not org-scoped: it grants read/write/**admin/delete** on
 every repository the personal account can reach, across every org and
 every private repo. A mistyped owner in a destructive command, or a
 leak of that single token, could damage anything the account touches
-anywhere on GitHub — far beyond the one org being worked on. `gh`
+anywhere on GitHub, far beyond the one org being worked on. `gh`
 authenticates per host, not per org, so the limit cannot live in `gh`
 config; it has to live in the token.
 
@@ -21,7 +23,7 @@ config; it has to live in the token.
   living until revoked.
 - Decouple automation from the personal account, so its cross-org
   access never rides along.
-- Least privilege — only the permissions the repo work actually needs.
+- Least privilege, only the permissions the repo work actually needs.
 - Still usable from the CLI and from CI.
 
 ## Considered options
@@ -51,12 +53,12 @@ holds.
 
 The everyday installation is granted `administration: write`,
 `contents: write`, `workflows: write`, `actions: read`, `metadata:
-read` on all repositories in the org — the set the repo work (push,
+read` on all repositories in the org, the set the repo work (push,
 edit workflows, archive/rename) needs.
 
 ## Consequences
 
-- Good: cross-org private access is impossible — the token cannot read
+- Good: cross-org private access is impossible, the token cannot read
   or write any private repo outside the org, and cannot act as the
   personal account.
 - Good: a leaked token is dead within ~1 hour, with no manual
@@ -69,7 +71,7 @@ edit workflows, archive/rename) needs.
   for every install of the App) and must be guarded as carefully as
   the token it replaces.
 - Bad: `administration: write` on all repos means the token can still
-  archive / rename / delete / transfer any repo _within_ the org — the
+  archive / rename / delete / transfer any repo _within_ the org, the
   in-org fat-finger case is not mitigated by scoping alone.
 
 ## Confirmation
@@ -85,7 +87,7 @@ The minted token's permissions read back as
 
 ## More information
 
-In-org blast radius — every repo, with `administration: write` — is
+In-org blast radius, every repo, with `administration: write`, is
 narrowed further by installing on selected repositories instead of
 all, and by splitting off a separate, rarely-used admin App so the
 everyday token drops `administration: write`. The accidental

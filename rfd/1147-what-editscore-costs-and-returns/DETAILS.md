@@ -1,4 +1,4 @@
-# RFD 1147 details: the scorer's cost and its scale
+# RFD 1147 details: What EditScore costs and returns
 
 Measured on the desk described in `logbook-fourloops-first-runs.md`, which holds
 the apparatus these figures come from. The entry says how the runs were made and

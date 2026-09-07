@@ -1,4 +1,4 @@
-# RFD 1045 details: the model, the interface, the validation gate
+# RFD 1045 details: Model image for kimodo_text_to_motion
 
 ## The model
 

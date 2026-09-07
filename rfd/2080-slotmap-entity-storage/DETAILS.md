@@ -1,3 +1,5 @@
+# RFD 2080 details: Slotmap entity storage
+
 ## Rationale
 
 Zonefabric's ZoneTick iterates all 200 entities in a zone every tick.
@@ -9,15 +11,15 @@ The iteration pattern is:
 4. Batch write back to FDB (cold path)
 
 Steps 1 and 4 are FDB operations (~1ms latency). Step 3 is pure compute
-(~7µs for 200 entities). Step 2 is the deserialization bridge — and
+(~7µs for 200 entities). Step 2 is the deserialization bridge, and
 its data structure choice determines whether step 3 is cache-friendly.
 
 A hash map (open-addressing) scatters entities across memory based on
 hash of entity ID. Iterating 200 entities from a hash map of capacity
-1024 touches ~8 cache lines randomly — 8 potential L1 misses.
+1024 touches ~8 cache lines randomly, 8 potential L1 misses.
 
 A slotmap stores entities in a dense array indexed by a slot index.
-Iteration is a sequential scan of the dense array — 200 entities × 40
+Iteration is a sequential scan of the dense array, 200 entities × 40
 bytes = 8KB, which fits in 128 cache lines, accessed sequentially with
 hardware prefetch. Zero L1 misses after warmup.
 
@@ -93,7 +95,7 @@ even after removals (removal swaps the last entry into the freed slot).
 ## Why not just a flat array?
 
 A flat array works if entities never leave zones. But zonefabric has
-entity migration — entities cross zone boundaries. When entity #47 of
+entity migration, entities cross zone boundaries. When entity #47 of
 200 leaves, a flat array either:
 
 - Leaves a gap (iteration must skip dead entries → branch per entity)
@@ -120,10 +122,10 @@ the iteration speed, not the abstraction.
 
 When an entity migrates from zone A to zone B:
 
-1. Zone A: `slotmap_remove(sm_a, handle)` — version bumped, slot freed
-2. FDB: `fdb_transaction_clear(zf/entity/{a_id}/{e_id})` — delete key
-3. FDB: `fdb_transaction_set(zf/entity/{b_id}/{e_id}, packed_entity)` — insert key
-4. Zone B: `handle_b = slotmap_insert(sm_b, entity)` — new slot, new version
+1. Zone A: `slotmap_remove(sm_a, handle)`, version bumped, slot freed
+2. FDB: `fdb_transaction_clear(zf/entity/{a_id}/{e_id})`, delete key
+3. FDB: `fdb_transaction_set(zf/entity/{b_id}/{e_id}, packed_entity)`, insert key
+4. Zone B: `handle_b = slotmap_insert(sm_b, entity)`, new slot, new version
 
 The generational handle prevents zone A from using a stale handle to
 access an entity that has already migrated to zone B. The version
@@ -147,7 +149,7 @@ insert/remove with stable handles.
 ## Capacity and growth
 
 Initial capacity: 256 (AUTHORITY_CAPACITY from RFD 2002). Grows by
-doubling when count reaches capacity. Growth is amortized O(1) — the
+doubling when count reaches capacity. Growth is amortized O(1), the
 realloc + copy is rare (log₂(200/256) = 0 growth events at steady
 state).
 
@@ -159,7 +161,7 @@ Negligible vs FDB's storage overhead.
 - **RFD 2002** (zonefabric): defines ENTITIES_PER_ZONE=200 and
   AUTHORITY_CAPACITY=256. Slotmap capacity = AUTHORITY_CAPACITY.
 - **RFD 2010** (binary encoding): FDB values are packed structs. The
-  slotmap stores the same struct in memory — `memcpy` from FDB value
+  slotmap stores the same struct in memory, `memcpy` from FDB value
   to slotmap entry, no conversion.
 - **RFD 2073** (async callbacks): FDB range scan callback populates
   the slotmap. Each KV pair in the range result is one
@@ -168,5 +170,5 @@ Negligible vs FDB's storage overhead.
   before `memcpy` into the slotmap entry. The slotmap always stores
   uncompressed data.
 - **RFD 2005** (actor-lite): each worker thread owns its zone's
-  slotmap. No cross-thread access — the slotmap is thread-local.
+  slotmap. No cross-thread access, the slotmap is thread-local.
   No locks, no atomics on the hot path.

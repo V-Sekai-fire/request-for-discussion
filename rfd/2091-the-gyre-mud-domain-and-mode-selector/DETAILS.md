@@ -1,3 +1,5 @@
+# RFD 2091 details: The gyre mud domain and mode selector
+
 ## Status
 
 Done for the smallest loop (`zone-server-h2o` PR #5). Not verified end
@@ -38,7 +40,7 @@ Real, not assumed:
   Camoufox-driven, and it follows `mud.spec.ts`'s own house rule:
   `MUD_BASE_URL` must point at a real reachable instance, with no
   mock. It has not run against one yet. It stays red until a real
-  deployment with the Gyre domain exists — the same state
+  deployment with the Gyre domain exists, the same state
   `mud.spec.ts` itself documented before its own first real deploy.
 
 The team did not verify a `riscv64-musl` and `libriscv` build and run

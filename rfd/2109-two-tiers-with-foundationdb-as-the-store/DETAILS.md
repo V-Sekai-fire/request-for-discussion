@@ -1,3 +1,5 @@
+# RFD 2109 details: Two tiers with foundationdb as the store
+
 ## Egress is the cost, and the store is not
 
 Bandwidth per client sets the bill. `rfd/0100` caps a client at 256

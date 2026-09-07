@@ -1,3 +1,5 @@
+# RFD 2124 details: Elixir error tuples in every reply
+
 ## Both encodings were built and measured
 
 ETF was written first. The decision moved to CBOR after both were shown to reach the same term,

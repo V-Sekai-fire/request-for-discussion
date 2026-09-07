@@ -1,4 +1,4 @@
-# RFD 1002 details: file references
+# RFD 1002 details: Studio pipeline graph
 
 - Data model: `src/library/studioGraph.js`
 - Executor: `src/library/studioGraphExecutor.js`

@@ -1,10 +1,10 @@
-# RFD 2144 details: what running the RFD 2143 runbook actually measured
+# RFD 2144 details: The DR runbook runs, and the CA it needed lands
 
 ## The disaster
 
 On 2026-09-01, `fly apps list` for `personal` returned one row:
 `artifacts-mmo-mcp`. The four apps the working agreements name as
-placed — `weftspun-fdb`, `weftspun-bao`, `spot-broker`, `chibifire-com` —
+placed, `weftspun-fdb`, `weftspun-bao`, `spot-broker`, `chibifire-com` —
 were gone. Tigris `weftspun-fdb-blob` and R2 `weftspun-fdb-dr` both
 survived, so the disaster matched RFD 2143's premise partially: compute
 lost, object storage kept. The `personal` org's `weftspun-fdb-blob` bucket
@@ -37,7 +37,7 @@ them.
 the fly.toml deliberately does not default it, and no 1P item held it.
 A fresh one was minted (`openssl rand -hex 8`) and stored to 1P as
 `weftspun-fdb cluster id`. Clients' cluster files change to the new
-`weft:<newid>@<newcoords>` — because coordinator addresses change on a
+`weft:<newid>@<newcoords>`, because coordinator addresses change on a
 rebuild anyway, the identity change costs nothing extra. Every future
 DR needs to either mint fresh or restore this from somewhere, and the
 runbook is now updated to say so.
@@ -77,7 +77,7 @@ of the shell.
 **6. The entrypoint spawns no `backup_agent` for R2-only setups.**
 `fdb-entrypoint.sh` gates the `[backup_agent]` config block on
 `$backup = 1`, which is set only inside the AWS/Tigris credentials
-block. R2-only bring-up — which is precisely the DR case — writes an
+block. R2-only bring-up, which is precisely the DR case, writes an
 `fdbmonitor` config with no agents, and `fdbrestore` queues with no
 worker to pick it up. The DR run's restore stayed in state `queued`
 with 0 blocks progressing over twenty polls before the cause was
@@ -113,11 +113,11 @@ the base64 line under `Unseal key (base64):` in that login's
 `notesPlain` all held different 44-character strings. The first two
 failed unseal with `cipher: message authentication failed`
 (AES-GCM auth tag mismatch = wrong key); the notes value succeeded.
-The rekey history clearly outran the 1P hygiene — every rekey wrote
+The rekey history clearly outran the 1P hygiene, every rekey wrote
 one place, and the two other slots kept their pre-rekey values. The
 end-of-DR pass rewrote `unseal_key` (CONCEALED) with the working
 value, cleared `notesPlain` of the leaked keys, and left a note
-naming the stale init doc — the source of truth is now one field.
+naming the stale init doc, the source of truth is now one field.
 
 **10. OpenBao's `sys/rekey/init` returns 405 unsupported operation,
 until enabled by a listener flag.** Vault registers the unauthenticated
@@ -140,7 +140,7 @@ variant (Vault's original path, without `-token`) is only registered
 when `disable_unauthed_generate_root_endpoints = false`. Same flag as
 #10, filed the same way. The CLI's `-decode` operation itself calls
 the authenticated status endpoint before decoding, so on this build
-the decode step fails even after the endpoint is enabled — decode was
+the decode step fails even after the endpoint is enabled, decode was
 done locally in Python (XOR of the OTP against `base64.RawStdEncoding`
 of the encoded token, per `sdk/helper/roottoken/decode.go`). The
 recovered token was used to revoke three orphan root accessors this
@@ -199,8 +199,8 @@ leaf to a certificate signed by the CA Bao's PKI mount holds, and
     T+10m   fdbbackup describe -d $R2_URL: Restorable: true
     T+10m   fdbrestore start -w -r $R2_URL
 
-The full T+ timeline for the rest — Bao restore, cert rotation, scale
-to three, key rotation — lands as it happens in
+The full T+ timeline for the rest, Bao restore, cert rotation, scale
+to three, key rotation, lands as it happens in
 `logbook-rfd2144-dr-runbook-first-run.md`.
 
 ## What this RFD does not cover

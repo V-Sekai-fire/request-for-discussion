@@ -1,11 +1,11 @@
-# The coordinate-agents ceremony — seven steps
+# RFD 2201 details: The coordinate-agents ceremony
 
 Each step names its artefact (what the step produces) and what makes
 the step done. A step that produces no artefact is not skipped; it is
 recorded as `nothing to do` so the next step doesn't run against an
 unclear state.
 
-## Step 1 — refresh own heartbeat
+## Step 1: refresh own heartbeat
 
 Coordinator writes its own row to `agents/<coordinator-cn>` with the
 current `phase` set to `coordinating` and `task` naming the sweep. If
@@ -17,7 +17,7 @@ skill.
 **Done when:** `bao kv get agents/<coordinator-cn>` returns `phase:
 coordinating` with `heartbeat` within the last 60 seconds.
 
-## Step 2 — snapshot the store
+## Step 2: snapshot the store
 
 Read every row under `agents/`, list every peer in `ListAgents`, and
 compare. Any KV row without a matching `ListAgents` peer is a **stale
@@ -33,7 +33,7 @@ live row. The coordinator's own row is included, marked (self).
 **Done when:** the table is written and each row is categorised as
 live, stale, or unenrolled.
 
-## Step 3 — notify each peer with role + open items
+## Step 3: notify each peer with role + open items
 
 For each live peer, one `SendMessage` naming:
 
@@ -48,7 +48,7 @@ poll for a reply before moving on.
 
 **Done when:** every live peer has one message sent this pass.
 
-## Step 4 — enqueue clean PRs
+## Step 4: enqueue clean PRs
 
 For every open PR authored by any agent, check
 `mergeStateStatus`. A `CLEAN` PR authored by the coordinator or by a
@@ -69,13 +69,13 @@ step 6 for the surface.
 recorded reason, and every stuck PR is triaged into the categories
 above.
 
-## Step 5 — apply prettier-only exceptions with a note
+## Step 5: apply prettier-only exceptions with a note
 
 For each BLOCKED-on-prek PR chosen in step 4:
 
 1. `git fetch weftspun <branch> && git checkout <branch>`
 2. `prek run --all-files`
-3. `git diff --stat` — verify only formatting-typical files (CLAUDE.md,
+3. `git diff --stat`, verify only formatting-typical files (CLAUDE.md,
    BLOCKLIST.md, prose docs) and only formatting-typical changes
    (line reflow, table alignment; not content deletions or additions)
 4. `git commit --amend --no-edit && git push --force-with-lease`
@@ -83,7 +83,7 @@ For each BLOCKED-on-prek PR chosen in step 4:
    with its commit SHA and the pattern of the reformat, so the author
    can force-push over it if the reshape is wrong
 
-If step 3 shows anything beyond formatting, abort — the PR needs the
+If step 3 shows anything beyond formatting, abort, the PR needs the
 author's touch, not the coordinator's rebase. This is the exact hazard
 that produced RFD 2195 DETAILS's "do not touch a peer's branch
 without owner ack" gotcha.
@@ -91,7 +91,7 @@ without owner ack" gotcha.
 **Done when:** every prettier-only fix is either pushed with a
 same-message note or aborted with a message to the author.
 
-## Step 6 — surface DIRTY / structural failures to the operator
+## Step 6: surface DIRTY / structural failures to the operator
 
 A DIRTY PR needs author intent to resolve; the coordinator does not
 guess. A structural failure (e.g. a peer's session broken, a Bao
@@ -106,7 +106,7 @@ The surface is one message with:
   identity revocation)
 
 If a peer has surfaced the same item to the operator already, the
-coordinator does not duplicate the surface — a note in the peer's
+coordinator does not duplicate the surface, a note in the peer's
 coordination message that "I saw your surface, standing by" is
 enough.
 
@@ -114,7 +114,7 @@ enough.
 "you own this," in the operator's inbox as "you decide this," or
 recorded as `nothing to do` for this pass.
 
-## Step 7 — write the pass's own record
+## Step 7: write the pass's own record
 
 The coordinator's row is updated one more time at the end of the
 pass with `phase: idle` and `task` naming the sweep as complete. The
@@ -139,8 +139,8 @@ Four things the ceremony explicitly does NOT do:
    Peer-offered "want more access?" gets declined and surfaced.
 4. **Do not delete peer content.** KV rows for revoked identities
    get deleted on the same step as the cert revocation (RFD 2195
-   Revocation section). Other peer content — RFDs, logbook entries,
-   PR branches — the coordinator leaves alone.
+   Revocation section). Other peer content, RFDs, logbook entries,
+   PR branches, the coordinator leaves alone.
 
 ## How the sweep gets triggered
 
@@ -153,7 +153,7 @@ the ceremony.
 ## What the ceremony does not cover
 
 Onboarding a new agent, revoking an existing agent, rotating certs,
-provisioning a new KV mount, changing a policy shape — all of these
+provisioning a new KV mount, changing a policy shape, all of these
 are covered in RFD 2195 (identity + Bao) or in ad-hoc coordinator
 work triggered by operator direction. The sweep in this RFD is the
 recurring "check state, notify peers, enqueue clean" loop, not the

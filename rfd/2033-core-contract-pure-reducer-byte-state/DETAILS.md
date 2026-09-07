@@ -1,3 +1,5 @@
+# RFD 2033 details: Core contract pure reducer byte state
+
 ## Context and problem statement
 
 Every hexagonal core (`rfd/2028-hexagonal-core-ports-adapters`) needs

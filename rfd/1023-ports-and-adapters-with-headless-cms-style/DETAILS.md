@@ -1,4 +1,4 @@
-# RFD 1023 details: the layout, the content split, the asset port, method, risks, status
+# RFD 1023 details: Ports and adapters, in the headless content style
 
 ## The layout
 

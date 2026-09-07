@@ -1,4 +1,4 @@
-# RFD 1130 details: the rig, and the confounds that will spoil it
+# RFD 1130 details: What the UGen300 actually delivers
 
 ## The device
 
@@ -33,12 +33,12 @@ for the rates, and `hailo/rung3_shim.py` for the controlled input.
     HW latency, NN core          2.27 ms
     overall latency              3.95 ms
     transferred bytes         150,528 in, 1,000 out per inference
-    chip temperature           38.7 - 41.7 C
+    chip temperature           38.7, 41.7 C
 
 **The third quantity is the answer to the question this RFD was written to ask.** Overall
 minus hardware is **1.68 ms of USB crossing per inference**, 43% of end-to-end latency. It
-amortises under pipelining -- 1168 FPS is 0.86 ms per frame against 3.95 ms for a lone
-frame -- so the bus is a latency cost and not a throughput cost at this model size. A
+amortises under pipelining, 1168 FPS is 0.86 ms per frame against 3.95 ms for a lone
+frame, so the bus is a latency cost and not a throughput cost at this model size. A
 resident model pays it once per frame for the activations, not per weight.
 
 At 1168 FPS the input traffic alone is 1168 x 150,528 = **176 MB/s**, against the bus's
@@ -57,8 +57,8 @@ warning stopped. Every figure above was taken after the move.
 
 **The evidence is the absence of the firmware's own flag, not a power reading**, and the
 distinction is worth keeping. Neither direct route works: `measure-power` fails with
-`HAILO_OPEN_FILE_FAILURE(13)`, and `monitor` -- whose help promises "on H10, presents
-performance and health stats" -- reports it "is not supported on Windows". So temperature is
+`HAILO_OPEN_FILE_FAILURE(13)`, and `monitor`, whose help promises "on H10, presents
+performance and health stats", reports it "is not supported on Windows". So temperature is
 the only proxy available, and **this RFD should not promise a power figure it cannot take.**
 
 **The comparison that would have priced the limit is gone.** No throughput was taken at
@@ -66,8 +66,8 @@ the only proxy available, and **this RFD should not promise a power figure it ca
 plugging back in on purpose.
 
 **Backfilled 2026-08-29: throughput at 1.5A now exists, and it is the same.** A frame ladder
-of raw uint8 transport -- a 1x1 convolution, so the compute is negligible and the number is
-the link -- was run at pipeline depth 4 across three different ports, each advertising 1.5A:
+of raw uint8 transport, a 1x1 convolution, so the compute is negligible and the number is
+the link, was run at pipeline depth 4 across three different ports, each advertising 1.5A:
 
     frame    in MB   out MB   ms/frame   frames/s   MB/s
     512p      1.05     0.26      4.83       207       272
@@ -78,14 +78,14 @@ the link -- was run at pipeline depth 4 across three different ports, each adver
 The link plateaus at ~285-300 MB/s and holds there across a 32x range of frame sizes, and
 across `usb/004:013`, `usb/001:001` and `usb/004:001` the 4K figure reproduced to within
 0.07%. So the 1.5A ports do not differ from each other, and the ~176 MB/s this RFD measured
-for the keypoint model sits comfortably under that ceiling -- which is why that model never
+for the keypoint model sits comfortably under that ceiling, which is why that model never
 felt the limit. **The power question is still open**: every port reached on this desk
 advertised 1.5A, so a run at 3.0A remains untaken and the plateau is a 1.5A number until one
 is. What is now closed is the within-1.5A comparison the paragraph above called unrecoverable.
 
 **Two software knobs that did not move it.** `HAILO_POWER_MODE_ULTRA_PERFORMANCE` and
 `VDevice::dma_map` on the caller's frame buffer were each measured at 4K, depth 4, against a
-baseline: 145.8 ms, ultra 146.2 ms, DMA-mapped 144.1 ms, both 146.7 ms -- all within 1.5%,
+baseline: 145.8 ms, ultra 146.2 ms, DMA-mapped 144.1 ms, both 146.7 ms, all within 1.5%,
 which is noise. The bounce copy DMA mapping removes is a 33 MB `memcpy` at 25.7 GB/s, 1.29 ms,
 0.9% of a frame's 145 ms. At this link speed the copy is not the cost, so zero-copy transport
 buys under one percent and its value here is multi-process topology, not throughput.
@@ -100,7 +100,7 @@ priced at 1.68 ms for the larger keypoint frame.
 
 `hailortcli` generates its own random inputs and dumps no outputs, so it cannot answer
 whether a host-side change reaches the device. HailoRT's flat C API is exported and binds
-cleanly -- all 17 declarations in `hailo/hailort.sigs` resolve against `libhailort.dll` --
+cleanly, all 17 declarations in `hailo/hailort.sigs` resolve against `libhailort.dll` --
 and the Hailo-10H **rejects it**:
 
     hailo_init_configure_params_by_vdevice -> HAILO_NOT_IMPLEMENTED(7)
@@ -108,12 +108,12 @@ and the Hailo-10H **rejects it**:
                       If so, use InferModel instead
 
 `InferModel` returns `Expected<std::shared_ptr<InferModel>>`, which ctypes cannot call, and
-the DLL exports no `extern "C"` entry points for it -- 245 mangled C++ symbols and no flat
+the DLL exports no `extern "C"` entry points for it, 245 mangled C++ symbols and no flat
 ones. `hailo_platform`, Hailo's Python bindings, are not on PyPI and are not shipped with
 the HailoRT 5.3.2 Windows install: `lib/` holds `libhailort.lib` and cmake files only.
 
 So `hailort_shim.cpp` wraps `InferModel` in six `extern "C"` functions, declared in
-`hailort_shim.sigs` and bound by `sigs_ctypes.py` -- the same declarative-ABI convention
+`hailort_shim.sigs` and bound by `sigs_ctypes.py`, the same declarative-ABI convention
 this workspace uses for `iceoryx2.sigs` and `openvr_api.sigs`. 178 KB, built with clang++
 against `libhailort.lib`.
 

@@ -1,4 +1,4 @@
-# Details: the certificate profile, the proof, and the procedure
+# RFD 2134 details: Cluster TLS is decided before data, and certificates carry v3 extensions
 
 ## The failure this profile exists for
 
@@ -103,18 +103,18 @@ The controlled counterpart ran in local Docker against
 server that presents its one certificate without SNI. Same fdbbackup,
 same CA profile, same verify-rule shape:
 
-1. the TLS handshake completes — so the client's TLS is fine and SNI is
+1. the TLS handshake completes, so the client's TLS is fine and SNI is
    the whole difference;
-2. `--knob_http_request_aws_v4_header=true` is required — versitygw
+2. `--knob_http_request_aws_v4_header=true` is required, versitygw
    refuses FoundationDB's default SigV2 (Tigris also speaks v4);
-3. the bucket must pre-exist — FoundationDB's create-bucket body is
+3. the bucket must pre-exist, FoundationDB's create-bucket body is
    refused as MalformedXML; created through the S3 API, the backup
    submits and runs: `The backup on tag 'default' is in progress`.
 
 The production hop that landed is stunnel, not the versitygw sidecar
 first named here: the job needed only SNI added to a TCP stream, and a
 second S3 implementation in the path was more moving parts than eleven
-lines of stunnel config. One more wall surfaced live — Tigris routes
+lines of stunnel config. One more wall surfaced live, Tigris routes
 buckets from the Host header, so the endpoint's name has to survive the
 hop (/etc/hosts points it at loopback after the IP is resolved for
 stunnel's literal dial). datasource-store PRs #4 and #5 carry the

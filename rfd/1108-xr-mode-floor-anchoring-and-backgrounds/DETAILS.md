@@ -1,4 +1,4 @@
-# RFD 1108 details: goals, wrapper math, recentering, and troubleshooting
+# RFD 1108 details: Floor-anchor in both AR and VR, opaque sky only in VR
 
 ## Current correct behavior, by mode
 

@@ -1,4 +1,4 @@
-# RFD 1144 details: what loop 2 costs and what it scores
+# RFD 1144 details: The image-to-OmniGen2 loop
 
 Loop 2 exercises OmniGen2 and EditScore with nothing else in the way, so its
 numbers are the ones the plan layers check their quantities against. Both

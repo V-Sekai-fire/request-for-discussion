@@ -1,4 +1,4 @@
-# RFD 2204: RECTGTN fleet coordination — details
+# RFD 2204 details: RECTGTN fleet coordination
 
 ## Fleet-domain shape
 
@@ -6,16 +6,16 @@ Checked in at `2-contract/manuals-weftspun/rectgtn/fleet.jsonld`,
 conforming to
 `3-interactor/taskweft/priv/schemas/rectgtn_domain.schema.json`. The
 document is one full RECTGTN domain (`actions`, `methods`,
-`capabilities`, `variables`, `todo_list` — same shape as
+`capabilities`, `variables`, `todo_list`, same shape as
 `priv/plans/problems/work_queue.jsonld` in the Taskweft repo).
 
 ### Entities
 
-One per live peer CN — `hero.<mps-suffix>.agents.weftspun`,
+One per live peer CN, `hero.<mps-suffix>.agents.weftspun`,
 `anchor.<mps-suffix>.agents.weftspun`, and so on. The CN is the full
 form under `agents/<cn>.agents.weftspun` per RFD 2195. Session-local
 aliases (HERO / ANCHOR / SIDEKICK / HERD) are not entities in the
-domain — the CN is the address.
+domain, the CN is the address.
 
 ### Capability edges
 
@@ -28,7 +28,7 @@ and writes edges of these shapes under `capabilities.graph.edges`:
     {"subject":"hero.<cn>","rel":"may-use--hf-repo","object":"chibifire/*"}
     {"subject":"hero.<cn>","rel":"may-use--uplink","object":"windows-desktop"}
 
-Contention is expressed by `may-use--gpu` — a peer without an edge
+Contention is expressed by `may-use--gpu`, a peer without an edge
 cannot bind an action that guards on it. Un-park is a caveat on the
 edge, not a message.
 
@@ -61,27 +61,27 @@ Known decompositions. First landing methods:
 
     ship-a-Q4-quant:
       alternatives:
-        - name: extract_then_train
+       , name: extract_then_train
           subtasks:
-            - [extract-safetensors, {actor}, {model_id}]
-            - [train-qat, {actor}, {model_id}, "int4"]
-            - [validate, {actor}, {model_id}]
-            - [publish-hf-dataset, {actor}, {model_id}]
-        - name: use_aero_ex_configs
+           , [extract-safetensors, {actor}, {model_id}]
+           , [train-qat, {actor}, {model_id}, "int4"]
+           , [validate, {actor}, {model_id}]
+           , [publish-hf-dataset, {actor}, {model_id}]
+       , name: use_aero_ex_configs
           subtasks:
-            - [update-config-pins, {actor}, {model_id}]
-            - [extract-safetensors, {actor}, {model_id}]
-            - [train-qat, {actor}, {model_id}, "int4"]
-            - [validate, {actor}, {model_id}]
-            - [publish-hf-dataset, {actor}, {model_id}]
+           , [update-config-pins, {actor}, {model_id}]
+           , [extract-safetensors, {actor}, {model_id}]
+           , [train-qat, {actor}, {model_id}, "int4"]
+           , [validate, {actor}, {model_id}]
+           , [publish-hf-dataset, {actor}, {model_id}]
 
     land-a-clean-pr:
       alternatives:
-        - name: open_then_merge
+       , name: open_then_merge
           subtasks:
-            - [open-pr, {actor}, {repo}, {branch}]
-            - [run-ci, {actor}, {repo}, {branch}]
-            - [merge-pr, {actor}, {repo}, {branch}]
+           , [open-pr, {actor}, {repo}, {branch}]
+           , [run-ci, {actor}, {repo}, {branch}]
+           , [merge-pr, {actor}, {repo}, {branch}]
 
 Alternatives are ordered: the planner tries the first, falls to the
 second when a `TwMethodSkip` write on the fleet's skip rows says the
@@ -97,8 +97,8 @@ State pointers the actions read and write:
                                        validated | published | failed
     /skip/<task_key>#<method_idx>  -> true | absent
 
-`<task_key>` is the C++ planner's `tw_call_key` — action-or-method name
-plus stringified args — so a skip row keys on the specific instance,
+`<task_key>` is the C++ planner's `tw_call_key`, action-or-method name
+plus stringified args, so a skip row keys on the specific instance,
 not the verb.
 
 ### Todo list
@@ -117,25 +117,25 @@ reach `merged` before quarter close, and so on).
 New module `3-interactor/taskweft/lib/taskweft/coordinator.ex`, ~150
 lines. Public API:
 
-- `snapshot/0` — read `agents/*` Bao rows and the RFD board's current
+- `snapshot/0`, read `agents/*` Bao rows and the RFD board's current
   goal statuses, materialise `fleet.jsonld` in memory.
-- `pick/1` — `Taskweft.plan(snapshot, actor: cn)`, return the first
+- `pick/1`, `Taskweft.plan(snapshot, actor: cn)`, return the first
   `TwCall` whose bindings resolve `actor` to `cn`. Returns `nil` when
   no task in the plan is assignable to that peer.
-- `publish/2` — write the returned Task as an ordinary row at
+- `publish/2`, write the returned Task as an ordinary row at
   `agents/<cn>/assignment` with a `SqlarCas.Caveat` carrying
   `{"type":"expires_at","at": start + duration}`.
-- `fail/2` — write a truthy row at `/skip/<task_key>#<method_idx>` so
+- `fail/2`, write a truthy row at `/skip/<task_key>#<method_idx>` so
   the next `Taskweft.replan` treats it as `TwMethodSkip` and
   backjumps.
 
 Reuses `Taskweft.JSONLD.Loader.validate/2` and `Taskweft.MCP.Server`
 without modification. The caveat primitive is imported verbatim from
-`7-service/service-sqlar-cas/lib/sqlar_cas/caveat.ex` — no fork.
+`7-service/service-sqlar-cas/lib/sqlar_cas/caveat.ex`, no fork.
 
 ## Tiebreak order
 
-Encoded in the domain's `methods.alternatives` list order — the
+Encoded in the domain's `methods.alternatives` list order, the
 planner picks the first alternative that satisfies its guards and
 has no matching `/skip/` row. Operator priority (e.g. `land-clean-pr`
 before `render-shard`) is a domain edit, not a coordinator argument.
@@ -148,9 +148,9 @@ ceremony:
 
 1. Encode "ship MotionBricks Q4" as a `TwGoal` with HERO's
    `may-use--gpu` edge present.
-2. `Coordinator.pick(hero_cn)` — assert `extract-safetensors`, not
+2. `Coordinator.pick(hero_cn)`, assert `extract-safetensors`, not
    `train-qat`. The extractor is the unmet predecessor.
-3. Manually mark extraction done; re-`pick` — assert `train-qat`.
+3. Manually mark extraction done; re-`pick`, assert `train-qat`.
 4. Encode HERO's real config-hash blocker as a
    `/skip/train-qat#0` write; assert the backjump picks the
    `use_aero_ex_configs` alternative rather than looping on the
@@ -166,7 +166,7 @@ RFD 2202 named "compute-lease broker" as future work. This RFD is
 that broker in miniature: a peer's `may-use--gpu` edge is a lease,
 and the assignment row's `expires_at` caveat is its TTL. When the
 caveat expires, `Coordinator.pick` no longer sees the row and the
-next `plan` reassigns the GPU. No new Sentinel, no new engine — the
+next `plan` reassigns the GPU. No new Sentinel, no new engine, the
 caveat primitive plus the planner's own capability check are enough.
 
 ## Migration
@@ -205,3 +205,72 @@ caveat primitive plus the planner's own capability check are enough.
   `7-service/service-sqlar-cas/docs/` gets the fleet-domain tables
   in its fixture and renders the plan sol-tree client-side, so a
   reader can inspect the planner's output without an Elixir toolchain.
+
+## From the README, moved here on 2026-09-07
+
+**Coordinator adapter as an Elixir module:** retracted 2026-09-05,
+see [RFD 2205](../2205-taskweft-in-bao/README.md), superseded by
+an in-Bao database-plugin (Go binary, cgo-linked C++ planner) that
+callers reach via `bao read taskweft/creds/<goal_id>`. This RFD's
+"fleet-domain document" scope stays live; the "adapter" scope
+moves to 2205.
+
+## Decision
+
+Feed the Taskweft engine a **fleet domain**, a single JSON-LD
+document conforming to
+`3-interactor/taskweft/priv/schemas/rectgtn_domain.schema.json`, that
+names the live peers as entities, their owned resources as capability
+edges, the verbs peers execute as actions, and known decompositions as
+methods. Every peer answers "what should I do next?" with the same
+call: `Taskweft.plan(fleet, actor: self_cn)`. Contention becomes
+capability tuples; ordering becomes ISO-8601 durations; peer authority
+becomes the ReBAC relations Taskweft already speaks
+(`HAS_CAPABILITY`, `OWNS`, `IS_MEMBER_OF`, `DELEGATED_TO`,
+`SUPERVISOR_OF`, `PARTNER_OF`, `CAN_ENTER`, `CAN_INSTANCE`). No new
+planner, no new SQL layer, no port of RECTGTN into Bao; the engine is
+the ground-truth solver and the fleet is a domain that feeds it.
+
+The seven-step coordinate-agents ceremony (RFD 2201) stays. One line
+of step 3 ("notify peers") becomes `Coordinator.snapshot |>
+Coordinator.pick(self) |> Coordinator.publish(self)`. Determinism
+against the shared snapshot removes the need to relay next-item picks
+in prose. Assignment rows carry a `SqlarCas.Caveat` with
+`{"type":"expires_at","at":start+duration}`, the compute-lease broker
+RFD 2202 named as future work, filled by reusing the caveat primitive
+that already exists in service-sqlar-cas.
+
+## Problem
+
+Peer sessions coordinate through three ad-hoc channels: Bao rows, free-
+form `SendMessage` prose, and operator-typed un-park signals. There
+is no shared representation of *why* a peer is doing what it is doing,
+so a peer that reranks does it by hand, a peer that finishes an item
+picks the next one from a board it interprets alone, and the operator
+carries the priority ordering in their head each turn. The
+`may-use--<device>` tuples RFD 2202 introduced are documentation only —
+nothing gates work on them. When two peers want the same GPU or the
+same HF repo, prose adjudicates.
+
+## Non-goals
+
+Not a scheduler; not a hook; not a replacement for the operator's
+right to reprioritise mid-turn. The fleet domain is a snapshot the
+operator edits like any other document, the planner is deterministic
+against whatever the snapshot says. Not a claim that RECTGTN scales to
+100+ peers today; the pilot is single-Goal, single-decomposition, and
+the engine's search bounds already surface a "no assignable Task"
+answer rather than looping.
+
+## Related
+
+- RFD 2200 (ReBAC agent roles), supplies the relation vocabulary the
+  fleet domain reuses.
+- RFD 2201 (coordinate-agents ceremony), step 3 gets the one-line
+  hook; the other six steps are unchanged.
+- RFD 2202 (ReBAC Bao enforcement), this RFD fills the compute-lease
+  broker gap RFD 2202 named as future work.
+- RFD 2195 (weftspun-bao), the Bao row shape the coordinator reads
+  from and writes back to.
+- Taskweft engine RFDs 0005 (unify capabilities with ReBAC) and 0008
+  (MCP public API), the surfaces the fleet uses without modification.

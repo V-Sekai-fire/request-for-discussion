@@ -1,3 +1,5 @@
+# RFD 2075 details: Fdb over cockroachdb for zone state
+
 ## Rationale
 
 **1. Write throughput.** TPC-C is 88% writes (NewOrder + Payment).
@@ -10,7 +12,7 @@ bottleneck.
 maintained by Apple. CockroachDB's v-sekai fork is a dead engine with
 no upstream activity.
 
-**3. Pure C client.** `libfdb_c` is a native C shared library — no JVM,
+**3. Pure C client.** `libfdb_c` is a native C shared library, no JVM,
 no JNI, no gRPC bridge. The C API is callback-based
 (`fdb_future_set_callback`), integrating naturally with h2o's event
 loop.

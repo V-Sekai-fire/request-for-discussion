@@ -1,4 +1,4 @@
-# RFD 1152 details: the garment the union deleted
+# RFD 1152 details: Background removal for photographic corpora
 
 ## Why a matting model rather than a segmenter
 
@@ -20,7 +20,7 @@ Six photographs chosen for sheer fabric, specular surfaces and wispy hair:
 | latex | 1.02 | 2.08 | 2.61 |
 | latex | 1.14 | 1.55 | 3.39 |
 | wispy hair | 0.82 | 2.25 | 2.91 |
-| missed garment | 1.85 | 2.94 | -- |
+| missed garment | 1.85 | 2.94 |, |
 
 The segmenter clusters near 1.0 as predicted. The matting variants run higher,
 and the high-resolution variant is the most consistent.
@@ -60,5 +60,5 @@ connectivity 3.97, consistent with the subset.
 
 This also corrects the `soft_per_perimeter` proxy, which had ranked HR-matting
 first for the right answer by an unreliable route, and RFD 1153's judged ordering,
-which had ranked the segmenter best on gradient -- inverted, since ground truth
+which had ranked the segmenter best on gradient, inverted, since ground truth
 puts it roughly 3x worse.

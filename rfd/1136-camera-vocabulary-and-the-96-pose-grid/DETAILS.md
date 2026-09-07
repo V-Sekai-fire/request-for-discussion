@@ -1,4 +1,4 @@
-# RFD 1136 details: The grid, the sequence it is not, and what a render costs
+# RFD 1136 details: Views are named in the ecosystem's camera vocabulary
 
 ## The vocabulary, verbatim
 

@@ -1,4 +1,4 @@
-# RFD 1112 details: the per-file table
+# RFD 1112 details: The Cursor rules, kept in the open
 
 Three buckets. A **guard** rule blocks a regression in a feature an
 existing RFD already designs. A **process** rule runs the agent's

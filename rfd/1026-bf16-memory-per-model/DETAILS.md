@@ -1,4 +1,4 @@
-# RFD 1026 details: the weights table
+# RFD 1026 details: bf16 memory per model
 
 | Model id                        | Parameters |     bf16 |   Q4_K_M | Source    |
 | ------------------------------- | ---------: | -------: | -------: | --------- |

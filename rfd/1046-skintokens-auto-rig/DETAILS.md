@@ -1,4 +1,4 @@
-# RFD 1046 details: the model, the interface, UsdSkel, the joint order trap
+# RFD 1046 details: Model image for skintokens_auto_rig
 
 ## The model
 

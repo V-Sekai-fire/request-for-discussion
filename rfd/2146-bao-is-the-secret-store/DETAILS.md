@@ -1,4 +1,4 @@
-# RFD 2146 details: policies, cert-auth roles, the walkthrough
+# RFD 2146 details: Bao is the secret store, cert-auth is the fence
 
 This RFD was drafted by an AI and read by a human before it shipped.
 
@@ -41,7 +41,7 @@ policy per verb, per scope. Two axes; nothing else needs to change.
 Bao's `cert` auth backend was enabled by RFD 2146. Every role binds
 one leaf (or a small allow-list of CNs) to a set of policies. The
 leaf is Bao-PKI-issued by `chibifire.com Intermediate CA v2` (except
-the operator's admin cert, which is signed directly by the Root — a
+the operator's admin cert, which is signed directly by the Root, a
 one-hop shortcut that lets the admin swap in without an intermediate
 in the trust chain).
 
@@ -55,7 +55,7 @@ in the trust chain).
 
 `allowed_common_names` is exact-match (no globs) so a compromised
 leaf under a shared CA cannot cross into another role's scope by
-renaming its CSR. Token TTL 8h, max TTL 24h — a session's window,
+renaming its CSR. Token TTL 8h, max TTL 24h, a session's window,
 not a service's lifetime.
 
 ## Walkthrough: DNS edit without 1P
@@ -104,7 +104,7 @@ policy leaks to the caller.
 
 ## Sources
 
-- RFD 2140 (Bao on FDB) — the storage backend this all sits on.
-- RFD 2142 — service TLS design; this RFD's role table is its
+- RFD 2140 (Bao on FDB), the storage backend this all sits on.
+- RFD 2142, service TLS design; this RFD's role table is its
   implementation.
-- RFD 2145 — cert lifetimes that constrain how often roles rotate.
+- RFD 2145, cert lifetimes that constrain how often roles rotate.

@@ -1,4 +1,4 @@
-# RFD 1150 details: the ladder, and why a multiplier fails to make one
+# RFD 1150 details: Shade colour is solved per tone, not multiplied
 
 ## The flat multiplier, measured
 

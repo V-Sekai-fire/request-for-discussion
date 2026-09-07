@@ -1,4 +1,4 @@
-# RFD 1099 details: the full command inventory, by section
+# RFD 1099 details: One cheat sheet, every operator command, machine plus folder plus command
 
 ## 1. Repo roots and key paths
 
@@ -14,7 +14,7 @@
 | SessionMem local database             | `~/.sessionmem/memories.db`              | `C:\Users\alfao\.sessionmem\memories.db`           |
 | MCP config (repository)               | `.../.mcp.json`                          | `...\.mcp.json`                                    |
 | Graphify output                       | `.../graphify-out/`                      | `...\graphify-out\`                                |
-| Remote debug log                      | —                                        | `...\logs\remote-log.txt`                          |
+| Remote debug log                      |,                                        | `...\logs\remote-log.txt`                          |
 
 Typical LAN IPs: the Surface at `10.0.0.32`, the DGX at
 `10.0.0.158`; the API URL from the Surface is
@@ -492,7 +492,7 @@ cd /home/sifr/3DAIGC-API
 | ----------------------------- | --------------------------------- | ------- | ------------------------------------------------------------------------------------------------ |
 | SessionMem sync               | After a coding session            | DGX     | `cd /home/sifr/Weftspun3DStudio`, then `bash scripts/sync-sessionmem-team.sh`                    |
 | SessionMem sync               | After a coding session            | Surface | `cd C:\Users\alfao\Documents\GitHub\Weftspun3DStudio`, then `.\scripts\sync-sessionmem-team.ps1` |
-| Memory Bank                   | At the start of a task            | —       | An agent reads `memory-bank/*.md` automatically                                                  |
+| Memory Bank                   | At the start of a task            |,       | An agent reads `memory-bank/*.md` automatically                                                  |
 | Memory Bank                   | After a big change                | Chat    | Say "update memory bank"                                                                         |
 | Agent context, to the Surface | After a DGX agent session         | DGX     | `bash scripts/sync-to-pc.sh --include-agent-context`                                             |
 | Agent context, from the DGX   | At the start of a Surface session | Surface | `.\scripts\sync-from-dgx.ps1 -IncludeAgentContext`                                               |

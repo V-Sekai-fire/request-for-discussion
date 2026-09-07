@@ -1,3 +1,5 @@
+# RFD 2030 details: Cicd runners as queueing system
+
 ## Context and problem statement
 
 The organization shares one GitHub Actions runner pool across every
@@ -38,7 +40,7 @@ admitted to the runner pool so that signal arrives quickly?
 
 Chosen option: an operating discipline that bounds arrivals at the
 source, because the waste comes from how work is submitted, not from
-how GitHub schedules it — and a discipline adapts per situation where
+how GitHub schedules it, and a discipline adapts per situation where
 a hard cap blocks urgent work behind stale work.
 
 The discipline:
@@ -73,7 +75,7 @@ The discipline:
   verdicts on key jobs arrive in roughly the service time of the job
   itself.
 - Good: the merge policy (merge on a passing key job) composes cleanly
-  — batched PRs mean each merge buys validation for several fixes with
+ , batched PRs mean each merge buys validation for several fixes with
   one matrix.
 - Bad: sequencing adds wall-clock latency to individual merges; a
   merge-ready PR waits for an unrelated in-flight run to finish.

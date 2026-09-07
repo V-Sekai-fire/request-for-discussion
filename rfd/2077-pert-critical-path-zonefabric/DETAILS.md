@@ -1,3 +1,5 @@
+# RFD 2077 details: Pert critical path zonefabric
+
 ## Method
 
 Expected duration (TE) for each task uses the PERT formula:
@@ -9,12 +11,12 @@ TE = (O + 4M + P) / 6
 Variance (σ²) measures uncertainty:
 
 ```
-σ² = ((P - O) / 6)²
+σ² = ((P, O) / 6)²
 ```
 
 The critical path is the chain of dependent tasks with the longest total
 TE. Any delay on the critical path delays the entire project. Tasks off
-the critical path have slack — they can slip without affecting the end
+the critical path have slack, they can slip without affecting the end
 date.
 
 ## Task list
@@ -23,7 +25,7 @@ All durations in engineering days. One engineer, full-time.
 
 | ID  | Task                                            | Depends on | O   | M   | P   | TE  | σ²   |
 | --- | ----------------------------------------------- | ---------- | --- | --- | --- | --- | ---- |
-| A   | Binary value encoding (RFD 2010)                | —          | 1   | 2   | 4   | 2.2 | 0.25 |
+| A   | Binary value encoding (RFD 2010)                |,          | 1   | 2   | 4   | 2.2 | 0.25 |
 | B   | FDB keyspace + async callbacks (RFD 2009, 0011) | A          | 2   | 3   | 6   | 3.3 | 0.44 |
 | C   | Actor-lite worker pool (RFD 2005)               | B          | 3   | 5   | 9   | 5.3 | 1.00 |
 | D   | Slotmap entity storage (RFD 2017)               | A, B       | 2   | 3   | 5   | 3.2 | 0.25 |
@@ -82,7 +84,7 @@ A → B → C → F → I → M
 This is the minimum time to a verified, ablation-tested zonefabric
 benchmark with CastSpell. The critical path passes through CastSpell
 because it depends on three upstream tasks (slotmap, tick, ghost) and
-has the highest variance (σ² = 1.36) — it's both the longest and the
+has the highest variance (σ² = 1.36), it's both the longest and the
 riskiest task.
 
 ## Slack analysis
@@ -148,7 +150,7 @@ With two engineers, the critical path remains A→B→C→F→I→M at 26 days
 (Engineer 1), but all slack tasks are completed in parallel. Total
 project duration: ~26 days instead of ~38 days (serial sum).
 
-The critical path cannot be shortened by adding engineers — it's
+The critical path cannot be shortened by adding engineers, it's
 sequential by dependency. Only reducing task scope (e.g., stubbing
 CastSpell's fanout as a fixed-radius range scan without effect
 entities) can shorten it.

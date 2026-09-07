@@ -1,4 +1,4 @@
-# Details
+# RFD 2006 details: Cockroachdb with mtls role separation
 
 ## Context
 

@@ -1,4 +1,4 @@
-# DETAILS: OpenPLC v4 into Godot Sandbox, from Elixir
+# RFD 2154 details: OpenPLC v4 into Godot Sandbox, from Elixir
 
 ## The three pieces and how they connect
 

@@ -1,4 +1,4 @@
-# RFD 1120 details: path changes, the new deploy convention, and open work
+# RFD 1120 details: Split apps/ into their own repos
 
 ## Repo map
 

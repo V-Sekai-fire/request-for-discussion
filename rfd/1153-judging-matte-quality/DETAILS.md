@@ -1,4 +1,4 @@
-# RFD 1153 details: what the crops found, and what they did not
+# RFD 1153 details: Judging matte quality
 
 ## Result
 
@@ -13,7 +13,7 @@ sheer fabric, specular surfaces and wispy hair.
 The failure mode of these background removers on this corpus is **edge fidelity,
 and only edge fidelity**. Not one crop showed a connectivity fault: no floating
 fragments, no holes punched through solid regions. 65% of crops showed a gradient
-fault -- an edge either smeared into a blur or, more often here, hardened into an
+fault, an edge either smeared into a blur or, more often here, hardened into an
 abrupt cut where the real edge is soft.
 
 Unlike the two whole-image formats, this produces variance: connectivity spans
@@ -38,7 +38,7 @@ configured rather than the model.
 
 Three faults, all ours:
 
-* `num_pass=1` at temperature 0.7 -- a single stochastic sample. Self-ensembling
+* `num_pass=1` at temperature 0.7, a single stochastic sample. Self-ensembling
   is how the paper reaches its headline numbers.
 * a pairwise "is B better than A" comparator, which is not how best-of-N works:
   candidates are scored independently against the source and the best wins. That
@@ -46,8 +46,8 @@ Three faults, all ours:
 * custom single-image rubrics, which bypass the SC pass entirely and are not
   EditScore at all.
 
-Corrected -- published SC rubric, source and candidate as the pair, an edit
-instruction, `num_pass=3`, judged on 100px crops -- it reproduces the
+Corrected, published SC rubric, source and candidate as the pair, an edit
+instruction, `num_pass=3`, judged on 100px crops, it reproduces the
 ground-truth ordering on the alphamatting.com set:
 
 | backend | overall | following | true SAD |
@@ -62,7 +62,7 @@ error rises, and the ordering held when the sample was tripled from an earlier
 gradient, which ground truth inverts.
 
 **Aggregate ranking works; per-sample selection does not.** Spearman against true
-SAD is -0.237 -- right sign, strengthening with sample size (-0.139 at n=15),
+SAD is -0.237, right sign, strengthening with sample size (-0.139 at n=15),
 still weak. Best-of-N picked the true best on 6 of 16 crops, 37.5% against a 33%
 chance rate: at n=15 it read 3 of 5 and that was noise.
 
@@ -75,7 +75,7 @@ EditScore scores *an edit*: a source image, an edited result, and the instructio
 that was supposed to have been applied. Its SC pass asks whether the instruction
 was followed and whether the result stays consistent with the source. Best-of-N,
 in the repository's own usage, means N generations of the same edit from the same
-model differing by seed -- candidates that differ in visible, semantic content.
+model differing by seed, candidates that differ in visible, semantic content.
 
 Our candidates are three mattes of one photograph. As whole images they are
 nearly identical: they differ by a few pixels of alpha along one silhouette.
@@ -87,7 +87,7 @@ correct; it is not the question a matte comparison asks.
 The same fact explains why the aggregate ordering survives. A small consistent
 bias toward the better matte averages up over sixteen judgements. On any single
 comparison it sits below the model's resolution, and below the 0.4 quantisation
-step that `score_range=25` implies -- only 24 distinct `overall` values appeared
+step that `score_range=25` implies, only 24 distinct `overall` values appeared
 across 48 judgements.
 
 ## Consequence
@@ -96,7 +96,7 @@ Use EditScore where the candidates differ semantically at whole-image scale:
 whether an edit happened, whether the subject was altered, whether residue
 remains. Do not use it to grade edge quality between near-identical candidates.
 
-Alpha error -- SAD, MSE, gradient, connectivity against ground truth -- is the
+Alpha error, SAD, MSE, gradient, connectivity against ground truth, is the
 field's instrument for that, and it settled the model choice unambiguously in a
 single run where the judge needed 48 to reach a weak correlation. RFD 1152
 records that result.

@@ -1,4 +1,4 @@
-# Details
+# RFD 2018 details: Feature classification poc baseline stretch
 
 ## Context and Problem Statement
 

@@ -1,3 +1,5 @@
+# RFD 2065 details: Fabric platform central elixir burrito casync
+
 ## The context
 
 The multiplayer-fabric stack ships three Windows packages via MSIX: a
@@ -13,7 +15,7 @@ implements the full casync content-addressable-sync protocol with
 parallel chunk fetching, local caching, and integrity verification. A
 second casync implementation for Godot (`multiplayer_fabric_asset`)
 was registered as a Godot module but contained only a Python
-build-config stub — no C++ source at all.
+build-config stub, no C++ source at all.
 
 ## The problem statement
 
@@ -41,7 +43,7 @@ implementation.
 **Single executable**: Use [Burrito](https://github.com/burrito-elixir/burrito).
 Burrito wraps a `mix release` into a self-extracting Zig-wrapper
 binary that bundles ERTS + all BEAM code. The output is
-`burrito_out/fabric_platform_central.exe` — one file, no separate
+`burrito_out/fabric_platform_central.exe`, one file, no separate
 `.bat`, no shim, no sidecar.
 
 **MSIX layout** (simplified by Burrito):
@@ -73,7 +75,7 @@ def update(target, install_dir, opts \\ []) when target in [:client, :server, :s
 end
 ```
 
-**CI checks** (`.github/workflows/ci.yml`) — runs on every push and
+**CI checks** (`.github/workflows/ci.yml`), runs on every push and
 PR:
 
 ```yaml
@@ -82,11 +84,11 @@ PR:
 - run: mix test
 ```
 
-**Release workflow** (`.github/workflows/release-msix.yml`) — fires on
+**Release workflow** (`.github/workflows/release-msix.yml`), fires on
 `v*` tag push:
 
-1. `erlef/setup-beam` — OTP 27 + Elixir 1.18
-2. `goto-bus-stop/setup-zig@v2.2.1` — Zig 0.14.0 (required by Burrito)
+1. `erlef/setup-beam`, OTP 27 + Elixir 1.18
+2. `goto-bus-stop/setup-zig@v2.2.1`, Zig 0.14.0 (required by Burrito)
 3. `mix release` → `burrito_out/fabric_platform_central.exe`
 4. `packaging/msix/pack.ps1 -BurritoExe ... -Version ...` → signed
    MSIX

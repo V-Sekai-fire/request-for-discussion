@@ -1,3 +1,5 @@
+# RFD 2081 details: Three layer verification strategy
+
 ## Layers
 
 | Layer           | Tool                  | Scope          | What it proves                                               |
@@ -19,14 +21,14 @@ bugs.
 
 ## CBMC harnesses
 
-- `test/cbmc/spsc_harness.c` — FIFO ordering, overflow, underflow, head-tail invariant
-- `test/cbmc/nurand_harness.c` — NURand result in [x, y]
-- `test/cbmc/random_harness.c` — get_random_number in [0, max]
+- `test/cbmc/spsc_harness.c`, FIFO ordering, overflow, underflow, head-tail invariant
+- `test/cbmc/nurand_harness.c`, NURand result in [x, y]
+- `test/cbmc/random_harness.c`, get_random_number in [0, max]
 
 ## Lean 4 modules
 
-- `TpccVerification/Spsc.lean` — SPSC ring buffer specification with proofs: `init_safe`, `push_safe`, `pop_safe`
-- `TpccVerification/Basic.lean` — TPC-C invariant predicates for plausible-witness-dag
+- `TpccVerification/Spsc.lean`, SPSC ring buffer specification with proofs: `init_safe`, `push_safe`, `pop_safe`
+- `TpccVerification/Basic.lean`, TPC-C invariant predicates for plausible-witness-dag
 
 ## plausible-witness-dag integration
 

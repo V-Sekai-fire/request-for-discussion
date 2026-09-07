@@ -1,4 +1,4 @@
-# RFD 1027 details: the tier table, staging, quantization, what to do
+# RFD 1027 details: GPU tier per model
 
 ## Tier per model
 
@@ -28,7 +28,7 @@ resident weight set, smaller than total for staged models.
 | SkinTokens (auto rig)            |  bf16  |  1.0 GB |  1.0 GB | 24 GB |
 | Kimodo (text -> motion)          |  bf16  |  0.6 GB |  0.6 GB | 24 GB |
 
-VoxHammer's 0.0 GB row is per RFD 1162 -- it holds no weights and
+VoxHammer's 0.0 GB row is per RFD 1162, it holds no weights and
 inherits placement.
 
 ### Vision heads

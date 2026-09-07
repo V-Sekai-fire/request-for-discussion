@@ -1,3 +1,5 @@
+# RFD 2123 details: A second webtransport implementation
+
 ## What the second implementation found
 
 One disagreement about the contract, and three integration defects found while building. The
@@ -100,14 +102,14 @@ Two repositories renamed, two created. GitHub redirects the old names.
 | ------------------- | -------------------------- | ---------------------------- |
 | `transport-gateway` | `transport-gateway-c`      | `1-transport/gateway-c`      |
 | `transport-ingest`  | `transport-ingest-c`       | `1-transport/ingest-c`       |
-| —                   | `transport-gateway-python` | `1-transport/gateway-python` |
-| —                   | `transport-ingest-python`  | `1-transport/ingest-python`  |
+|,                   | `transport-gateway-python` | `1-transport/gateway-python` |
+|,                   | `transport-ingest-python`  | `1-transport/ingest-python`  |
 
 `check_path_recomposes` in `check_docs.py` requires the directory and its child to rebuild the
 repository name, and all four do. The manifest count moves from 45 to 47.
 
-Both C repositories carried a description using a word RFD 2111 retired — "hands the result to a
-**plane** over iceoryx2" — because the READMEs were converted and the GitHub descriptions were
+Both C repositories carried a description using a word RFD 2111 retired, "hands the result to a
+**plane** over iceoryx2", because the READMEs were converted and the GitHub descriptions were
 missed. Both now say interactor.
 
 `check_docs.py`'s moved-repository check found eight stale references in six files across five

@@ -1,4 +1,4 @@
-# RFD 1044 details: why a planner, the nine actions, two runtimes
+# RFD 1044 details: Model image for seethrough_layer_decomposition
 
 ## Why a planner earns its place here
 

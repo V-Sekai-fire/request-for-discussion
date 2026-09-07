@@ -1,4 +1,4 @@
-# RFD 1058 details: the mechanisms, ZooKeeper, images, migration, boot bugs, deploy, verification
+# RFD 1058 details: Zero trust networking
 
 ## Zero trust, in this deployment
 
