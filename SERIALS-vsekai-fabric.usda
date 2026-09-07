@@ -533,7 +533,7 @@ def Scope "Serials"
                 def "S2171"
                 {
                     custom string slug = "atelier-workshop-shuttle-vocabulary"
-                    custom string flight_level = "L3"
+                    custom string flight_level = "L2"
                 }
                 def "S2172"
                 {
@@ -579,7 +579,7 @@ def Scope "Serials"
                 def "S2182"
                 {
                     custom string slug = "identity-triangle-operator-market-customer"
-                    custom string flight_level = "L3"
+                    custom string flight_level = "L2"
                 }
                 def "S2183"
                 {
@@ -684,7 +684,7 @@ def Scope "Serials"
                 def "S2210"
                 {
                     custom string slug = "atelier-godot-web-shipping-surface"
-                    custom string flight_level = "L3"
+                    custom string flight_level = "L2"
                 }
                 def "S2211"
                 {
@@ -929,12 +929,12 @@ def Scope "Serials"
                 def "S2228"
                 {
                     custom string slug = "webgpu-native-drop-platform-web"
-                    custom string flight_level = "L3"
+                    custom string flight_level = "L2"
                 }
                 def "S2231"
                 {
                     custom string slug = "drop-webgpu-use-vulkan"
-                    custom string flight_level = "L3"
+                    custom string flight_level = "L2"
                 }
                 def "S2143"
                 {

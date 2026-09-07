@@ -1,7 +1,7 @@
 # RFD 1175: game
 
 **State:** discussion
-**Flight level:** L3
+**Flight level:** L2
 
 ## What the player sees
 
