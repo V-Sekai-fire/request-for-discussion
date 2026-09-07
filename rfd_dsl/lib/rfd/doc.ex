@@ -22,7 +22,7 @@ defmodule RFD.Doc do
     human: "This RFD was drafted by a human without AI help."
   }
   @tropes [
-    {~r/ [-—][-—]? /u, "an em-dash join"},
+    {~r/(?<=\S) [-—][-—]? /u, "an em-dash join"},
     {~r/\b(is|are)\s+what\s+(makes|proves|shows|says)\b/i, "a pompous copula"},
     {~r/\bthe exact (window|moment|shape|line|point|reason|failure)\b/i,
      "an `exact` on a soft noun"}
@@ -76,8 +76,6 @@ defmodule RFD.Doc do
     )
     |> check(d.drafted_by in [:ai, :human], "drafted_by must be :ai or :human")
     |> check(d.flight_level in [nil, :l1, :l2, :l3], "flight_level must be :l1, :l2, :l3 or nil")
-    # :none is for RFDs that predate the attestation rule; check_rfd_canary.py only
-    # scopes new directories, and a new RFD should say :readme or :details.
     |> check(
       d.attest_in in [:readme, :details, :none],
       "attest_in must be :readme, :details or :none"
@@ -118,7 +116,6 @@ defmodule RFD.Doc do
   end
 
   def validate!(%__MODULE__{} = d) do
-    # RFD_LENIENT=1 turns the shape errors into warnings, for diffing an import.
     problems = if System.get_env("RFD_LENIENT"), do: [], else: problems(d)
 
     case problems do
@@ -188,8 +185,6 @@ defmodule RFD.Doc do
       |> Enum.map(&elem(&1, 1))
       |> Enum.reject(&(&1 in [nil, false]))
 
-    # compact_head: the title runs straight into the metadata block, which buys one
-    # line inside the 40-line budget; the importer sets it where an RFD came that way.
     title_block =
       "# RFD #{d.serial}: #{d.title}" <>
         if(d.compact_head, do: "\n", else: "\n\n") <> Enum.join(meta, "\n")

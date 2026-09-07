@@ -4,32 +4,10 @@
 defmodule RFD.Register do
   @moduledoc """
   One site's serial register as data, and the `SERIALS*.usda` layer rendered from it.
-
-      defmodule Serials.Weftspun do
-        use RFD.Register
-
-        register "Weftspun" do
-          layer arc: "1.3.6.1.4.1.66606.1.1", site: 1, site_name: "weftspun", ...
-          thesis "Every serial this site has allocated ..."
-
-          allocated do
-            serial 1000, "conventions"
-            serial 1027, "a-slug", flight_level: :l2
-          end
-
-          deleted "A deleted serial keeps its row." do
-            retired 1024, recorded_in: 1070
-            serial 1004, "aigc-task-catalog"
-          end
-        end
-      end
-
-  The rendered layer is what `scripts/check-rfd-serials.py`, `scripts/render_site.py`
-  and `pen-66606.usda` read; it is a build artifact, written by `mix rfd.render`.
-  A serial is appended once and never reused, so the compile refuses a serial listed
-  twice, a serial from another site, and a retired row whose `recorded_in` names no
-  serial in the register. `mix rfd.serials` holds the register against the tree and
-  against a base revision.
+  `SERIALS.exs` at the repository root is the reference source; rfd_dsl/README.md
+  shows the block. A serial is appended once and never reused, so the compile refuses
+  a serial listed twice, a serial from another site, and a retired row whose
+  `recorded_in` names no serial in the register.
   """
 
   @enforce_keys [:name]

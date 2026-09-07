@@ -6,12 +6,8 @@ defmodule Mix.Tasks.Rfd.Render do
   @moduledoc """
       mix rfd.render [--check] [--qmd] [NAME ...]
 
-  NAME is `NNNN-slug`, a path to `rfd/NNNN-slug.exs`, or a directory; with none,
-  every `rfd/*.exs` and every `SERIALS*.exs` at the repository root is rendered.
-  The rendered Markdown and the `.usda` registers are build artifacts: they are
-  what the Python gates, `render_site.py`, `pen-66606.usda` and Quarto read, and
-  they are not tracked. `--check` writes nothing and fails when a rendered file on
-  disk differs from its source. `--qmd` also writes `index.qmd`.
+  NAME is `NNNN-slug`, `rfd/NNNN-slug.exs`, a directory or `SERIALS*.exs`; with none,
+  every source is rendered. `--check` writes nothing and fails on drift.
   """
   use Mix.Task
 
@@ -78,12 +74,7 @@ end
 
 defmodule Mix.Tasks.Rfd.Usda do
   @shortdoc "Print the .usda rendering of one register source to stdout"
-  @moduledoc """
-      mix rfd.usda PATH
-
-  `scripts/check-rfd-serials.py` uses this to read a base revision's register when
-  that revision carries `SERIALS.exs` and no rendered layer.
-  """
+  @moduledoc false
   use Mix.Task
 
   @impl true
@@ -99,11 +90,8 @@ defmodule Mix.Tasks.Rfd.Serials do
   @moduledoc """
       mix rfd.serials [--base REF]
 
-  Every allocated serial names an `rfd/NNNN-slug.exs` with that slug, every source
-  in the site's range has an allocated row, and no deleted serial has a source.
-  With `--base`, every serial the base revision recorded is still recorded, and none
-  moved from deleted back to allocated. A missing base register is a failure, not a
-  skip, unless the register is new in this change.
+  The registers against the sources on disk and, with `--base`, against a revision:
+  no serial gone, none revived. A missing base register fails unless it is new here.
   """
   use Mix.Task
 
@@ -221,11 +209,7 @@ defmodule RFD.Serials do
 end
 
 defmodule RFD.Source do
-  @moduledoc """
-  Locate, compile and render the sources. RFDs are one file each, `rfd/NNNN-slug.exs`,
-  rendered into the directory of the same name; registers are `SERIALS*.exs` at the
-  repository root, rendered to the `.usda` beside them.
-  """
+  @moduledoc "Locate, compile and render the RFD and register sources."
 
   def repo_root, do: Path.expand("..", File.cwd!())
   def rfd_root, do: Path.join(repo_root(), "rfd")

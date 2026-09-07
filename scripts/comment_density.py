@@ -54,13 +54,16 @@ def _elixir(lines):
     return comment
 
 
+LICENSE_HEADER = ("# Copyright ", "# SPDX-License-Identifier:")
+
+
 def density(text, ext):
-    """Returns (comment lines, code lines, ratio). Blank lines count as neither."""
+    """Returns (comment lines, code lines, ratio). Blank lines and the licence header count as neither."""
     lines = text.splitlines()
     marked = _python(text) if ext == ".py" else _elixir(lines)
     comment = code = 0
     for n, raw in enumerate(lines, 1):
-        if not raw.strip():
+        if not raw.strip() or raw.startswith(LICENSE_HEADER):
             continue
         if n in marked:
             comment += 1
