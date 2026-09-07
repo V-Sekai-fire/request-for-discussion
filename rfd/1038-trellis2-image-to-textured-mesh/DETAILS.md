@@ -1,4 +1,4 @@
-# RFD 1038 details: the model, the interface, staging
+# RFD 1038 details: Model image for trellis2_image_to_textured_mesh
 
 ## The model
 

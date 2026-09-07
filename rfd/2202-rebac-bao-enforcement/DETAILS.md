@@ -1,4 +1,4 @@
-# ReBAC via Bao identity groups — mapping, reconciler, and the non-enforcement scope
+# RFD 2202 details: ReBAC role tuples enforced via Bao identity groups
 
 ## Role → group → policy mapping
 
@@ -15,7 +15,7 @@ capabilities require.
 
 Today `gpu-experimenter`, `edge-qat-specialist`, and `assist` all
 carry the same `agents-rw` policy. The role distinction is
-semantic — carried by the tuple, consumed by the coordinator's
+semantic, carried by the tuple, consumed by the coordinator's
 task-picking, and visible in the store's `role` field on the
 agent's row. When the workspace grows a policy shape that scopes to
 a specific role (say, `gpu-experimenter` needs `pki/sign/experiment-*`
@@ -36,7 +36,7 @@ reconciler picks it up on the next run.
    policies via `bao write identity/group/name/agents-<role>
    policies=... member_entity_ids=...`.
 
-Idempotent — re-running with no tuple changes produces `no change`
+Idempotent, re-running with no tuple changes produces `no change`
 on every group.
 
 The script carries:
@@ -73,7 +73,7 @@ the entity's alias set, so the template resolution is unchanged.
 ## What Bao does not enforce
 
 **Hardware `may-use--<device>` tuples are documentation.** Bao's API
-surface has no relationship to GPU or NPU compute — those live in
+surface has no relationship to GPU or NPU compute, those live in
 CUDA drivers, Metal, HailoRT, whatever. A `hailo-552dfa--may-use--cpu`
 tuple describes the workspace's expectation of HAILO's behaviour; it
 does not stop HAILO's Python process from importing `torch` and
@@ -144,7 +144,7 @@ tuples and group memberships surfaces as `DRIFT` with the specific
 `+` / `-` entity ids. Running with `--apply` fixes the drift.
 
 Suitable for periodic invocation from the coordinate-agents skill
-(RFD 2201) as a step-8 addition — reconcile before closing the
+(RFD 2201) as a step-8 addition, reconcile before closing the
 pass. Not adding to that skill in this RFD; the skill's seven-step
 scope lands separately when this is proven idempotent over a few
 cycles.

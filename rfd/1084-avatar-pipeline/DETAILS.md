@@ -1,4 +1,4 @@
-# RFD 1084 details: the quick path, the task table, and the key files
+# RFD 1084 details: The avatar pipeline, image to downloaded VRM
 
 ## Quick path
 

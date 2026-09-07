@@ -1,3 +1,5 @@
+# RFD 2004 details: Castspell libgodot sandbox runtime scope
+
 ## Summary
 
 `rfd/2001-zonefabric-roadmap-vs-mas-bandwidth-fps/index.md`, item 6, commits to

@@ -1,3 +1,5 @@
+# RFD 2115 details: A planner domain document is a cheap layer surface
+
 ## The encoder that prompted this
 
 `fabric-store-domain` reached for a hand-written CBOR codec before this RFD

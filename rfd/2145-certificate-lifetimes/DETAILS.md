@@ -1,4 +1,4 @@
-# RFD 2145 details: citations, current-state audit, exceptions
+# RFD 2145 details: Certificate lifetimes, from a risk-based ceiling
 
 This RFD was drafted by an AI and read by a human before it shipped.
 
@@ -50,7 +50,7 @@ deliberate. Short as practical, taking rotation cost into account.
 
     Certificates should have lifetimes that are as short as practical,
     while balancing the operational overhead of renewal.
-    – NCSC "In-house public key infrastructure — PKI principles"
+    – NCSC "In-house public key infrastructure, PKI principles"
 
 **NIST SP 800-57 Part 1 §5.3.6 (key lifetimes).** Recommends both
 "originator usage period" and "recipient usage period" bounded.

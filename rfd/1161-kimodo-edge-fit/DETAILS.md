@@ -1,4 +1,4 @@
-# RFD 1161 details: un-abandonment rescore + un-park scope
+# RFD 1161 details: Kimodo is the smallest catalog model, and it is a decoder
 
 ## The 2026-08-28 abandonment paragraph, as history
 

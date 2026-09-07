@@ -1,4 +1,4 @@
-# RFD 1151 details: the allocation, the floor, and the cards
+# RFD 1151 details: Which axes the survey weights
 
 ## What the survey measures, and what it does not
 

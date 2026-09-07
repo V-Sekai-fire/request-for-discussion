@@ -1,4 +1,4 @@
-# RFD 1063 details: what moved where, what this repository does not gain back
+# RFD 1063 details: STE enforcement moves to the plugin
 
 ## What moved where
 

@@ -1,4 +1,4 @@
-# RFD 2177 details: tag schema, render script, citation
+# RFD 2177 details: flight levels taxonomy
 
 ## Tag schema
 
@@ -41,7 +41,7 @@ title: >-
   Rethinking Agile: Why Agile Teams Have Nothing To Do With Business
   Agility
 authors:
-  - family-names: Leopold
+ , family-names: Leopold
     given-names: Klaus
 year: 2018
 publisher:

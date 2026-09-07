@@ -1,4 +1,4 @@
-# RFD 1059 details: the steps, why one script, what it does not cover
+# RFD 1059 details: Continuous integration, in one step
 
 ## What the one step does
 

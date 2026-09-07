@@ -1,3 +1,5 @@
+# RFD 2019 details: Gitassembly tag release
+
 ## Context and problem statement
 
 The `merge` repo's `gitassembly` recipe builds the engine by merging

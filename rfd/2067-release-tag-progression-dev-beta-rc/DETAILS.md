@@ -1,3 +1,5 @@
+# RFD 2067 details: Release tag progression dev beta rc
+
 ## The context
 
 `fabric-godot-packaging` produces native Linux packages, a Podman
@@ -44,7 +46,7 @@ v<major>.<minor>.<patch>               # final release
 | rc      | `v0.1.0-rc.1`   |
 | release | `v0.1.0`        |
 
-The counter (`1`, `2`, …) is unpadded — zero-padding (`001`) was only
+The counter (`1`, `2`, …) is unpadded, zero-padding (`001`) was only
 needed for lexicographic ordering within a stage, which is
 unnecessary once creator-date sort is adopted.
 
@@ -59,9 +61,9 @@ git tag --sort=creatordate
 ```
 
 Neither `sort` nor `git tag --sort=version:refname` gives the correct
-cross-stage order for these names — `beta` precedes `dev`
+cross-stage order for these names, `beta` precedes `dev`
 alphabetically and bare `v0.1.0` precedes all suffixed forms as a
-string prefix — so creator date is the authoritative sort key.
+string prefix, so creator date is the authoritative sort key.
 
 **Workflow inputs**
 

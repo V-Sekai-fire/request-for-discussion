@@ -1,3 +1,5 @@
+# RFD 2045 details: Loot action core loop mvp vertical slice
+
 ## Context and problem statement
 
 The fabric has transport, authority, persistence, and budget decisions
@@ -104,14 +106,14 @@ in-headset authoring, rollback, and user-generated content.
 
 ## Confirmation
 
-The slice's stated goal — exercise every integration seam — is met.
+The slice's stated goal, exercise every integration seam, is met.
 On 2026-06-29 the playable-loop smoke (`smoke.sh`) runs end to end on
 the frozen Godot 4.7 double editor and passes: one authoritative
 server and four bot clients carry the Hub-to-Field-to-Hub round trip
 through transport, server authority, loot contention, and
 SQLite-backed inventory persistence. The run grants exactly one bot
-and commits exactly one profile row; the smoke asserts both — exactly
-one grant and exactly one committed row — and exits zero.
+and commits exactly one profile row; the smoke asserts both, exactly
+one grant and exactly one committed row, and exits zero.
 
 The integration is proven. The decided scope that is not built is
 production hardening and platform reach, which adds no integration
@@ -133,7 +135,7 @@ coverage. As built on 2026-06-29, verified by reading the
   preset and carries no XR options; the Quest Android preset is the
   configured XR target.
 
-These decided-but-unbuilt items — the three cores as separate
+These decided-but-unbuilt items, the three cores as separate
 reducers, the CockroachDB adapter, the performance gate, and a real
-OpenXR build — carry forward as deferred-until-needed in
+OpenXR build, carry forward as deferred-until-needed in
 `decisions/20260629-defer-loot-slice-hardening-until-needed.md`.

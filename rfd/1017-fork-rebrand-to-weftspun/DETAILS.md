@@ -1,4 +1,4 @@
-# RFD 1017 details: compatibility, risk, references
+# RFD 1017 details: Fork rebrand to Weftspun
 
 ## Compatibility
 

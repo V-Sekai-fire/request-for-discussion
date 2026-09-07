@@ -1,3 +1,5 @@
+# RFD 2023 details: Webtransport http3 transport
+
 ## Context and problem statement
 
 The stack needs a client/server transport that carries reliable
@@ -21,8 +23,8 @@ provide?
 Chosen option: WebTransport over HTTP/3, provided by the engine's
 `modules/http3` (on `feat/module-http3`):
 
-- `quic_picoquic_backend.{cpp,h}` — native QUIC via picoquic.
-- `quic_web_backend.cpp` + `quic_web_glue.js` — the web/wasm backend.
+- `quic_picoquic_backend.{cpp,h}`, native QUIC via picoquic.
+- `quic_web_backend.cpp` + `quic_web_glue.js`, the web/wasm backend.
 - `http3_client.{cpp,h}`, `quic_client.{cpp,h}`, `quic_server.h`.
 - Classes `HTTP3Client`, `QUICClient`, `QUICServer`, `WebTransportPeer`.
 - Demos: `modules/http3/demo/wt_client_test.gd`, `wt_server_demo.gd`,

@@ -1,4 +1,4 @@
-# RFD 1057 details: the open-work list
+# RFD 1057 details: Open work
 
 Delete an entry when it closes. This file shrinks, and it never
 grows a history section.
@@ -49,8 +49,8 @@ asset attribute, because `usd-core` alone reads no glTF. A glTF file
 format plugin would let it be a reference arc.
 
 **The `idtx_core` NIF adapter.** RFD 1061. `flow/adapters/` in
-`thirdparty/fabric-flow-adapters/` holds three hosts — Godot, Unity,
-CLI — and no Elixir one. Needs a fourth adapter, a `weftspun_studio`
+`thirdparty/fabric-flow-adapters/` holds three hosts, Godot, Unity,
+CLI, and no Elixir one. Needs a fourth adapter, a `weftspun_studio`
 route, and the browser call site swapped over. RFD 1061's stopgap
 (`prepareGlbForApiUpload` in `glbCompress.js`) stays until this
 lands.

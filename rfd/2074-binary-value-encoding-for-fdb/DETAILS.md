@@ -1,3 +1,5 @@
+# RFD 2074 details: Binary value encoding for fdb
+
 ## Rationale
 
 1. Zero-copy deserialization: a packed struct can be cast directly

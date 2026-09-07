@@ -1,4 +1,4 @@
-# Details
+# RFD 2013 details: Archival file naming convention
 
 ## Context and Problem Statement
 

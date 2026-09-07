@@ -1,4 +1,4 @@
-# maskscore-rung-1-bootstrap HF restructure: join plan and media strategy
+# RFD 2197 details: Restructure maskscore-rung-1-bootstrap for the HF viewer
 
 ## Amendment 2026-09-04: join keys, speech schema, media budget
 

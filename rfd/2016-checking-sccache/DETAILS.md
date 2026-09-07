@@ -1,4 +1,4 @@
-# Details
+# RFD 2016 details: Checking sccache
 
 ## Context and Problem Statement
 
@@ -9,7 +9,7 @@ cached across machines and CI (see
 `rfd/2017-compiling-godot-engine/index.md`). The failure mode is
 silent: if the `SCCACHE_*` environment is missing, the credentials are
 wrong, or the region/endpoint is off, sccache quietly falls back to a
-local disk cache — or records read/write errors — while the build still
+local disk cache, or records read/write errors, while the build still
 succeeds. The shared-cache benefit is lost with no obvious signal. How
 does someone confirm sccache is actually using the remote bucket and is
 healthy?
@@ -53,7 +53,7 @@ measure a single build, reset first:
   since stats read the running server's own counters.
 - Good: works identically across shells; the PowerShell `sccheck`/`scc`
   shortcut makes it a reflex.
-- Bad: the counters are per-server-session — they reset when the
+- Bad: the counters are per-server-session, they reset when the
   sccache server restarts or on `--zero-stats`, so they are not
   lifetime bucket totals.
 - Bad: `--show-stats` alone does not prove S3 connectivity; only a
@@ -65,7 +65,7 @@ measure a single build, reset first:
 
 Running `sccheck` reported `Cache location  s3, name: chibifire-sccache,
 prefix: /godot/`, `Cache errors 0`, and hits accumulating during a Godot
-rebuild — so the remote backend, region, and `do-tor1` credentials are
+rebuild, so the remote backend, region, and `do-tor1` credentials are
 all working.
 
 ## More Information

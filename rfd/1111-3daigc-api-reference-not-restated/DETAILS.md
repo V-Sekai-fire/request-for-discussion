@@ -1,4 +1,4 @@
-# RFD 1111 details: the endpoint groups the removed reference held
+# RFD 1111 details: The 3DAIGC-API reference, not restated here
 
 `GET /health` and other system checks; optional token-based user
 management, off by default (`user_auth_enabled`); a file upload

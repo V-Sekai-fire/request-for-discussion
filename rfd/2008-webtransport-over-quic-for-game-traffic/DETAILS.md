@@ -1,4 +1,4 @@
-# Details
+# RFD 2008 details: Webtransport over quic for game traffic
 
 ## Context
 

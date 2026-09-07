@@ -1,3 +1,5 @@
+# RFD 2072 details: Actor lite worker pool
+
 ## Target
 
 Top 10 TechEmpower R23 data update test.
@@ -80,10 +82,10 @@ HTTP response. No shared state on the return path.
 
 ## Why this beats a generalized actor framework
 
-- No scheduler overhead — each worker is a bare pthread
-- No lock contention — SPSC rings have zero cross-thread writes on the fast path
+- No scheduler overhead, each worker is a bare pthread
+- No lock contention, SPSC rings have zero cross-thread writes on the fast path
 - FDB async callbacks chain transaction steps without blocking
 - FDB transactions are native ACID (no SQL BEGIN/COMMIT overhead)
-- libfdb_c is pure C — no JVM, no JNI, no SQL parser
+- libfdb_c is pure C, no JVM, no JNI, no SQL parser
 - h2o's event loop handles HTTP/3 natively (no separate QUIC stack)
-- Top 10 is exclusively Rust and C/C++ — no managed runtime in the top 10
+- Top 10 is exclusively Rust and C/C++, no managed runtime in the top 10

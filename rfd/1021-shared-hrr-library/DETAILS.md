@@ -1,4 +1,4 @@
-# RFD 1021 details: reasoning, dimension, proofs, status
+# RFD 1021 details: A shared holographic algebra library
 
 ### Why the phase representation wins
 

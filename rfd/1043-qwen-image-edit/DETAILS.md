@@ -1,4 +1,4 @@
-# RFD 1043 details: the model, the interface, the open quality question
+# RFD 1043 details: Model image for qwen_q4_k_m_image_edit
 
 ## The model
 

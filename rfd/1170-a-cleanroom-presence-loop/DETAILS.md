@@ -1,4 +1,4 @@
-# RFD 1170 details: what the study found, and what it deliberately did not read
+# RFD 1170 details: A cleanroom presence loop, and which components swap
 
 ## Why cleanroom, and what that means here
 
@@ -8,7 +8,7 @@ finding RFD 1166 reached for the See-Through checkpoints and the same
 rule the blocklist applies to `24yearsold/metricdepth3d_tmp`.
 
 So this study read the **README, the card metadata and
-`package.json`** — what components the thing is built from, which is
+`package.json`**, what components the thing is built from, which is
 factual and stated by the author for that purpose. It did not read
 `index.ts`, `src/app.js`, `src/avatar.js` or `src/s2s/*.js`, because
 those are the integration and the integration is the part that cannot
@@ -44,7 +44,7 @@ their own terms and the missing piece is an evening of wiring.
 RFD 1166 seated `Qwen3-TTS-12Hz-1.7B-CustomVoice` at 4 on the same day
 this Space was read, chosen from the Qwen model index rather than from
 anybody's example. Independent selection is weak evidence and it is the
-useful kind — it says the artifact is discoverable and that a second
+useful kind, it says the artifact is discoverable and that a second
 party building a voice loop reached for the same thing.
 
 It says nothing about quality. Nobody here has measured it against
@@ -54,7 +54,7 @@ judgements.
 ## The two swaps, and why each is a swap rather than a preference
 
 **Parakeet out, Qwen3-ASR-1.7B in.** Parakeet is CC-BY-4.0, which
-clears the commercial bar and is not blocklisted — CC-BY-**SA** is the
+clears the commercial bar and is not blocklisted, CC-BY-**SA** is the
 blocked one, and the pose rule already admits CC-BY-4.0 sets with
 citation metadata. So this is not a licence swap.
 
@@ -68,8 +68,8 @@ and the other has not been looked at.
 **Gemma 4 out, Qwen3-VL-8B in, and one correction falls out of it.**
 `google/gemma-4-31B-it` is **Apache-2.0**. RFD 1155 abandoned Gemma 4
 and the reasons it gave were the GGUF artifact carrying no graph and
-autoregressive decode against fixed shapes — shape reasons, not licence
-ones — so nothing there needs revising. Recording the licence anyway,
+autoregressive decode against fixed shapes, shape reasons, not licence
+ones, so nothing there needs revising. Recording the licence anyway,
 because "abandoned" invites a reader to assume the worst about a model
 and this one is permissively licensed.
 
@@ -89,15 +89,15 @@ stretch a rule past what it says.
 ## The lip-sync, which is the genuinely new part
 
 TalkingHead is MIT and drives a glTF head from visemes with real-time
-audio. Two things make it a good fit and the third — whether our
-avatars carry the morph targets it needs — was the unknown at the
+audio. Two things make it a good fit and the third, whether our
+avatars carry the morph targets it needs, was the unknown at the
 first draft. That check has run.
 
 **Visemes are morph targets, and morph targets are data.** CLAUDE.md's
 deployment rule allows skin weights, animation samplers and morph
 targets in a glTF export and forbids runtime modifiers, drivers,
 constraints and custom extensions. A viseme-driven head is the allowed
-side of that line, which is not an accident — it is why the rule is
+side of that line, which is not an accident, it is why the rule is
 written that way.
 
 **The Space ships `model-en-mixed.bin` and two minified vendor
@@ -112,7 +112,7 @@ blendshapes; it carries 52 facial-action blendshapes covering the FACS
 action units, exposed in `3-interactor/anny/src/anny/models/facial_actions.py`
 under `FACIAL_ACTION_LABELS`. Verified against the on-disk target
 files at `3-interactor/anny/src/anny/data/faceunits01/targets/faceunits/*.target`.
-The 52 shapes are enough to render every viseme by weighted sum — mouth
+The 52 shapes are enough to render every viseme by weighted sum, mouth
 opening from `jawOpen`, lip rounding from `mouthPucker` + `mouthFunnel`,
 lip closure from `mouthClose` + the `mouthPress*` pair, and so on.
 
@@ -130,7 +130,7 @@ a companion self-test planting one typo per rule per rule 2.
 **The mapping's weight numbers are placeholders**, cited in the file's
 own `weight_sources` note as derived from Oculus Lipsync and Preston
 Blair public references. A real per-language measurement replaces them
-in a refinement — the mapping ships as documented-placeholder, not
+in a refinement, the mapping ships as documented-placeholder, not
 as-if-measured (rule 4 shape: a number without a baseline is not a
 measurement, so the file names its baseline as the pending refinement).
 
@@ -146,7 +146,7 @@ half the accelerator actually serves.
     no camera           Kimodo-SOMA, with a LoRA          wrapper unwired
 
 **Two motion sources, and the split is presence against authoring.**
-A camera in the room makes somebody present -- their movement is theirs,
+A camera in the room makes somebody present, their movement is theirs,
 in real time, which is what "people are present to each other" means and
 what mocap is for. Without a camera the motion has to be authored, and
 that is Kimodo's job. They are not fallbacks for one another.
@@ -162,7 +162,7 @@ That falls out of what has been measured rather than from a preference:
                          cost measured in the tail section below
 
 So the device carries the thing that must be low-latency and continuous
--- a body tracked every frame -- while the host carries the turn-taking
+-- a body tracked every frame, while the host carries the turn-taking
 speech, which is bursty and tolerates more delay. That is a better
 division than it would have been if chosen deliberately.
 
@@ -198,8 +198,8 @@ wrapper rather than a model.
 ## Can Mitsuba 3 render this in real time, and the answer is at a head
 
 Proposed as the renderer instead of Godot. The arithmetic comes from
-figures this workspace already measured -- 48.1 ns a pixel for the
-G-buffer and 14.1 for MToon shading -- so the answer is a multiplication
+figures this workspace already measured, 48.1 ns a pixel for the
+G-buffer and 14.1 for MToon shading, so the answer is a multiplication
 rather than an opinion:
 
     target          pixels      ms a frame    fps
@@ -253,7 +253,7 @@ from the same camera is the physical quantity.
 
 **The camera sequence is already settled**, which is what makes the
 comparison cheap. CLAUDE.md requires views from
-`sphere_hammersley_sequence` and gives the reason -- a hand-picked front
+`sphere_hammersley_sequence` and gives the reason, a hand-picked front
 view showed error of five stacked soda cans along the travel axis
 against three and a half across it. So the oracle renders that sequence,
 Godot renders the same sequence, and the diff is per-pixel per view with
@@ -264,7 +264,7 @@ will not match Mitsuba: MToon is a stylised shading model and the
 runtime is rasterised, so the two disagree by construction and the
 useful bound is not zero. What the oracle catches is a *change* --
 a rig edit, a material change or an export regression that moves the
-runtime away from where it was -- rather than absolute physical
+runtime away from where it was, rather than absolute physical
 agreement. Stating that first avoids the trap of building a gate whose
 only possible verdict is failure.
 

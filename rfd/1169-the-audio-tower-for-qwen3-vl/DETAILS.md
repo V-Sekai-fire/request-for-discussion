@@ -1,4 +1,4 @@
-# RFD 1169 details: the tower, the fork gap, and the half that has no path
+# RFD 1169 details: The audio tower for Qwen3-VL, and which half compiles
 
 ## Why this is the vision tower again
 
@@ -39,7 +39,7 @@ assuming it translates.
 **The input rank is the risk worth naming, and it looks survivable.**
 `_add_input_layers` refused Pixal3D four times because its inputs are a
 voxel grid and a timestep rather than anything image-shaped. A log-mel
-is 128 bins by a fixed frame count — a single-channel 2D array, which
+is 128 bins by a fixed frame count, a single-channel 2D array, which
 is exactly the shape the parser wants. This is the one place the audio
 path is structurally luckier than the 3D one.
 
@@ -50,7 +50,7 @@ path is structurally luckier than the 3D one.
 - refuses any `proj_type` but `PROJECTOR_TYPE_QWEN3VL`
 - sets `ctx->model.modality = CLIP_MODALITY_VISION` unconditionally
 - takes `max_image_edge`, `patch_size`, `spatial_merge_size`,
-  `image_mean[3]`, `image_std[3]` — every parameter image-shaped
+  `image_mean[3]`, `image_std[3]`, every parameter image-shaped
 
 Upstream `mtmd` is already more general than this. It carries
 `CLIP_MODALITY_AUDIO`, a `clip_graph_whisper_enc` builder,
@@ -127,7 +127,7 @@ says.
 
 That is a statement about what can be downloaded today, not a claim the
 model does not exist. If it lands, the argument for taking the newer
-projector stands -- a projector being retrained is a projector whose
+projector stands, a projector being retrained is a projector whose
 provenance is free to change.
 
 ## The better answer for ASR is a smaller model, not a bigger tower
@@ -139,13 +139,13 @@ recommendation:
 
     Qwen3-ASR-0.6B-hf            Apache-2.0   896, 18 layers   128
     Qwen3-ASR-1.7B-hf            Apache-2.0   1024, 24 layers  128
-    Qwen3-ForcedAligner-0.6B-hf  Apache-2.0   -                 -
+    Qwen3-ForcedAligner-0.6B-hf  Apache-2.0  ,                 -
 
 All three are ungated Apache-2.0 and take **128 mel bins**, exactly the
 front end this proposal specified.
 
 **The 1.7B is the one to take, and it fits.** Its parameter count is
-2.04 B whole -- 4.08 GB at bf16 and 2.04 GB at eight bits against the
+2.04 B whole, 4.08 GB at bf16 and 2.04 GB at eight bits against the
 device's 8 GB, so unlike almost every row in RFD 1166 it does not meet
 RFD 1128's four-bit question at all. Its encoder is 1024 wide over 24
 layers, against the 0.6B's 896 over 18, and its decoder is 2048 rather
@@ -186,7 +186,7 @@ So the two routes are not competing, they answer different questions:
     want                                   route
 
     transcription, alignment, captions     Qwen3-ASR-0.6B, standalone
-    audio inside the VLM's reasoning --    the AuT tower, a new
+    audio inside the VLM's reasoning,    the AuT tower, a new
     "what is the tone of this clip,        projector to 4096, and a
     given the image"                       LoRA on Qwen3-VL
 
@@ -199,7 +199,7 @@ find out with the first.
 **The licence is usable.** Qwen3-Omni-30B-A3B, in all three variants, is
 **Apache-2.0**. The Hugging Face API reports `license: other` while
 `license_name` and the card badge both say `apache-2.0`, which is
-metadata noise rather than a second licence -- worth recording because
+metadata noise rather than a second licence, worth recording because
 `other` is the value that should always be chased rather than assumed.
 
 **There is no standalone AuT checkpoint.** Only the three 30B-A3B
@@ -225,7 +225,7 @@ into 4096 has to be trained with a LoRA teaching Qwen3-VL to read it.
 
 **That is exactly EditScore's arrangement.** RFD 1157 records EditScore
 as a LoRA over Qwen3-VL holding 516 tensors, 12 of them at
-`deepstack_merger_list` -- the projector adaptation -- with the ViT left
+`deepstack_merger_list`, the projector adaptation, with the ViT left
 stock. An audio LoRA is the same object with an audio tower behind it,
 which is a reason to think the arrangement works and not a reason to
 think the training is free.
@@ -254,7 +254,7 @@ before a number is picked, and no such distribution has been collected.
 ## What to measure, cheapest first
 
 Following RFD 1168's ordering rule and the stratification argument in
-arXiv:2608.12875 — climb only as far as the answer requires:
+arXiv:2608.12875, climb only as far as the answer requires:
 
 1. **Export a stock Whisper-family encoder to ONNX at a fixed window**
    and run `gate_onnx_device.py` against it. No fork change, no device,

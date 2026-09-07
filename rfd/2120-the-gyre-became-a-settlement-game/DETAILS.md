@@ -1,3 +1,5 @@
+# RFD 2120 details: The gyre became a settlement game
+
 ## What changed, line by line
 
 |            | RFD 2085                          | `service-store`                                 |

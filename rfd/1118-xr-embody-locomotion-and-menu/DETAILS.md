@@ -1,4 +1,4 @@
-# RFD 1118 details: forbidden changes
+# RFD 1118 details: XR embody, view toggle, and Move stay input, not menu state
 
 Sourced from `xr-avatar-view-locomotion-protected.mdc`
 (user-locked 2026-07-26).

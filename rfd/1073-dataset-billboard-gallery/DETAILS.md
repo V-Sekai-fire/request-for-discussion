@@ -1,4 +1,4 @@
-# RFD 1073 details: the proof, verified locally, and what full scale needs
+# RFD 1073 details: A billboard gallery of the RFD 1064 dataset, in one USD stage
 
 ## What shipped, verified, not claimed
 
@@ -179,7 +179,7 @@ carries that same fix upstream. Until a fix lands upstream and a new
 published version picks it up, RFD 1076 carries the identical patch
 forward as a real `patch-package` patch,
 `apps/usd_viewer_app/patches/usd-viewer+0.0.0.patch`, applied by
-`npm ci`'s own `postinstall` — not the two hand-patched vendor
+`npm ci`'s own `postinstall`, not the two hand-patched vendor
 copies this session first shipped. A stated mirror of the real
 submitted fix either way, not an unexplained local hack.
 
@@ -241,7 +241,7 @@ per RFD 1076) still does not fetch from object storage at all. It
 holds the three verified proof files under `public/usd/`, baked
 into its own Docker image at build time and served as static files.
 Wiring that fetch path is still the next step, unchanged by RFD
-1076's own restructuring — only which app would hold that fetch
+1076's own restructuring, only which app would hold that fetch
 code changed, and RFD 1077 changes which storage it fetches from.
 
 ## The gallery's asset is still a stopgap, decided which shape replaces it
@@ -264,7 +264,7 @@ belongs. RFD 1077 changes that decision: Tigris, not `versitygw`.**
 `weftspun_studio`'s own Fly machine, per RFD 1058's zero-trust rule.
 `apps/usd_viewer_app/` is a separate Fly machine now, per RFD 1076,
 and cannot reach a loopback-bound port on a different machine at
-all — a real blocker `versitygw`'s own architecture creates, not
+all, a real blocker `versitygw`'s own architecture creates, not
 present before RFD 1076 split the two apps apart. Tigris, Fly's own
 managed, S3-compatible object storage, has no such constraint: any
 Fly app reaches it over its own public S3 endpoint

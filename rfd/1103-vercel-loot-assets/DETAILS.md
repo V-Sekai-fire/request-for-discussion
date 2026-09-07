@@ -1,4 +1,4 @@
-# RFD 1103 details: dashboard setup, URL layout, verification, and the alternative
+# RFD 1103 details: Loot assets from a CDN, not a full clone, on Vercel
 
 ## One-line setup, recommended
 

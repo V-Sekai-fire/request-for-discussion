@@ -1,4 +1,4 @@
-# RFD 1028 details: deleted and blocklisted models
+# RFD 1028 details: Model license gate
 
 ## Deleted models
 

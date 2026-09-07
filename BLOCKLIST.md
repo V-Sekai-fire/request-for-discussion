@@ -1122,7 +1122,7 @@ CycleGAN by junyanz, 11.4M params per direction) plays the photo-to-stylized rol
 AnimeGAN was chosen for. Pretrained `style_monet` and `style_ukiyoe` ship with it;
 `style_ukiyoe` is Japanese woodblock, adjacent to anime but not identical. Training a
 new photo-to-anime direction is tractable on the 3090 with an unpaired anime collection
-this workspace can source cleanly. The Sinew RFD 0036 packaging convention already
+this workspace can source cleanly. The Sinew RFD 2036 packaging convention already
 wraps it.
 
 **Why this row exists.** RFD 2183 (MaskScore-driven layer decomposition on OmniGen2)

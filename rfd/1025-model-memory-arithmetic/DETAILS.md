@@ -1,4 +1,4 @@
-# RFD 1025 details: the three costs above the weights
+# RFD 1025 details: Model memory arithmetic
 
 - The load transient. A loader that reads the file into host memory,
   and then copies to the device, holds two copies. A loader that maps

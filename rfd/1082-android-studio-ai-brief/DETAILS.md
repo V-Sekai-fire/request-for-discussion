@@ -1,4 +1,4 @@
-# RFD 1082 details: data flow, implementation status, constraints, and testing
+# RFD 1082 details: A companion APK relays face weights past Chrome's own gap
 
 ## End-to-end data flow
 

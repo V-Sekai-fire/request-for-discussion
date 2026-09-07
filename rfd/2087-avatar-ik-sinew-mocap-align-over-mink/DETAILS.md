@@ -1,3 +1,5 @@
+# RFD 2087 details: Avatar ik sinew mocap align over mink
+
 ## Context
 
 `sinew-mocap/solve` (FK + LBS skinning) was flagged as less trusted
@@ -21,14 +23,14 @@ solver. Each solve builds a full quadratic program:
 
 That QP is solved via `qpsolvers`, a separate general-purpose QP
 dispatch library backing onto solvers such as OSQP, quadprog, or
-proxqp — not something `mink` implements itself. `mink` also ships
+proxqp, not something `mink` implements itself. `mink` also ships
 its own C-optimized Lie group (SE3/SO3) module and roughly a dozen
 pluggable task/limit types (frame, COM, posture, look-at,
 collision-avoidance, velocity/configuration limits).
 
 A faithful port would need a vendored C QP solver (OSQP is the
 natural pick), plus `mink`'s QP-assembly loop, Lie group math, and at
-least the `FrameTask` case — a genuinely large, multi-session effort.
+least the `FrameTask` case, a genuinely large, multi-session effort.
 
 ## Revision 1 (superseded)
 
@@ -55,16 +57,16 @@ at all.
 against the exact same known-rotation-recovery test
 `core/spec/AlignTest.lean` itself uses (quaternion
 (0.5,0.5,0.5,0.5), the same five source vectors, the same N=5/N=2/N=1
-cases) — `test/unit/test_sinew_align.c` reproduces it and recovers
+cases), `test/unit/test_sinew_align.c` reproduces it and recovers
 the rotation to floating-point precision in all three cases. This is
-done, not deferred — smaller and more tractable than either Revision
+done, not deferred, smaller and more tractable than either Revision
 1's QP framing or the original mink-wholesale framing, because it is
 the algorithm this org already trusts and has proven, not a heavier
 one substituted in from outside.
 
 `mink` feature parity (limits, closed-chain constraints, the Lie
 group module, multi-task weighting) stays deferred, and is unrelated
-to `Align.lean`'s now-completed scope — it would only become relevant
+to `Align.lean`'s now-completed scope, it would only become relevant
 if a genuinely different, `mink`-shaped IK need arises later.
 
 ## Revision 3: MuJoCo dropped

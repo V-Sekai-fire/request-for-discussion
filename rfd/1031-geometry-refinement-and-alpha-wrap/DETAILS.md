@@ -1,4 +1,4 @@
-# RFD 1031 details: the alpha wrap, permissive options, blocklist
+# RFD 1031 details: Geometry refinement and alpha wrap
 
 ## What the alpha wrap does
 

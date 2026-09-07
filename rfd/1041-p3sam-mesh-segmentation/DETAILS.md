@@ -1,4 +1,4 @@
-# RFD 1041 details: the model, the interface, the output, the label reasoning
+# RFD 1041 details: Model image for p3sam_mesh_segmentation
 
 ## The model
 

@@ -1,4 +1,4 @@
-# RFD 2203 details: the row-shape tradeoff, the joint-count hook, and the RFD 1122 lineage
+# RFD 2203 details: The first-subset row shape for the anny-soma keypoint corpus
 
 ## The three row shapes and the axis they trade against
 
@@ -114,7 +114,7 @@ inverts the recipe, that is a revision to RFD 2196 rather than this one.
 To be settled with HERO in this RFD's review before the render begins: motion source (a walk
 cycle set from the pose library), camera policy count (how many `sphere_hammersley_sequence`
 views per pose), image resolution (256 × 256 is enough for the keypoints stub; higher costs
-storage), split shape (train/val, no test — the test set is the blinded holdout, never
+storage), split shape (train/val, no test, the test set is the blinded holdout, never
 generated from). None of these change the row shape decision; they change what the first
 subset's manifest records under motion source and sampler configuration.
 
@@ -138,8 +138,8 @@ The vertex-side hook landed via `interactor-kimodo-text-to-motion` PR #3 in
 vertices compared against SOMA-topology posed vertices interpolated via the barycentric map
 anny uses at build time (`point_to_mesh_distance_and_face_uvs` from `soma.py:97`). Filtered
 to the body-surface subset (rest distance to nearest SOMA_wrap triangle < 5 mm; 15,778 of
-19,158 verts kept) because the 3,380 non-body verts — interior mesh, hair, teeth, eye
-internals — sit too far from SOMA_wrap for barycentric interpolation to be meaningful and
+19,158 verts kept) because the 3,380 non-body verts, interior mesh, hair, teeth, eye
+internals, sit too far from SOMA_wrap for barycentric interpolation to be meaningful and
 would drive max/p99 without saying anything about pose correctness. `wholebody133.pth`'s
 anchors are body-surface points, so the check that matters is on the body-surface subset.
 

@@ -1,3 +1,5 @@
+# RFD 2024 details: Windows background services nssm
+
 ## Context and problem statement
 
 Several pieces of the workstation stack need to run as long-lived
@@ -14,7 +16,7 @@ The naive approaches all failed in practice. Starting these by hand in
 a terminal ties them to that shell. The compile cache made the problem
 concrete: sccache auto-starts a single machine-wide server on first
 use, and whichever project touches it first fixes its configuration
-(S3 key prefix, base dirs) for everyone — so a second project silently
+(S3 key prefix, base dirs) for everyone, so a second project silently
 inherits the wrong cache namespace. Worse, a configuration that lives
 only in a per-build environment forces a stop/start of the server on
 every build to apply it, which is slow and races ("Address in use").
@@ -33,7 +35,7 @@ interactive UAC prompt.
   clobbering each other's state (e.g. one cache server per project,
   several game/zone servers).
 - Secrets (object-store keys, DB credentials) must never be written
-  into a repo, a service definition, or the registry — only read at
+  into a repo, a service definition, or the registry, only read at
   runtime from their existing secured location.
 - The target programs are plain executables, not native Windows
   services, so they do not implement the Service Control Manager (SCM)
@@ -73,7 +75,7 @@ The pattern has four parts:
    servers (Godot `--headless`, `cockroach start`, zone daemons) are
    already foreground.
 2. A per-instance launcher script sets that instance's environment and
-   execs the program by absolute path — services run as LocalSystem,
+   execs the program by absolute path, services run as LocalSystem,
    whose `PATH` does not include user shims (e.g. scoop). Secrets are
    read at runtime from their existing secured file (for sccache, the
    object-store keys come from the `do-tor1` AWS profile in
@@ -94,7 +96,7 @@ The pattern has four parts:
    session. sccache additionally uses a distinct S3 key prefix per
    instance.
 
-### Worked example — the sccache services
+### Worked example: the sccache services
 
 Two services back two projects from the one shared object-store
 bucket, kept apart by port and key prefix:
@@ -107,7 +109,7 @@ bucket, kept apart by port and key prefix:
 4226 is sccache's default port, so the idtx-flow builds use that
 service with no changes; the Godot build sets `SCCACHE_SERVER_PORT=4227`.
 The build wrapper (`gscons`) therefore no longer manages the server at
-all — it sets one port variable and runs. This supersedes the earlier
+all, it sets one port variable and runs. This supersedes the earlier
 per-build environment juggling and server restarts described in
 `rfd/2017-compiling-godot-engine` and `rfd/2016-checking-sccache`.
 
@@ -131,13 +133,13 @@ services:
 
 ## Consequences
 
-- Good: real services — boot start, crash restart, and lifecycle owned
+- Good: real services, boot start, crash restart, and lifecycle owned
   by the SCM, not a terminal.
 - Good: many instances of one binary coexist cleanly (port/namespace
   per service).
 - Good: no secrets in the repo, the service config, or the registry;
   they stay in their existing secured files and are read at runtime.
-- Good: build/runtime wrappers shrink to "pick a port and run" — no
+- Good: build/runtime wrappers shrink to "pick a port and run", no
   server management, no restart races.
 - Bad: requires one-time elevation per install/change; with Force New
   Window sudo this is an interactive UAC prompt and the output must be
@@ -153,7 +155,7 @@ services:
 After install, both sccache services report `Running` with `Automatic`
 start, and `sccache --show-stats` on each port shows the expected S3
 backend (`s3, name: <bucket>`) with the correct per-project key prefix
-and base dirs — so isolation, credentials, and auto-start all hold. A
+and base dirs, so isolation, credentials, and auto-start all hold. A
 subsequent build connects on port 4227 and accumulates cache hits with
 zero cache errors.
 
@@ -164,7 +166,7 @@ zero cache errors.
   Verify a target stays in the foreground before wrapping it.
 - LocalSystem can read another user's secured files (e.g. the AWS
   credentials file), but `$HOME`/`%USERPROFILE%` resolve to the system
-  profile — always pass absolute paths to both the launcher and the
+  profile, always pass absolute paths to both the launcher and the
   secrets it reads.
 - Restart-on-crash plus a throttle/delay avoids a hot loop when a
   target is misconfigured; check the per-service stderr log to

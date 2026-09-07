@@ -1,4 +1,4 @@
-# RFD 1110 details: file map, context layers, workflows, and carried-over decisions
+# RFD 1110 details: RepoResident, a file-based operating harness for coding agents
 
 ## File map
 

@@ -1,4 +1,4 @@
-# RFD 1055 details: the local worker, the rented tier priced for later, the two phases, image shape, unresolved
+# RFD 1055 details: BEAM workers, local first
 
 ## What was considered, and when it applies
 

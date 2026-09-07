@@ -1,4 +1,4 @@
-# RFD 2161 details: cleanroom VN-avatar on the MaskScore stack
+# RFD 2161 details: Cleanroom Gemma-Avatar as a visual novel, on MaskScore
 
 ## Retractions from the 2026-09-01 compute ladder
 

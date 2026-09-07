@@ -1,4 +1,4 @@
-# RFD 1173 details: a multimodal avatar pipeline
+# RFD 1173 details: A multimodal avatar pipeline
 
 This RFD was drafted by an AI and read by a human before it shipped.
 
@@ -79,7 +79,7 @@ cross-modal ground truth: synchronized visual (768×512) and audio at
 nine camera angles. The ANNY canonical rig fitted to video frames
 recovers keypoints and SOMA bone poses (77 rotation vectors as Kimodo
 emits them, plus root translation and a root identity anny prepends at
-index 0 to reach the 78 pose parameters anny takes at call time — both
+index 0 to reach the 78 pose parameters anny takes at call time, both
 counts true at different levels of the stack, per
 anny/test/test_soma.py:242-283 and task #76's back-port; the fitted
 poses are directly consumable by any downstream that accepts Kimodo
@@ -110,11 +110,11 @@ The four-stage loop:
 
 Gemma-4-12B Q4_0 (~7 GB) is Google's own QAT release. On the 3090's
 24 GiB, Gemma-4-12B Q4_0 + Wan-VACE NF4 co-resident totals ~15.7
-GiB -- comfortable, no workspace-side quantization required.
+GiB, comfortable, no workspace-side quantization required.
 
 An earlier draft named Qwen3-VL-4B (fp16 ~8.9 GB) as the VLM; the
 Qwen3-VL-8B fp16 fallback (~16 GB) was also on the shortlist. Both
-retracted per RFD 2169. The reason is not tier -- Qwen3-VL fits --
+retracted per RFD 2169. The reason is not tier, Qwen3-VL fits --
 it is that Gemma-4-12B has a true upstream QAFT release and Qwen
 does not, and the workspace standardized on QAFT-first (RFD 1027).
 

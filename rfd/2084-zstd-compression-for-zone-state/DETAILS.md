@@ -1,3 +1,5 @@
+# RFD 2084 details: Zstd compression for zone state
+
 ## Rationale
 
 mas-bandwidth/fps assumes 10x bandwidth reduction via delta compression
@@ -21,12 +23,12 @@ that complements delta compression:
 
 | Value type                | Size         | Compress? | Level | Expected ratio            |
 | ------------------------- | ------------ | --------- | ----- | ------------------------- |
-| entity_t (single)         | ~40 bytes    | No        | —     | 1.0x (overhead > savings) |
+| entity_t (single)         | ~40 bytes    | No        |,     | 1.0x (overhead > savings) |
 | entity batch (200)        | ~8KB         | Yes       | 3     | 2-3x                      |
 | zone snapshot             | ~8-16KB      | Yes       | 3     | 2-3x                      |
 | asset blob                | ~5MB         | Yes       | 19    | 3-5x                      |
-| TPC-C row (packed struct) | 50-500 bytes | No        | —     | 1.0x                      |
-| World table row           | ~10 bytes    | No        | —     | 1.0x                      |
+| TPC-C row (packed struct) | 50-500 bytes | No        |,     | 1.0x                      |
+| World table row           | ~10 bytes    | No        |,     | 1.0x                      |
 
 Threshold: compress values ≥ 512 bytes. Below that, the 4-byte zstd
 frame header + compression CPU cost exceeds the savings.
@@ -64,7 +66,7 @@ bool zf_is_compressed(const void *data, size_t size);
 ```
 
 The magic number check lets the reader handle both compressed and
-uncompressed values transparently — old uncompressed values still read
+uncompressed values transparently, old uncompressed values still read
 correctly after compression is deployed.
 
 ## FDB value framing
@@ -85,7 +87,7 @@ compatible: the flags byte is 0x00 for uncompressed, which existing
 readers interpret as the first byte of the struct (safe because all
 packed structs start with a non-zero field like an ID).
 
-Wait — backward compatibility is not safe if struct's first byte can
+Wait, backward compatibility is not safe if struct's first byte can
 be 0x00. Alternative: use the zstd magic number (0x28B52FFD) as the
 discriminator instead of a flags byte. Readers check the first 4
 bytes:
@@ -153,7 +155,7 @@ For assetcdn:
 ## Relationship to mas-bandwidth/fps
 
 Glenn Fiedler assumes delta compression (10x) for snapshot delivery.
-zstd is orthogonal — it compresses the current state, not the delta.
+zstd is orthogonal, it compresses the current state, not the delta.
 The two compose:
 
 ```

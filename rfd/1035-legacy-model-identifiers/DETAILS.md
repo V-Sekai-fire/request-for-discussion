@@ -1,4 +1,4 @@
-# RFD 1035 details: the identifier table and the two rules that stay
+# RFD 1035 details: Legacy model identifiers
 
 ## The identifiers
 

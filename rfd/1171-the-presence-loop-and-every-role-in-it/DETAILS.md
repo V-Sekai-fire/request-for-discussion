@@ -1,4 +1,4 @@
-# RFD 1171 details: every role, what fills it, and the five that are empty
+# RFD 1171 details: The presence loop, and every role in it
 
 ## Every movement runs both ways, and the inverses are the hard half
 
@@ -37,7 +37,7 @@ the risk sits should read the right-hand column.
 
 The inverse of `dress` takes the body back out from under a garment. It
 is named for what it produces, and naming it after the clothing would
-lose that -- the operation exists to obtain a body model, and the
+lose that, the operation exists to obtain a body model, and the
 garment is what stands in the way.
 
 It is also the subtraction already recorded here, read backwards: the
@@ -178,15 +178,15 @@ providing has to come from a model instead.
     supplied by a person       supplied by a model
 
     body motion, a webcam      Kimodo
-    what is in the room, the   nothing -- the friend sees only what it
+    what is in the room, the   nothing, the friend sees only what it
     same webcam                is shown
     speech, a microphone       Qwen3-VL and Qwen3-TTS
     intent                     the persona's manner
 
 ## The webcam is not only a motion source, and each head is its own compile
 
-rf-detr covers three camera tasks -- **keypoints, segmentation and
-object detection** -- so the camera is an input to every movement and
+rf-detr covers three camera tasks, **keypoints, segmentation and
+object detection**, so the camera is an input to every movement and
 not just to `be it`.
 
 **AN EARLIER REVISION SAID ONE HEF SERVES ALL THREE. THAT WAS WRONG.**
@@ -250,7 +250,7 @@ is an **outline**, and an outline is one representation:
     the body        the posed mesh, projected
 
 **The last row is not a model.** Once a pose is fitted, the body outline
-is a render of geometry already held -- deterministic, exact, no
+is a render of geometry already held, deterministic, exact, no
 checkpoint, no calibration set and no rung to climb. Everything above it
 is an inference and that one is arithmetic.
 
@@ -266,7 +266,7 @@ workspace's currency for asking whether a body matches a pose.
 **The garment is then the difference, and that is the useful part.** The
 mesh silhouette is the body. What lies outside it and still belongs to
 the person is worn. A skirt, a coat and a hat all extend past the body
-outline, and that overhang is the garment boundary -- derived from
+outline, and that overhang is the garment boundary, derived from
 geometry rather than learned from labels, which is the corpus problem
 RFD 1168 could not solve any other way.
 
@@ -278,7 +278,7 @@ between that body and the picture.
 
 The body contour comes from the mesh. The person's outer edge has to
 come from the image, and **MoGe answers that without a segmenter and
-without a taxonomy** -- a depth step separates a person from the wall
+without a taxonomy**, a depth step separates a person from the wall
 behind them, and no labelled corpus is involved. That is the blocker
 RFD 1168 could not get past, sidestepped rather than solved.
 
@@ -298,7 +298,7 @@ a 3x3 alongside the point map, recovered from the picture by
 **Without that third row the first is guesswork.** A projected
 silhouette is only as good as the camera it is projected through, and a
 wrong focal length yields a body outline of the wrong size in the right
-place -- which subtracts into a garment boundary that is wrong
+place, which subtracts into a garment boundary that is wrong
 everywhere and looks plausible. One model closing both gaps is worth
 more than the depth alone.
 
@@ -310,7 +310,7 @@ different use, and the caveat does not travel.
 
 MoGe is MIT and already at rung 2 here: 885 nodes, 26 operators, with
 `Mod x4` outside `DEVICE_OPS` and unexplained. Nothing in this section
-needs it compiled -- it runs on the host beside the fit.
+needs it compiled, it runs on the host beside the fit.
 
 ## `contour.py`, which is the first piece of this actually built
 
@@ -350,7 +350,7 @@ not move" is a temporal statement, and a single frame cannot make it.
 
 **An illustration has one view and there is no second one to take.** A
 drawing is not a scene anybody can walk around. For that input,
-multi-view has to be *generated* -- which is TRELLIS.2 or Pixal3D --
+multi-view has to be *generated*, which is TRELLIS.2 or Pixal3D --
 and then verified back against what conditioned it, exactly the control
 rule CLAUDE.md states for poses.
 
@@ -380,7 +380,7 @@ are Apache-2.0 in as many words.
 
 **And it is the right shape.** Streaming feed-forward reconstruction
 from video or an image sequence, emitting camera poses, metric scale and
-dense point clouds -- roughly 20 fps at 518 by 378, over sequences past
+dense point clouds, roughly 20 fps at 518 by 378, over sequences past
 ten thousand frames.
 
     what the loop needs        MoGe            LingBot-Map
@@ -396,7 +396,7 @@ supply. Forked to `weftspun/lingbot-map` and pinned at `1740f18` in the
 manifest at `3-interactor/lingbot-map-upstream`.
 
 MoGe is not displaced. It keeps the single-image case, where no sequence
-exists and no map can be built -- which is every illustration.
+exists and no map can be built, which is every illustration.
 
 ## `depth_term.py` is written against Marigold, which is now blocked
 
@@ -412,7 +412,7 @@ stale is the reasoning, and it is stale in a way that matters.
 
 **Why depth is the right third opinion is measured, not asserted.** The
 silhouette scores 0.849 on a depth-plus-scale change, which is exactly
-its own self-IoU floor -- perfectly blind. That is the strongest
+its own self-IoU floor, perfectly blind. That is the strongest
 independence argument anywhere in this workspace:
 
     LBFGS vertex   sees 3D with correspondence  blind to whether the
@@ -453,7 +453,7 @@ re-derived it.
 `(a, b)` alignment inside the objective because Marigold was
 affine-invariant. Against a metric source that alignment is optional,
 and leaving it on will absorb genuine scale error instead of reporting
-it -- blinding the term to the axis metric depth was bought for.
+it, blinding the term to the axis metric depth was bought for.
 
 ## The trio re-derived for metric depth
 
@@ -473,7 +473,7 @@ now are:
 
 **What improved is not the depth term, it is where absolute scale comes
 from.** Under affine depth, scale was visible to exactly one term --
-the LBFGS vertex fit -- and only when its correspondence was right. The
+the LBFGS vertex fit, and only when its correspondence was right. The
 one quantity nothing else could see was sourced through the least
 trustworthy path in the system. Metric depth sees scale with no
 correspondence at all, so scale moves from single-sourced-through-the-
@@ -486,7 +486,7 @@ silhouette from behind constrains the back that a front depth map
 cannot.
 
 **The overlap with the silhouette is not redundancy.** Both now
-constrain build, which is what the silhouette was introduced for -- ANNY
+constrain build, which is what the silhouette was introduced for, ANNY
 carries 11 phenotype parameters and no keypoint touches them. They
 constrain it differently: a body correct in outline but too thick
 front-to-back moves the depth field and not the silhouette, and a body
@@ -497,7 +497,7 @@ of right thickness and wrong width moves both.
     left on         the residual is scale-invariant, so the term cannot
                     see the one thing metric depth was taken for
     turned off      the term reports scale, and MoGe's own metric bias
-                    becomes a fitting force -- a five per cent under-read
+                    becomes a fitting force, a five per cent under-read
                     shrinks the body five per cent
 
 Both are wrong, and the reason they are both wrong is that **one scalar
@@ -517,7 +517,7 @@ failure, which is the precedent for handling this one the same way.
 **What is still unmeasured, and the number that decides the weight**:
 nobody has measured MoGe-3's metric accuracy against a rendered depth
 buffer of known geometry. Until that exists, any weight on a scale term
-is a guess -- and RFD 1170's rendered walk is exactly the apparatus that
+is a guess, and RFD 1170's rendered walk is exactly the apparatus that
 would produce it, since a Mitsuba render has known depth by construction.
 
 ## LingBot-Depth was checked and is not a candidate
@@ -554,7 +554,7 @@ perfectly blind:
 
 Marigold is Stable-Diffusion-derived. rf-detr's backbone and MoGe are
 both DINOv2 descendants. **A second opinion is worth having only if it
-fails differently** -- `silhouette.py`'s own stated test -- and two
+fails differently**, `silhouette.py`'s own stated test, and two
 models from one lineage can fail together where an SD model and a DETR
 could not.
 
@@ -576,7 +576,7 @@ above lists depth as blind to absolute scale, which held for Marigold
 and MoGe-1 and does not hold for MoGe-2 or MoGe-3. The trio may still
 cover and nobody has re-derived it. And `align_affine` solves an
 `(a, b)` alignment inside the objective because Marigold was
-affine-invariant -- against a metric source that is optional, and
+affine-invariant, against a metric source that is optional, and
 leaving it on absorbs genuine scale error instead of reporting it,
 blinding the term to the axis metric depth was bought for.
 
@@ -664,7 +664,7 @@ not to claim the number transfers to a webcam in a room.
 
 RFDs 1051 and 1052 abandoned WorldMirror 2.0 and TripoSplat when RFD
 1064 turned toward character concepts and away from scene
-reconstruction. **That reason has inverted** -- the presence loop makes
+reconstruction. **That reason has inverted**, the presence loop makes
 scene reconstruction a character tool, because the static scene is what
 a moving person is separated from. So the abandonment was revisited.
 
@@ -719,7 +719,7 @@ to weigh rather than a free upgrade.
 **The licence needs care, and in an unusual direction.** The code is BSD
 2-Clause, which is clean. The weights on `JUGGHM/Metric3D` state no
 licence at all. The ONNX re-exports at `onnx-community/metric3d-vit-*`
-declare **CC0-1.0** -- a third party dedicating to the public domain
+declare **CC0-1.0**, a third party dedicating to the public domain
 weights whose author granted nothing. That is the See-Through problem
 inverted: there a downstream party could not relicense restrictions
 away, and here a downstream party cannot grant rights it was never
@@ -781,7 +781,7 @@ which is the whole of what a detection checkpoint would add.
 
 **Dropping detection therefore costs nothing rather than costing
 accuracy**, which is a better position than the kludge argument
-reached. The kludge -- deriving a coarse box from joints -- stays
+reached. The kludge, deriving a coarse box from joints, stays
 available for the case where only the keypoint model is compiled, and
 it is a fallback rather than the plan.
 
@@ -793,7 +793,7 @@ webcam is a boundary from the real world.
 
 **The order is settled by what is already measured.** The keypoint
 model is at rung 3 and a seg checkpoint has never been exported here,
-so the second compile waits on the first reaching rung 5 -- and on a
+so the second compile waits on the first reaching rung 5, and on a
 card that can run QAFT.
 
 ## Express the surviving two as keypoints, because keypoints are fixed-shape
@@ -861,7 +861,7 @@ Compiler has accepted, and it is the one that must run every frame with
 low latency. Everything with a voice in it is autoregressive and cannot
 compile. So the device took the body and the host took the speech
 because that is what the graphs allow, and it happens to be the right
-split — continuous tracking on the accelerator, bursty turn-taking on
+split, continuous tracking on the accelerator, bursty turn-taking on
 the host, which tolerates delay.
 
 ## The five stages with no model
@@ -876,13 +876,13 @@ Naming these is most of the value of reorganising the document.
    that corrupt-clean render pairs would generate the corpus.
 3. **Audio to visemes.** RFD 1170 found the Space ships this as two
    minified vendor modules and a `.bin` with no stated licence, so it
-   is the part to replace rather than reuse — and whether ANNY even
+   is the part to replace rather than reuse, and whether ANNY even
    carries viseme morph targets is unchecked.
 4. **A garment representation.** Every row above treats a garment as
    pixels or voxels. Nothing here says what a `topwear` *is* as a
    shippable asset, and glTF's pure-data rule constrains the answer.
 5. **A persona.** `make a friend` needs the character to have a manner
-   -- what it knows, how it speaks, what it will not say -- and nothing
+   – what it knows, how it speaks, what it will not say -- and nothing
    in this workspace holds one. A system prompt is the cheap version
    and a LoRA over Qwen3-VL is the durable one, which is EditScore's
    arrangement pointed at personality instead of judgement.

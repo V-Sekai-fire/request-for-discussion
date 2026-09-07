@@ -1,4 +1,4 @@
-# RFD 1030 details: the component table, runtimes, formats
+# RFD 1030 details: See-Through component models
 
 ## The components
 

@@ -1,4 +1,4 @@
-# RFD 1042 details: the model, the interface, the disk trap
+# RFD 1042 details: Model image for krea2_turbo_text_to_image
 
 ## The model
 

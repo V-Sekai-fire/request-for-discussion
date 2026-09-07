@@ -1,4 +1,4 @@
-# RFD 1083 details: coordinate system, requirements, failure codes, and the Blender path
+# RFD 1083 details: The API avatar rig export contract
 
 ## Coordinate system (glTF / three.js)
 
@@ -29,10 +29,10 @@ convert to and from this contract.
 | `character_upside_down`       | yes                  | fails                                              |
 | `character_facing_backwards`  | yes                  | fails                                              |
 | `missing_skinned_mesh`        | yes                  | fails                                              |
-| `insufficient_joints`         | yes, under 40 joints | —                                                  |
+| `insufficient_joints`         | yes, under 40 joints |,                                                  |
 | `mesh_bone_vertical_mismatch` | no, advisory         | fails                                              |
 | `hips_not_at_mesh_torso`      | no, advisory         | fails                                              |
-| `api_validation_failed`       | —                    | fails, when `rig_info.validation.passed === false` |
+| `api_validation_failed`       |,                    | fails, when `rig_info.validation.passed === false` |
 
 Client-only structural codes: `no_model_root`, `empty_mesh_bounds`,
 `empty_bone_bounds`, `missing_hips_bone`, `no_bones_in_glb`,

@@ -1,4 +1,4 @@
-# Details
+# RFD 2012 details: Amend pr before it enters the queue
 
 ## Context and Problem Statement
 

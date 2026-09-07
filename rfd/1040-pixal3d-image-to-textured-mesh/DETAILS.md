@@ -1,4 +1,4 @@
-# RFD 1040 details: the Docker test, measurement, format, interface, downloads
+# RFD 1040 details: Model image for pixal3d_image_to_textured_mesh
 
 ## Tested in Docker
 

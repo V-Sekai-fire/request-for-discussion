@@ -1,3 +1,5 @@
+# RFD 2036 details: Forward renderer baked light
+
 ## Context and problem statement
 
 The mobile tile renderer rations bandwidth across file, memory, and

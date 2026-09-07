@@ -1,3 +1,5 @@
+# RFD 2110 details: H2o libriscv as a rivet actor
+
 ## The child contract
 
 | Item             | Value                                                        |
@@ -45,7 +47,7 @@ Four optional fields, CBOR-encoded per the RivetKit convention:
 | `port`    | `Option<u16>`            | The child's local port, also exported as `PORT` |
 
 Anything omitted falls back to the CLI template, which is
-`rivet-container-runner -- <command...>`. An omitted `port` falls back to
+`rivet-container-runner, <command...>`. An omitted `port` falls back to
 the runner's `--child-port`.
 
 Two properties matter for a zone. The decoded input is also the actor's

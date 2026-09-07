@@ -1,5 +1,4 @@
 # RFD 2148: GRAFCET as taskweft's authoring surface
-
 **State:** prediscussion
 **Feature:** taskweft domains authored as compact IEC 60848 GRAFCET,
 lowered to HTN at load, driven over `2-contract/bus`
@@ -20,10 +19,7 @@ parameter dispatch and method decomposition without leaving the
 standard. `DETAILS.md` carries the mapping table, the loss ledger,
 the transport, the persona rate contract, and the verification.
 
-The reference implementation and proof is
-`3-interactor/taskweft-nmm-personas`: three GRAFCET personas play a
-128-agent Neural MMO 2 episode over `2-contract/bus` with CBOR+zstd
-on the wire, effective persona rate 26 Hz against a 10 Hz floor.
+`DETAILS.md` carries the full text of this RFD.
 
 ## Problem
 
@@ -38,5 +34,7 @@ hazards follow: the file drifts against itself, and no gate reads it.
 1. `3-interactor/taskweft/lib/taskweft/grafcet.ex`; lower and raise
 2. `3-interactor/taskweft-nmm-personas/`; reference implementation
 3. RFD 1065, 2093, RFD 1173 MASKSCORE.md, Project-AGRAFE
+
+This RFD was drafted by an AI and read by a human before it shipped.
 
 This RFD was drafted by an AI and read by a human before it shipped.

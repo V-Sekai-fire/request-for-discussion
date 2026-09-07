@@ -1,4 +1,4 @@
-# Details
+# RFD 2009 details: Ghcr package ownership same repo
 
 ## Context
 

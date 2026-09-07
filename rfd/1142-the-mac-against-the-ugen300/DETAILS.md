@@ -1,4 +1,4 @@
-# RFD 1142 details: what the Neural Engine reaches, and what it holds
+# RFD 1142 details: The Mac against the UGen300
 
 Every number here is from `scripts/ane_bench.py` on one machine: Apple M2 Pro,
 32 GiB unified, 16-core ANE, macOS 26.5.2, coremltools 9.0. A timing without the
@@ -14,7 +14,7 @@ placement. So the number is consistent with two opposite worlds and selects neit
 
 `MLComputePlan` answers it per operation. Two details cost time to find:
 
-- It requires a **compiled** model. Handed an `.mlpackage` it does not raise — it
+- It requires a **compiled** model. Handed an `.mlpackage` it does not raise, it
   aborts the process with an `ios_base::failure` from libc++. The compile step is
   inside `placement()` so no caller can meet that.
 - Constants carry no device and are **excluded from the denominator**. A graph is
@@ -61,14 +61,14 @@ round number inside it.
 RETRACTED, IN THE SAME SESSION THAT WROTE IT: "the Neural Engine has no model-size
 ceiling worth planning around. It has a layer-width ceiling." The second sentence
 stands. The first was an artifact of stopping the sweep at 1.7 GiB, and the paragraph
-is kept because the error is instructive — a shape control disproved a total-size limit
+is kept because the error is instructive, a shape control disproved a total-size limit
 and was then read as proving no total-size limit existed. It disproved one number, not
 the category.
 
 ### The total ceiling is 2 GiB, and it is exactly 2^31 bytes
 
-Continuing the sweep with a deep, narrow stack — every tensor 55.6 MiB, far under the
-per-tensor cap — finds the second limit:
+Continuing the sweep with a deep, narrow stack, every tensor 55.6 MiB, far under the
+per-tensor cap, finds the second limit:
 
     depth  width   weights MiB   ops   ANE fraction
     36     1800    1946.8         72   1.000
@@ -94,13 +94,13 @@ the GPU together, rather than the graph splitting across the two.
 Bryngelson's *Apple Neural Engine: Architecture, Programming, and Performance*
 (arXiv 2606.22283) documents a per-axis extent cap of 16384 on the M1 generation,
 "applied per-axis rather than to the last axis alone". The weights measured above are
-`[3648, 3648, 3, 3]` — every axis is an order of magnitude inside that cap. So the
+`[3648, 3648, 3, 3]`, every axis is an order of magnitude inside that cap. So the
 boundary found here is **not** the documented one, and searching turned up the reason:
 Apple does not publish the internal buffer limits. This bracket is measured, not cited.
 
 ## Throughput, and a cliff that is not the ceiling
 
-Convolution stacks at 3x3 stride-1, FLOPs counted as `2 * MACs` — `gpu_tops.py`'s
+Convolution stacks at 3x3 stride-1, FLOPs counted as `2 * MACs`, `gpu_tops.py`'s
 convention, so the numbers compose with the GPU rows already in the plan.
 
     width   GMAC/inf   ms med    TFLOP/s   of 15.8 peak   ANE fraction
@@ -116,7 +116,7 @@ convention, so the numbers compose with the GPU rows already in the plan.
 operation on the device.
 
 The last row matters more than the best one. At width 2048 the rate halves while
-placement stays at 1.000 — the work is still on the Neural Engine and is running at
+placement stays at 1.000, the work is still on the Neural Engine and is running at
 half speed. Its weights are 72 MiB per tensor, well inside the 224 MiB cap, so this is
 a bandwidth or residency effect and not the ceiling above. **Throughput degrades before
 placement does**, which means a placement check alone is not a health check, and a
@@ -134,7 +134,7 @@ running the same work. `--units gpu` confines the identical convolution stack to
     1024    1082.78    311.664     6.948   {'gpu': 16}
     1536    2435.93    719.915     6.767   {'gpu': 16}
 
-**6.98 TFLOP/s against the Neural Engine's 13.58 on the same graph — 1.95x.** This also
+**6.98 TFLOP/s against the Neural Engine's 13.58 on the same graph, 1.95x.** This also
 corroborates `gpu_tops.py`'s 6.20 TFLOP/s fp16 for this desk from dense GEMM, measured
 by a different route on a different shape.
 
@@ -209,7 +209,7 @@ scalar or a (1 x 1 x ... x 1) tensor", then its constant branch calls `dtype(x.v
 without the squeeze its non-constant branch applies. `int(np.array([48]))` raises. The
 device half hits it at `encoder/encoder/embeddings/68`, where transformers' Dinov2
 `interpolate_pos_encoding` computes `sqrt_num_positions` as shape (1,). Identical at
-torch 2.11.0 and at the tested 2.7.1, so the version warning was a red herring — which
+torch 2.11.0 and at the tested 2.7.1, so the version warning was a red herring, which
 is why `rf-detr-cpp` gained a `coreml` feature pinning the tested torch rather than
 repinning the shared `gate`.
 

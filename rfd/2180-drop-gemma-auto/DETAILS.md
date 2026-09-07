@@ -1,4 +1,4 @@
-# RFD 2180 details: the fix, the measurement, and why the drop still holds
+# RFD 2180 details: Drop the gemma-auto ASR track (bug fixed, drop confirmed)
 
 ## The bug
 
@@ -71,8 +71,8 @@ outcome at 0.000 for free.
   Voxtral       0.000 mean WER, sub-second per clip on MPS
   Parakeet      0.501 mean WER, sub-second, CC-BY-4.0 canonical
   wav2vec2      0.571 mean WER, sub-second, Apache-2.0 alternate
-  Whisper       0.339 mean WER, several seconds -- dropped (RFD 2179)
-  Gemma-auto    0.690 mean WER, several seconds -- drop here
+  Whisper       0.339 mean WER, several seconds, dropped (RFD 2179)
+  Gemma-auto    0.690 mean WER, several seconds, drop here
 
 Gemma-auto's quality is worst-in-panel and its latency matches the
 already-dropped Whisper family. Keeping it needs a WHY that isn't

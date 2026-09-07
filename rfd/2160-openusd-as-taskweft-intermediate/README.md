@@ -1,5 +1,4 @@
 # RFD 2160: OpenUSD `.usda` as taskweft's intermediate
-
 **State:** prediscussion
 **Feature:** one bidirectional intermediate that carries the source
 FBD, every derived artefact (`.gd`, Udon asm, `.elf`, `.uasset`),
@@ -14,17 +13,7 @@ zip/gz blocklisted). USD gives hierarchical Prims, typed attributes,
 references + layer composition (native bidirectional shape), and
 asset refs for binary payloads.
 
-Prim shape per plan: `/Plan/{Domain, Problem, Network, Deliveries,
-Provenance}`. Under `/Deliveries`, two platforms only:
-1. **Godot**: `ElfCpp` / `ElfRust` (asset refs, RFD 2159 cross-check)
-2. **VRChat**: `UdonAsm` (inline Udon assembly)
-Plus `PLCopenXML` (inline XML, source of truth) and optional
-`GDScript` (inline `.gd`). `/Provenance`: emitter versions, hashes,
-timestamps.
-
-RFD 2159's differential reads `ElfCpp` and `ElfRust` and diffs.
-RFD 2153 writes `UdonAsm`. RFD 2154 loads `ElfCpp`. All emitters
-become USD writers; all consumers USD readers.
+`DETAILS.md` carries the full text of this RFD.
 
 ## Problem
 
@@ -37,5 +26,7 @@ the input FBD so a checker cross-verifies.
 
 1. CLAUDE.md archive-format rule + blocklist
 2. RFDs 2150, 2148, 2149, 2150, 2152, 2154
+
+This RFD was drafted by an AI and read by a human before it shipped.
 
 This RFD was drafted by an AI and read by a human before it shipped.

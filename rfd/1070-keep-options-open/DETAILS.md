@@ -1,4 +1,4 @@
-# RFD 1070 details: the RFDs this rule removed
+# RFD 1070 details: Keep options open
 
 ## What each one was
 

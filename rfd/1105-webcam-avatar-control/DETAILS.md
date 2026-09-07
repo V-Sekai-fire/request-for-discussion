@@ -1,4 +1,4 @@
-# RFD 1105 details: features, usage, the Android XR path, and remote logging
+# RFD 1105 details: Webcam avatar control, off during WebXR
 
 ## Stack and features
 

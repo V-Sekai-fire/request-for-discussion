@@ -1,4 +1,4 @@
-# RFD 1168 details: what already exists, and the two things that bound it
+# RFD 1168 details: Segment the 3D latent with rf-detr, and treat masking as corruption
 
 ## The three pieces, and where each is
 
@@ -22,7 +22,7 @@ instead is the same call with a different tensor, and the uv it samples
 at is computed from the camera the renderer already used.
 
 **The segmenter is the one model at rung 3.** RFD 1167 records rf-detr
-as the only candidate the Dataflow Compiler has accepted -- 825 nodes,
+as the only candidate the Dataflow Compiler has accepted, 825 nodes,
 22 operators, nothing outside `DEVICE_OPS`. A segmentation head is small
 beside the backbone it sits on, so the device half already measured is
 most of this.
@@ -32,7 +32,7 @@ most of this.
 The layer names that matter are depth relations wearing appearance
 names. `front hair` and `back hair` are not two textures, they are the
 same material on either side of the head, and **a rendered view is
-exactly where that distinction is destroyed** -- from the front, one
+exactly where that distinction is destroyed**, from the front, one
 occludes the other and the pixels do not say which is which.
 
 This is the same fact CLAUDE.md states from the other side when it says
@@ -49,7 +49,7 @@ that are genuinely appearance rather than depth.
 
 Segmentation alone does not produce layers. It produces regions of a
 surface, and a layer that stops where another one covered it is not a
-layer -- it is a silhouette with a bite taken out. `back hair` has to
+layer, it is a silhouette with a bite taken out. `back hair` has to
 come out whole or it cannot be posed, restyled or painted on.
 
 **So cut the occluder and call the hole corruption.** Remove `front
@@ -64,7 +64,7 @@ hole, and the inpainter fills it.
 `annotators/lama_inpainter` loads `lama_large_512px.ckpt` from
 `dreMaz/AnimeMangaInpainting`, which is **MIT**, over upstream LaMa code
 which is **Apache-2.0**. Unlike every See-Through checkpoint RFD 1166
-blocklists, this one carries a real grant -- so the useful part of that
+blocklists, this one carries a real grant, so the useful part of that
 project survives its licensing twice over, once as the taxonomy and once
 as this.
 
@@ -76,12 +76,12 @@ into the role.
 **And it will not compile for the accelerator.** LaMa is built on Fast
 Fourier Convolutions: `ffc.py` calls `torch.fft.rfftn`, and no Fourier
 operator appears anywhere in `DEVICE_OPS`. RFD 1131 names the refused
-families and this is a new one -- not data-dependent indexing, simply
+families and this is a new one, not data-dependent indexing, simply
 absent from the allowlist. LaMa runs on the host or it does not run.
 
 **CycleGAN is the opposite trade.** It is a ResNet-9block generator,
 plain convolution throughout, which is why RFD 1166 scores it 95 on
-`shape` -- second only to rf-detr. It would compile. But it is an
+`shape`, second only to rf-detr. It would compile. But it is an
 unpaired translation model rather than an inpainter, so using it here
 means training it for hole-filling, and the corruption pairs below are
 exactly the supervision that would take.
@@ -108,7 +108,7 @@ for this taxonomy. Corruption pairs do not have that problem:
 
 Both frames come from the same rig, the same seed and the same camera
 sequence, so the pair is exact and the label is true by construction. No
-annotator, no inference, and no generated data -- this is the
+annotator, no inference, and no generated data, this is the
 constructed synthetic CLAUDE.md admits as ordinary training data, with
 `syn_data.py`'s Live2D renders as the reference case.
 
@@ -147,8 +147,8 @@ is on hand:
 
 The sparse structure stage emits a voxel grid, and the taxonomy's finest
 parts are far below it. `irides`, `eyewhite`, `eyelash` and `eyebrow`
-are millimetres on a face -- about a credit card's thickness, 0.76 mm,
-for a lash -- and no voxel in a structure latent is that small.
+are millimetres on a face, about a credit card's thickness, 0.76 mm,
+for a lash, and no voxel in a structure latent is that small.
 
 So the reachable label set is the coarse half: `front hair`,
 `back hair`, `headwear`, `topwear`, `bottomwear`, `legwear`, `footwear`,
@@ -182,7 +182,7 @@ where they actually lead rather than tie.
 That distinction is the useful import here, and it is sharper than the
 laddering this document was already doing. A ladder asks how far up to
 climb. Stratification asks whether the expensive rung is better *at this
-task* or only in aggregate -- and a 0.4-point aggregate gap at 1431x the
+task* or only in aggregate, and a 0.4-point aggregate gap at 1431x the
 cost means the aggregate was hiding the answer.
 
 Applied to each choice below:
@@ -193,13 +193,13 @@ Applied to each choice below:
                  per voxel          model ties here rather than losing
     inpaint      generation         the expensive model plausibly does
                                     win, so measure before economising
-    score a      judgement, and     REACHES RFD 1166 -- see below
+    score a      judgement, and     REACHES RFD 1166, see below
     proposal     possibly retrieval
 
 **The scoring row is where this reaches beyond this RFD.** RFD 1166
 ranks EditScore, a LoRA over Qwen3-VL-8B at 6.75 GiB, as the gate that
 accepts or rejects a proposal. If that gate is doing classification --
-is this edit good -- the paper's finding is that an embedding model ties
+is this edit good, the paper's finding is that an embedding model ties
 an LLM at a fraction of the cost, and 6.75 GiB is most of the device's
 8 GB. If it is doing reasoning-intensive judgement, the LLM earns its
 place. **Nobody here has established which**, and the two answers differ
@@ -210,7 +210,7 @@ recorded here because this is where the paper was raised.
 
 **The inpainter choice is not an instance of the dilemma**, and saying
 so keeps the analogy honest. LaMa against CycleGAN is quality against
-*accelerability*, not quality against cost -- LaMa is small and cheap
+*accelerability*, not quality against cost, LaMa is small and cheap
 and simply contains an operator the compiler refuses. A framework about
 paying more for better does not decide it.
 

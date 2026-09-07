@@ -1,4 +1,4 @@
-# RFD 1047 details: the model, the interface, the guard, layering
+# RFD 1047 details: Model image for voxhammer_text_mesh_editing
 
 ## The model
 

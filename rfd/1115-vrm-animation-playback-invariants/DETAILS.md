@@ -1,4 +1,4 @@
-# RFD 1115 details: forbidden changes, protected files, tests
+# RFD 1115 details: VRM animation playback, one mixer, normalized bones
 
 Sourced from `vrm-animation-protected.mdc` (user-confirmed 2026-06-27)
 and `weftspun3d-vrm-animation-playback.mdc`, near-duplicate rules
@@ -39,7 +39,7 @@ resolve a renamed or relocated file.
 ## Before merging an animation change
 
 ```bash
-npm run test:run -- src/__tests__/loadMixamoAnimation.test.js \
+npm run test:run, src/__tests__/loadMixamoAnimation.test.js \
   src/__tests__/animationManager.playback.test.js \
   src/__tests__/kimodoMotionLoader.test.js \
   src/__tests__/vrmMixamoPlaybackGuard.test.js

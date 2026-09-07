@@ -1,3 +1,5 @@
+# RFD 2117 details: Retire the h2o tier record set
+
 ## Counts
 
 | Set                               | Count |

@@ -1,6 +1,6 @@
-# RFD 2205: Taskweft in Bao — details
+# RFD 2205 details: Taskweft in Bao: database plugin, cgo-linked
 
-## Plugin binary — `bao-plugin-taskweft`
+## Plugin binary: `bao-plugin-taskweft`
 
 New Go project at `7-service/service-taskweft-bao/`. Layout mirrors
 the shipped `7-service/service-bao-sqlite-fdb/` reference plugin:
@@ -12,7 +12,7 @@ the shipped `7-service/service-bao-sqlite-fdb/` reference plugin:
         paths.go            # taskweft/{config,roles,creds,skip}/…
         rebac_check.go      # Bao capability lookup via req identity
       planner/
-        shim.h              # extern "C" — one entry per FINE_NIF
+        shim.h              # extern "C", one entry per FINE_NIF
         shim.cpp            # includes standalone/*.hpp, drops fine glue
         planner.go          # cgo bindings, ~600 LOC
       Makefile              # builds libtaskweft.a from standalone/
@@ -28,7 +28,7 @@ into the plugin binary.
 
 Registered as a **database** plugin (`bao plugin register database
 taskweft`), not a secrets engine. The database type gives us Bao's
-native lease lifecycle — Initialize / New / Update / Delete
+native lease lifecycle, Initialize / New / Update / Delete
 callbacks with no bookkeeping of our own. Mapping RECTGTN onto the
 database-plugin vocabulary:
 
@@ -43,7 +43,7 @@ database-plugin vocabulary:
 
 If the database-plugin interface's `NewUserResponse{Username string}`
 field proves too narrow for the task-JSON payload, the fallback is
-a **secrets engine plugin with `framework.Secret`** — same lease
+a **secrets engine plugin with `framework.Secret`**, same lease
 semantics, JSON-shaped responses natively supported. Either way
 the planner code path is identical; only the SDK-facing shims
 differ. The pilot will tell us which fits.
@@ -52,10 +52,10 @@ differ. The pilot will tell us which fits.
 
 Four Bao-native paths, database-plugin convention:
 
-    taskweft/config/<name>      # Configure — points at fleet.sqlite
-    taskweft/roles/<goal_id>    # Role — declare an issuable Goal
-    taskweft/creds/<goal_id>    # NewUser — the pick call
-    taskweft/skip/<task_key>    # UpdateUser / sibling — skip-write
+    taskweft/config/<name>      # Configure, points at fleet.sqlite
+    taskweft/roles/<goal_id>    # Role, declare an issuable Goal
+    taskweft/creds/<goal_id>    # NewUser, the pick call
+    taskweft/skip/<task_key>    # UpdateUser / sibling, skip-write
 
 ### `taskweft/creds/<goal_id>` (the pick)
 
@@ -70,7 +70,7 @@ Four Bao-native paths, database-plugin convention:
    `lease_duration = duration_of(action)`.
 
 Bao stamps the response `lease_id` on the server clock; every peer's
-`expires_at` derives from one wall-clock reading — operator's
+`expires_at` derives from one wall-clock reading, operator's
 global-time argument, satisfied by construction.
 
 ### `taskweft/skip/<task_key>`
@@ -83,7 +83,7 @@ planner-side extension.
 
 ### Lease Revoke (`DeleteUser`)
 
-Undoes any state the pick wrote — releases GPU claims, decrements
+Undoes any state the pick wrote, releases GPU claims, decrements
 progress-track marks, clears `/gpu_claim/gpu-3090`. A peer that
 crashes without renewing its lease has its assignment reclaimed by
 Bao automatically. No bespoke reaper.
@@ -94,17 +94,17 @@ The plugin runs `may-use--<device>` checks BEFORE calling the
 planner, using Bao's own `system.Client.Sys().Capabilities` against
 the request's authenticated identity. A caller whose group lacks
 the capability gets `403` from Bao and the cgo hop never runs.
-"Documentary → enforced" in one plugin — the compute-lease broker
+"Documentary → enforced" in one plugin, the compute-lease broker
 RFD 2202 named as future work.
 
-## Storage — SQLite, not KV
+## Storage: SQLite, not KV
 
 The git-tracked file
 `2-contract/manuals-weftspun/rectgtn/fleet.jsonld` remains the
 human-editable source of truth for the domain document. A small
 builder script `scripts/build_fleet_sqlite.py` compiles it into
 `2-contract/manuals-weftspun/rectgtn/fleet.sqlite` (also checked
-into git — a small binary fixture, same pattern as
+into git, a small binary fixture, same pattern as
 `service-sqlar-cas/docs/fixtures/persona.sqlite`).
 
 CI on manuals-weftspun runs `bao kv put secret/taskweft/db/fleet
@@ -114,7 +114,7 @@ The diffable JSON-LD is what humans review. `sync_fleet_domain.py`
 `relationships/*--<verb>--*` tuples into the JSON-LD before the
 sqlite mirror step.
 
-Schema — three tables, ETNF-shaped for local SQLite work (per
+Schema, three tables, ETNF-shaped for local SQLite work (per
 CLAUDE.md's carve-out: HF datasets denormalize, local SQLite stays
 ETNF):
 
@@ -155,17 +155,17 @@ The browser demo already shipping in
 `plan(domainJson, skipJson)` on it. See RFD 2204's Starforged demo
 section for the game-loop shape.
 
-Parity is a hard verification target — same domain + same skip
+Parity is a hard verification target, same domain + same skip
 state → byte-for-byte identical plan JSON in both hosts. Recorded
 as a fixture under `test/parity/` that both harnesses read.
 
-## Deploy gap — three edits, none built today
+## Deploy gap: three edits, none built today
 
-1. `7-service/service-openbao/Dockerfile.fdb` — `COPY
+1. `7-service/service-openbao/Dockerfile.fdb`, `COPY
    bao-plugin-taskweft /bao/plugins/`.
-2. `7-service/service-openbao/config-fdb.hcl` — add
+2. `7-service/service-openbao/config-fdb.hcl`, add
    `plugin_directory = "/bao/plugins"`.
-3. `7-service/service-openbao/entrypoint-fdb.sh` — one-shot init:
+3. `7-service/service-openbao/entrypoint-fdb.sh`, one-shot init:
 
         CHECKSUM=$(sha256sum /bao/plugins/bao-plugin-taskweft | cut -d' ' -f1)
         bao plugin register -sha256=$CHECKSUM database taskweft
@@ -176,9 +176,9 @@ existing weftspun-bao deploy loads zero plugins today (both HCLs
 have no `plugin_directory`, entrypoint has no `bao plugin
 register` step); this RFD closes that gap.
 
-## Pilot — three phases
+## Pilot: three phases
 
-**Phase 1 — local Bao plugin**. Build the plugin binary (cgo-linked,
+**Phase 1, local Bao plugin**. Build the plugin binary (cgo-linked,
 static `libtaskweft.a`); register against a `bao dev` server; mount
 as `taskweft/`; fleet.sqlite loaded from disk via the sibling
 sqlite-fdb secrets engine. Assert:
@@ -188,7 +188,7 @@ sqlite-fdb secrets engine. Assert:
    "lease_id":..., "lease_duration": 2700}` (PT45M).
 2. `bao write taskweft/skip/train-qat method_idx=0`; then
    `bao read taskweft/creds/motionbricks` returns
-   `["update-config-pins", ...]` from `use_aero_ex_configs` — the
+   `["update-config-pins", ...]` from `use_aero_ex_configs`, the
    backjump.
 3. Two `bao read` calls one second apart, one from HERO one from
    ANCHOR, both against a Goal both are eligible for, see
@@ -198,14 +198,14 @@ sqlite-fdb secrets engine. Assert:
    `DeleteUser`; assert the SQLite `assign` row is gone and any
    state var the pick wrote is undone.
 
-**Phase 2 — WASM parity**. Emcc-build `taskweft.wasm` from the same
+**Phase 2, WASM parity**. Emcc-build `taskweft.wasm` from the same
 standalone headers. Extend the browser demo to fetch fleet.sqlite
 via `Range: bytes=0-` and call `taskweft.wasm`'s
 `plan(domainJson, skipJson)`. Assert byte-identical output vs
 phase-1 step 1 for the same input. Playwright at
 `scratchpad/pages_check.mjs` verifies.
 
-**Phase 3 — production deploy**. Land the three deploy-gap edits;
+**Phase 3, production deploy**. Land the three deploy-gap edits;
 push weftspun-bao; smoke-test phase-1 assertions against the
 deployed instance with real peer certs.
 
@@ -244,12 +244,97 @@ deployed instance with real peer certs.
 
 ## Future work
 
-- **Pure-Go port of the planner** — sized at ~7000 LOC / 8–12
+- **Pure-Go port of the planner**, sized at ~7000 LOC / 8–12
   weeks in the standalone-header audit. The plugin's Go API stays
   stable across the swap; callers see no change. Trigger: when the
   plugin's cgo hop shows up as a hot path in tracing, or when the
   Bao container's clang dependency becomes a supply-chain concern.
-- **Starforged domain** (RFD 2204 test-vector corpus) — a second
+- **Starforged domain** (RFD 2204 test-vector corpus), a second
   domain loaded into the same plugin, exercising deeper method
   alternatives and stochastic move outcomes. Drives the VRM demo's
   decision-point control surface.
+
+## From the README, moved here on 2026-09-07
+
+## Decision
+
+Ship one C++ planner (`taskweft_nif/standalone/*.hpp`, unchanged),
+one thin `extern "C"` shim mirroring its 23-function NIF surface,
+and two hosts that call the shim:
+
+1. **Bao plugin**, Go binary at `7-service/service-taskweft-bao/`,
+   registered against weftspun-bao as `bao plugin register database
+   taskweft`. Every peer resolves "what is my next task?" as
+   `bao read taskweft/creds/<goal_id>`. Bao stamps the response
+   `lease_id` on the server clock, every peer sees the same
+   `expires_at`, so global time for durations is satisfied by
+   construction. `may-use--<device>` ReBAC tuples become ENFORCED
+   at read-time via Bao's own capability check (fills the compute-
+   lease broker gap RFD 2202 named as future work).
+2. **CDN + WASM**, emcc-built `taskweft.wasm` loaded from GitHub
+   Pages, reading a static `fleet.sqlite` via HTTP `Range: bytes=0-`
+   the same way `service-sqlar-cas/docs/`'s persona demo already
+   loads `persona.sqlite`. No server, no toolchain, reviewers see
+   the planner's output client-side against the same fixture the
+   Bao plugin runs.
+
+The same `.sqlite` fixture ships under `docs/fixtures/` on GitHub
+Pages and is the file the Bao plugin reads from
+`secret/taskweft/db/fleet` after CI's mirror step. **One file, two
+hosts, one planner.**
+
+## Problem
+
+RFD 2204 named the fleet-coordination shape; the plan-mode session
+of 2026-09-05 iterated three approaches before landing here. Two
+earlier shapes are retracted, deliberately, retraction pointers
+below.
+
+Peer sessions today coordinate through Bao rows + free-form
+`SendMessage` + operator-typed un-park signals. There is no shared
+representation of *why* a peer is doing what it is doing, no
+programmatic assignment surface, no compute-lease enforcement, and
+no clock the whole fleet can agree on for lease `expires_at`. This
+RFD is the answer.
+
+## Retractions
+
+- **coordinator.ex Elixir adapter as primary:** retracted
+  2026-09-05, superseded by the Go plugin in this RFD. The Elixir
+  standalone adapter had no answer for global time or ReBAC
+  enforcement.
+- **thin-HTTPS bridge to taskweft-mcp.fly.dev:** retracted
+  2026-09-05, superseded by cgo-linked C++. The bridge shape added
+  an external service dependency the plugin doesn't need; embedding
+  the planner satisfies operator's constraint that the plugin
+  requires only REST commands and no other service.
+- **`router.ex` mTLS auth extension:** retracted with the bridge —
+  nothing calls MCP any more.
+
+## Non-goals
+
+Not a pure-Go port of the planner (RFD 2006 sized it at ~7000 LOC
+and 8–12 weeks; cgo is 3–5 days). Not a rewrite of the RECTGTN
+schema. Not a scheduler; not a hook. The plugin does not extend
+Bao's storage surface, plan and skip state live in a SQLite blob
+served by the sibling sqlite-fdb secrets engine, not in KV rows
+under a separate mount.
+
+## Related
+
+- RFD 2204 (RECTGTN fleet coordination), the domain document
+  shape the plugin queries. This RFD supersedes its "coordinator
+  adapter" section with a one-line pointer, per CLAUDE.md doctrine.
+- RFD 2140 (OpenBao on FoundationDB), the storage backend the
+  plugin's SQLite fixture sits on top of.
+- RFD 2142 (Bao PKI zerotrust), the cert-auth path peers use.
+- RFD 2146 (Bao is the secret store), the policy discipline any
+  new mount inherits.
+- RFD 2147 (Bao is critical infrastructure), the blast-radius bar
+  a new plugin must meet.
+- RFD 2195 (weftspun-bao Tailscale sidecar), the deploy shape
+  this plugin ships alongside.
+- RFD 2202 (ReBAC Bao enforcement), this RFD fills the
+  compute-lease broker gap RFD 2202 named as future work.
+- Sibling plugin scaffold: `7-service/service-bao-sqlite-fdb/` —
+  the layout the new plugin copies verbatim.

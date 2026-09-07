@@ -1,4 +1,4 @@
-# RFD 1060 details: the second move, why a real move, what stays, paths, verification
+# RFD 1060 details: A thirdparty/ reset
 
 ## The symlink attempt, and why it failed
 
@@ -15,9 +15,9 @@ instruction reversed the symlink call: move the real files.
 ## The second move, in full
 
 `weftspun_studio/` becomes the repository root. Everything that was
-at the root — `src/`, `package.json`, `vite.config.js`, `index.html`,
+at the root, `src/`, `package.json`, `vite.config.js`, `index.html`,
 `public/`, `native/`, `tests/`, and the JS toolchain's own
-`scripts/*.mjs` files — moves to `thirdparty/3d_studio/`.
+`scripts/*.mjs` files, moves to `thirdparty/3d_studio/`.
 `decisions/`, `.github/`, and a small, named set of root-level
 `scripts/` stay at the root, alongside `weftspun_studio/`'s promoted
 `lib/`, `test/`, `config/`, `mix.exs`, `Dockerfile`, and `deploy/`.
@@ -44,19 +44,19 @@ and then several hundred independent edits.
 
 ## What stays at the root, and why
 
-**`decisions/`** — direct instruction. The RFD index documents both
+**`decisions/`**, direct instruction. The RFD index documents both
 `weftspun_studio` and the browser client. Splitting it would break
 RFD 1000's DRY policy.
 
-**`.github/`** — GitHub Actions only discovers workflows at the true
+**`.github/`**, GitHub Actions only discovers workflows at the true
 repository root. It cannot move.
 
-**`.devcontainer/`** — RFD 1056's dev container, for the Elixir
+**`.devcontainer/`**, RFD 1056's dev container, for the Elixir
 side. `devcontainer.json` sets `privileged: true` and
 `--cgroupns=host` specifically so Quadlet units can start inside it.
 Removed in this session, ahead of a rebuild.
 
-**Six `scripts/` files, at the time of this move** — `ci.sh`,
+**Six `scripts/` files, at the time of this move**, `ci.sh`,
 `deploy-weftspun-quadlet.sh`, `studio-test.sh`,
 `check-elixir-parses.exs`, `ste-lint-decisions.py`,
 `check-model-images.py`. `.pre-commit-config.yaml` named four of
@@ -69,7 +69,7 @@ and write that tree, not this one. RFD 1063 later deleted
 `ste-lint-decisions.py`, leaving five.
 
 **`LICENSE`, `TRADEMARKS`, `.formatter.exs`, `.gitattributes`,
-`.pre-commit-config.yaml`** — repository-wide, not app-specific.
+`.pre-commit-config.yaml`**, repository-wide, not app-specific.
 `.formatter.exs` now merges two input globs that used to be two
 files: `decisions/**/*.{ex,exs}` (from the root's old file) and
 `{mix,.formatter}.exs`, `{config,lib,test}/**/*.{ex,exs}` (from

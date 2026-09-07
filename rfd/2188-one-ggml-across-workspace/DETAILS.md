@@ -1,4 +1,4 @@
-# RFD 2188 details
+# RFD 2188 details: One GGML across the workspace
 
 ## Discovery: HEAD dates for every ggml copy found
 
@@ -12,7 +12,7 @@ Measured 2026-09-03 across the workspace.
 | `3-interactor/rf-detr-cpp/third_party/ggml` | subtree, no independent history | n/a | vendored |
 | `3-interactor/llama-cpp-npu-vision-upstream/ggml` | inside llama.cpp | 2026-09-02 | ggml lives under llama.cpp's tree, not independently rebasable. HEAD date is llama.cpp's, not ggml's. |
 | `3-interactor/turboquant-godot/thirdparty/llama_cpp/ggml` | inside llama.cpp | n/a | same shape as above |
-| `3-interactor/skin-tokens-cpp` | not checked out | n/a | manifest projects `skin-tokens.cpp` and `motion-bricks.cpp` did not sync to disk in this session — Phase 2 migration blocked until the sync completes |
+| `3-interactor/skin-tokens-cpp` | not checked out | n/a | manifest projects `skin-tokens.cpp` and `motion-bricks.cpp` did not sync to disk in this session, Phase 2 migration blocked until the sync completes |
 | upstream `ggml-org/ggml` `master` | `d4716378` | 2026-08-30 | pushed to `weftspun/ggml:upstream-tracking` for future rebase base |
 
 The user's intuition ("ggml-seethrough has the newest stuff") held: it
@@ -52,7 +52,7 @@ The first close-out claimed the template mechanism had been restructured and dk1
 
 PR https://github.com/weftspun/ggml/pull/1 adds 16 template instantiations (dk16, dk56 × 8 K/V dtypes) plus 2 entries in the head-size whitelist in supports_op. Vec templates omitted because `ggml_metal_op_flash_attn_ext_use_vec` gates on `ne00 % 32 == 0`, which excludes 16 and 56. **Merged 2026-09-03.**
 
-**Verified on Apple M2 Pro.** `test-backend-ops`'s default FLASH\_ATTN\_EXT generator loops hsk over `{ 40, 64, 72, 80, 96, 128, 192, 256, 320, 512, 576 }` — no 16 and no 56. With 16 added test cases enumerating hsk=16 and hsk=56 across all 8 K/V dtypes and `-b MTL0`: **4768/4768 tests passed** against the CPU reference (baseline 4752 + 16 new = 4768), and the Metal pipeline compile log confirmed the new kernels were actually reached: `kernel_flash_attn_ext_{f16,f32,bf16}_dk{16,56}_dv{16,56}`. Wall clock 49 s.
+**Verified on Apple M2 Pro.** `test-backend-ops`'s default FLASH\_ATTN\_EXT generator loops hsk over `{ 40, 64, 72, 80, 96, 128, 192, 256, 320, 512, 576 }`, no 16 and no 56. With 16 added test cases enumerating hsk=16 and hsk=56 across all 8 K/V dtypes and `-b MTL0`: **4768/4768 tests passed** against the CPU reference (baseline 4752 + 16 new = 4768), and the Metal pipeline compile log confirmed the new kernels were actually reached: `kernel_flash_attn_ext_{f16,f32,bf16}_dk{16,56}_dv{16,56}`. Wall clock 49 s.
 
 Household anchor: this is a build+test on the same M2 Pro that runs the rest of the desk. The "no Metal build+run capability" caveat that appeared in the first PR body was wrong and has been retracted from the PR body it stood in.
 
@@ -72,13 +72,13 @@ Phase 2 walks this per-consumer. Not run in Phase 1.
 | `motion-bricks.cpp` | `3-interactor/motion-bricks-cpp` | its own | ditto |
 | `rf-detr-cpp` | `3-interactor/rf-detr-cpp` | `third_party/ggml` subtree | rf-detr keypoint pipeline owner |
 | `nx-ggml` | `3-interactor/nx-ggml` | `native/nx_ggml/third_party/ggml` subtree | nx-ggml NIF owner |
-| `llama-cpp-npu-vision-upstream` | `3-interactor/llama-cpp-npu-vision-upstream` | ggml under llama.cpp | vendor-runtime exempt (CLAUDE.md ggml row) — no migration |
-| `turboquant-godot` | `3-interactor/turboquant-godot` | ggml under llama.cpp | vendor-runtime exempt — no migration |
+| `llama-cpp-npu-vision-upstream` | `3-interactor/llama-cpp-npu-vision-upstream` | ggml under llama.cpp | vendor-runtime exempt (CLAUDE.md ggml row), no migration |
+| `turboquant-godot` | `3-interactor/turboquant-godot` | ggml under llama.cpp | vendor-runtime exempt, no migration |
 
 ## Phase 1 landing PRs
 
 - `weftspun/ggml`: pushed `weftspun-consolidated` and
-  `upstream-tracking` branches. No PR — direct branch push.
+  `upstream-tracking` branches. No PR, direct branch push.
 - `weftspun/request-for-discussion`: this RFD, S2188 in
   `SERIALS-vsekai-fabric.usda`, `scripts/check_ggml_singleton.py`,
   hook wiring in `.pre-commit-config.yaml`.
@@ -90,7 +90,7 @@ Phase 2 walks this per-consumer. Not run in Phase 1.
 
 - `skin-tokens.cpp` proof-of-pattern migration deferred: the
   manifest projects did not check out in this session. Named and
-  counted per CLAUDE.md rule 3 — a silent skip would have read as a
+  counted per CLAUDE.md rule 3, a silent skip would have read as a
   pass.
 - No consumer's CMake was edited in Phase 1.
 - No build was verified in Phase 1.

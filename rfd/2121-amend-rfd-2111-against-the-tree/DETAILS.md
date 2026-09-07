@@ -1,3 +1,5 @@
+# RFD 2121 details: Amend rfd 2111 against the tree
+
 ## How this was checked
 
 Every count below comes from the GitHub API or from a checkout on disk, on
@@ -146,8 +148,8 @@ done
 and both carry Lean sources: `Rebac/core/NoGod.lean`, `Rebac/core/ReBAC.lean`,
 and `Rebac/ports/AuthQuery.lean`. Its README says
 
-> - `core/` — dependency-free domain logic + proofs
-> - `ports/` — narrow driving (source) / driven (sink) contracts
+>, `core/`, dependency-free domain logic + proofs
+>, `ports/`, narrow driving (source) / driven (sink) contracts
 
 which describes what is there. The correction it needs is the prefix `Rebac/` on
 each path, and the removal of `adapters/`, which the repository does not have.

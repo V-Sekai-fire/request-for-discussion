@@ -1,4 +1,4 @@
-# RFD 1095 details: architecture, ports, start scripts, and troubleshooting
+# RFD 1095 details: A voice XR path, beside Task Manager, same backend
 
 ## Architecture
 

@@ -1,4 +1,4 @@
-# RFD 1037 details: the shape, type rules, the solved plan, replanning, the five
+# RFD 1037 details: Composite models as taskweft domains
 
 ## The shape
 

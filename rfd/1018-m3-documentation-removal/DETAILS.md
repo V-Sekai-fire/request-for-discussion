@@ -1,4 +1,4 @@
-# RFD 1018 details: background, plan, risk, references
+# RFD 1018 details: M3 documentation removal
 
 ## Background
 

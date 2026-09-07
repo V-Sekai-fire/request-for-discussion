@@ -1,4 +1,4 @@
-# RFD 1134 details: Running loop 1 in the browser
+# RFD 1134 details: A loop notebook is tested in the browser
 
 The apparatus, the failure text, and the defects that the first run found.
 
@@ -288,7 +288,7 @@ NF4 and samples, so the loop is currently measuring the scorer's variance.
 Nothing here knows how large that variance is, because it has never been
 measured: score one image k times and report the spread. Until that number
 exists, a round-to-round delta from this loop is not a measurement, and
-CLAUDE.md's rule is the one that applies -- a number without a baseline is
+CLAUDE.md's rule is the one that applies, a number without a baseline is
 not a measurement, and the baseline for a noisy instrument is its own noise.
 
 ## The bound on a pose has two forms, and neither is wired in

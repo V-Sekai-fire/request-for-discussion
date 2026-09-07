@@ -1,4 +1,4 @@
-# RFD 1126 details: the rig budget, the unrolled cost, and what is unmeasured
+# RFD 1126 details: Unroll the descent, do not replace it
 
 Every section names its gate in an HTML comment under its heading, per RFD 1125.
 

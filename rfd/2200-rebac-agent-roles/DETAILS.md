@@ -1,4 +1,4 @@
-# ReBAC agent roles — tuples, roles, and what enforcement would look like
+# RFD 2200 details: ReBAC agent roles as tuples, not per-agent policy sprawl
 
 ## The tuple shape
 
@@ -26,22 +26,22 @@ overloading existing verbs is fine when the mapping is obvious.
 
 ## The three roles
 
-**Coordinator** — MPS. Bao admin (`mps-admin` policy). Authors
+**Coordinator**, MPS. Bao admin (`mps-admin` policy). Authors
 `weftspun-agreements` (CLAUDE.md, RFDs, doctrine, retraction pointers).
 Provisions agent identities on operator instruction. Drafts logbook
 entries **only** when relaying a peer's measurement, with the peer
 credited as the measuring session. Does not own ML hypotheses; does not
 run GPU experiments; does not touch peer hardware.
 
-**GPU-experimenter** — CUDA. Owns 3090 + 4090. Authors
-`gpu-experiments` — Lumina2 distillation, LLaDA-o step sweeps, OmniGen2
+**GPU-experimenter**, CUDA. Owns 3090 + 4090. Authors
+`gpu-experiments`, Lumina2 distillation, LLaDA-o step sweeps, OmniGen2
 comparisons, EditScore ladder runs. Publishes measurements as logbook
 PRs on its own branches; drafts + files its own retractions when a
 result doesn't survive scale-up. `agents-rw` policy; no admin ops
 (no mint, no revoke, no policy edit).
 
-**Edge-QAT-specialist** — HAILO. Owns USB-Hailo NPU. Authors
-`edge-qat-experiments` — RFD 2199 direction, HailoRT + DFC compiler
+**Edge-QAT-specialist**, HAILO. Owns USB-Hailo NPU. Authors
+`edge-qat-experiments`, RFD 2199 direction, HailoRT + DFC compiler
 work, HEF deployment. Same PR-driven measurement discipline as
 gpu-experimenter. `agents-rw` policy; does not touch CUDA's cards, and
 CUDA does not touch the Hailo NPU, even though both agents `runs-on`
@@ -102,7 +102,7 @@ Adding a new agent:
 1. Operator authorises identity (per RFD 2195 rule zero).
 2. Admin (MPS) mints cert, publishes bundle to `certs/<cn>`.
 3. **Admin writes the new agent's tuples to `relationships/`** in
-   the same session — at minimum a `runs-on` tuple, plus the
+   the same session, at minimum a `runs-on` tuple, plus the
    `owns` and `authors` tuples that scope the new agent's role.
 4. If a `runs-on` shares a host with an existing agent, admin
    confirms the new agent will use a per-agent-suffixed cred dir

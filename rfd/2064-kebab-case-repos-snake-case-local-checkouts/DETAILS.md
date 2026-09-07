@@ -1,3 +1,5 @@
+# RFD 2064 details: Kebab case repos snake case local checkouts
+
 ## Context and problem statement
 
 Repositories across our orgs grew inconsistent names. The loot-action
@@ -29,7 +31,7 @@ be named, and must the local checkout directory match the repo name?
 
 ## Considered options
 
-- Kebab-case everywhere — both GitHub repos and local checkout
+- Kebab-case everywhere, both GitHub repos and local checkout
   directories.
 - snake_case everywhere.
 - Kebab-case GitHub repos; local checkout directories keep
@@ -67,7 +69,7 @@ The rules:
 - Good: a rename is just `gh repo rename` plus a local `git remote
 set-url`; CI that still clones the old name keeps working through
   the redirect.
-- Good: no build breakage — sibling-by-path repos retain the directory
+- Good: no build breakage, sibling-by-path repos retain the directory
   name the build hardcodes.
 - Bad: a local directory name can differ from its remote repo name
   (`mount_drift` ↔ `mount-drift`), which can surprise newcomers.

@@ -1,4 +1,4 @@
-# RFD 1020 details: reasoning, schema, setup, status
+# RFD 1020 details: CockroachDB persistence for catalog facts
 
 > **The store is SQLite now.** The section directly below retracts the CockroachDB decision
 > and gives the reasons. The rest of this file is kept as written, because the schema, the

@@ -1,4 +1,4 @@
-# RFD 1075 details: registration steps and the login flow
+# RFD 1075 details: GitHub OAuth login, gated on weftspun org membership
 
 ## Why an OAuth App, not a GitHub App
 

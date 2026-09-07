@@ -1,4 +1,4 @@
-# RFD 1054 details: the wrong-answer record, mocking, measured plans, fixes, routes
+# RFD 1054 details: The planner inside the studio core
 
 ## A second application was the wrong answer first
 

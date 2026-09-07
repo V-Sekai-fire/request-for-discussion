@@ -1,4 +1,4 @@
-# RFD 1104 details: passthrough, display, export, and the retest checklist
+# RFD 1104 details: Uploaded VRM, rotate the scene root, never the hips
 
 ## The problem, in one table
 
@@ -27,7 +27,7 @@ Passthrough policy, uploads only:
 2. Flags: set `vrm.scene.userData.vrmNormalized = true` and `vrm.scene.userData.vrmBindPassthrough = true`.
 3. No scale, center, floor snap, rebind, bone rename, or AIGC rig repair on upload.
 
-Log line: `[VRM] Upload passthrough — scene yaw only if needed; no
+Log line: `[VRM] Upload passthrough, scene yaw only if needed; no
 scale/rebind/rename`.
 
 `processModel` must early-return for a VRM or a

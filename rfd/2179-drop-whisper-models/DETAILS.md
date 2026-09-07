@@ -1,4 +1,4 @@
-# RFD 2179 details: WER pass across the 5 text tracks on 15 clips
+# RFD 2179 details: Drop all Whisper models from the ASR panel
 
 Per-clip WER against SpeakingFaces canonical text. Lower is better.
 Zero = exact match on the canonical wording (case-insensitive, whitespace-

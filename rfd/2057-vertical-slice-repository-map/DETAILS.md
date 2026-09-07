@@ -1,3 +1,5 @@
+# RFD 2057 details: Vertical slice repository map
+
 ## Context and problem statement
 
 The [loot-action core-loop slice](../2045-loot-action-core-loop-mvp-vertical-slice/README.md)

@@ -1,3 +1,5 @@
+# RFD 2068 details: Sccache github actions cache for godot builds
+
 ## The context
 
 The `fabric-godot-images` repo builds the Godot engine from source

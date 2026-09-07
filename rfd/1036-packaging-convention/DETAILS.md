@@ -1,4 +1,4 @@
-# RFD 1036 details: the target, the rules, stages, files, composites, status
+# RFD 1036 details: Model packaging convention
 
 ## Retracted: Replicate Cog as the package format
 

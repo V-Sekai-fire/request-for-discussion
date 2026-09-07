@@ -1,10 +1,12 @@
+# RFD 2069 details: Defer loot slice hardening until needed
+
 ## The context
 
 The loot-action core-loop MVP vertical slice
 (`rfd/2045-loot-action-core-loop-mvp-vertical-slice`) decides a large
 scope: five named cores, a CockroachDB adapter, a measured 90 Hz
 performance gate, and a SteamVR build. Its stated goal, though, is
-narrow — one slice "complete enough to exercise every integration
+narrow, one slice "complete enough to exercise every integration
 seam." The running `godot-loop-slice` already carries that loop end to
 end (Hub to Field to Hub, through transport, server authority, loot
 contention, and SQLite-backed persistence), and the playable-loop
@@ -39,13 +41,13 @@ when its trigger fires, not before.
 | Progression as a separate reducer, today an inline inventory append (`rfd/2043-hexagon-progression-core`)                                  | The inventory delta commits correctly inline; a reducer is structure ahead of need               | Inventory or affinity logic outgrows append, or deterministic replay is required         |
 | Budgeter core, unimplemented (`rfd/2039-hexagon-budgeter-core`)                                                                            | Nothing measures or breaches the frame floor yet                                                 | The frame floor is actually breached under load, or the performance gate is enforced     |
 | CockroachDB adapter, with SQLite the only path today (`rfd/2006-cockroachdb-with-mtls-role-separation`)                                    | Single-node SQLite carries the slice's persistence round trip                                    | Persistence needs multi-node storage or mTLS role separation beyond single-node SQLite   |
-| Measured performance gate — 90 Hz, 500,000 triangles, 200 draw calls per eye (`rfd/2035-first-party-curated-content-zone-baker-budgets`)   | No headset target consumes the gate; placeholder content makes the number premature              | A real headset build is the sign-off step                                                |
+| Measured performance gate, 90 Hz, 500,000 triangles, 200 draw calls per eye (`rfd/2035-first-party-curated-content-zone-baker-budgets`)   | No headset target consumes the gate; placeholder content makes the number premature              | A real headset build is the sign-off step                                                |
 | Real OpenXR build, where the desktop preset duplicates Windows Desktop with no XR options (`rfd/2051-headless-openxr-testing-with-monado`) | The slice is verified headless; a real XR export is platform reach, not integration              | A headset playthrough is the acceptance step                                             |
 
-The items the slice record already files after the gate — ranged and
+The items the slice record already files after the gate, ranged and
 caster archetypes, Steam Frame and Steam Deck builds, in-headset
 authoring, rollback (`rfd/2046-server-authoritative-simulation-deferred-rollback`),
-and user-generated content — stay deferred where they are. This
+and user-generated content, stay deferred where they are. This
 record cross-references them rather than restating them.
 
 ## The downsides
@@ -58,11 +60,11 @@ record cross-references them rather than restating them.
 
 ## The road not taken
 
-- Build the full decided gate now — rejected as anti-YAGNI; most of it
+- Build the full decided gate now, rejected as anti-YAGNI; most of it
   adds production hardening and platform reach, not integration
   coverage, and pays the optionality and timing bills for a need that
   has not arrived.
-- Leave the unbuilt items in the slice record as "pending" — rejected;
+- Leave the unbuilt items in the slice record as "pending", rejected;
   it conflates the shipped deliverable with deferred work and invites
   building ahead of need.
 

@@ -1,4 +1,4 @@
-# RFD 1048 details: the mode branch, the model, the interface, the guard
+# RFD 1048 details: Model image for voxhammer_image_mesh_editing
 
 ## The mode branch
 

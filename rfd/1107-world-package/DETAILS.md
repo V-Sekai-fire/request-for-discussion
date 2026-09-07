@@ -1,4 +1,4 @@
-# RFD 1107 details: layout, manifest, XR mapping, and the API calls
+# RFD 1107 details: The world package format, splats plus optional props
 
 ## Layout
 

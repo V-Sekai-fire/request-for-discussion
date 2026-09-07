@@ -1,4 +1,4 @@
-# RFD 1174 details: mapping the workspace to SOC 2 and ISO 27001
+# RFD 1174 details: Publish the security rules against SOC 2 and ISO 27001
 
 ## What this document adds
 

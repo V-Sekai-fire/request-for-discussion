@@ -1,4 +1,4 @@
-# RFD 2140 details: the interface port and the deploy
+# RFD 2140 details: OpenBao on FoundationDB
 
 ## The three interface changes
 

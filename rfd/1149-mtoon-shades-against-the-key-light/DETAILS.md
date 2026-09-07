@@ -1,9 +1,9 @@
-# RFD 1149 details: the measurements behind the material and the renderer
+# RFD 1149 details: MToon shades against the key light
 
 ## Held against three-vrm, pixel for pixel
 
 A unit sphere under an orthographic camera framed exactly to it, so pixel (u, v) carries
-normal (u, v, sqrt(1 - u^2 - v^2)). No plateau finding and no fitting: our model is evaluated
+normal (u, v, sqrt(1, u^2, v^2)). No plateau finding and no fitting: our model is evaluated
 at precisely the normal the render used. three 0.185.1, three-vrm 3.5.5, headless Chromium
 through swiftshader, colour management off and the output colour space linear.
 
@@ -39,9 +39,9 @@ two dE readings, and the targets have yet to be checked at the exposure a viewer
 
 The Godot port implements MToon 3.3, whose ramp is
 
-    clamp((I - shadeShift) / (mix(1, shadeShift, shadeToony) - shadeShift), 0, 1)
+    clamp((I, shadeShift) / (mix(1, shadeShift, shadeToony), shadeShift), 0, 1)
 
-and VRM 1.0 uses `linearstep(-1 + shadingToonyFactor, 1 - shadingToonyFactor, ...)`. `mtoon.py`
+and VRM 1.0 uses `linearstep(-1 + shadingToonyFactor, 1, shadingToonyFactor, ...)`. `mtoon.py`
 targeted the VRM0 form for one commit and now implements VRM1.0. A difference worth naming
 because it silently inverts a term: VRM0 lerps the rim toward BLACK as `rimLightingMix` falls
 and VRM1.0 lerps toward WHITE, so `rimLightingMixFactor` 0 leaves the rim at full strength.

@@ -1,4 +1,4 @@
-# RFD 2176 details: per-pair annotations for the 39 pairs
+# RFD 2176 details: Index of committed/published RFDs citing terminal RFDs
 
 Full list from the Lean 4 audit (`Report.lean` output). Three classes:
 retraction chain (keep), historical framing (keep, weakly stale), real

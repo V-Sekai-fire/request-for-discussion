@@ -1,3 +1,5 @@
+# RFD 2090 details: Uro burrito release
+
 ## Context and problem statement
 
 `zone-backend`'s root `Dockerfile` (used for local `docker-compose`)
@@ -25,7 +27,7 @@ actual OTP release needed a different mechanism for secrets entirely.
 
 1. **Keep the `iex -S mix` boot shape for production**, and rely on a
    different image build for the archived `infra` consumer. Rejected
-   with `infra`'s archival — nothing consumes that image path anymore,
+   with `infra`'s archival, nothing consumes that image path anymore,
    and the seeded test data on every boot was never appropriate for a
    real deploy regardless.
 2. **A real `mix release`, config moved to `config/runtime.exs`,
@@ -68,7 +70,7 @@ and run stages.
 SSL options, `Uro.Endpoint` (port, secret key base, HTTPS options),
 `cors_plug`'s origin, `joken`'s signer, `Turnstile`'s secret,
 `pow_assent`'s OAuth2 provider list, the mailer, `ex_aws`/S3 config,
-OpenTelemetry's endpoint, and `aria_storage`'s bucket/DB path — all
+OpenTelemetry's endpoint, and `aria_storage`'s bucket/DB path, all
 gated under `if config_env() == :prod do`, so `dev.exs`/`test.exs`
 (which already define their own complete, static `Uro.Repo` config)
 are unaffected. `config.exs`/`prod.exs` keep only what is genuinely
@@ -82,7 +84,7 @@ lib/` that nothing outside `config/*.exs` referenced it.
 `lib/uro/release.ex` adds `Uro.Release.migrate/0`, run via the
 release's own `eval` command
 (`bin/uro eval "Uro.Release.migrate()"`), since a compiled release has
-no `mix` tasks at runtime — `mix ecto.migrate` does not exist inside
+no `mix` tasks at runtime, `mix ecto.migrate` does not exist inside
 it. This runs `Ecto.Migrator.with_repo/2` against
 `Uro.Repo.Migration` only, matching `AGENTS.md`'s documented DDL/DML
 role split.
@@ -92,10 +94,10 @@ role split.
 `riscv-none-elf-gcc` toolchain `.github/workflows/casync-interop.yml`
 already installs, for `WeftWarpBurrito.SandboxNif`'s `c_src` build)
 running `mix release uro`, and a runtime stage that is just
-`alpine:3.20` plus `ca-certificates` — no Elixir/Erlang install at
+`alpine:3.20` plus `ca-certificates`, no Elixir/Erlang install at
 all, since Burrito's output is fully static.
 `docker/uro/fly-start.sh` runs `Uro.Release.migrate/0`, then `exec`s
-`start` — the script `AGENTS.md` has described for a while but which
+`start`, the script `AGENTS.md` has described for a while but which
 never actually existed in this repo.
 
 ## Consequences
@@ -109,7 +111,7 @@ runtime image needs nothing but the static binary and CA certs
 real CA verification), which is a smaller, simpler runtime surface
 than an Erlang-installed image.
 
-Bad: the build stage is heavier than before — Zig, CMake, Ninja, and a
+Bad: the build stage is heavier than before, Zig, CMake, Ninja, and a
 RISC-V cross-compiler, on top of what `mix compile` already needed per
 `zone-backend`'s own `docs/decisions/0017`. `config/runtime.exs` is a
 real, sizeable file (over 150 lines) that concentrates every

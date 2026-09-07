@@ -1,4 +1,4 @@
-# RFD 1125 details: what already exists, and the three detectors that cannot fire
+# RFD 1125 details: Two prose gates, marked per section
 
 Every section below names its gate in an HTML comment under its heading. That
 mark is the mechanism this RFD adds, so this file is also its first example.

@@ -1,4 +1,4 @@
-# Details
+# RFD 2017 details: Compiling godot engine
 
 ## Context
 
@@ -37,21 +37,21 @@ sccache picks its backend from environment variables. Two options:
   config needed.
 
 Secrets policy: only the bucket name, endpoint, region, and key prefix —
-none of which are secrets — appear in committed config. The access key
+none of which are secrets, appear in committed config. The access key
 and secret are never committed to any repo, dotfile, or build log. They
 live in one of two places depending on where the build runs:
 
 - Locally: `~/.aws/credentials` under a named profile (`AWS_PROFILE`).
 - CI: GitHub Actions secret variables, injected at runtime via the
-  `${{ secrets.* }}` context. Storing the keys there is fine — they are
+  `${{ secrets.* }}` context. Storing the keys there is fine, they are
   encrypted and never land in the repo. What is not fine is pasting a
   literal key into a workflow YAML, a script, or this manual.
 
-## CI — GitHub Actions
+## CI: GitHub Actions
 
 In a workflow, read the credentials from secret variables into the
 sccache S3 environment for the build step. Only the secret names appear
-in the committed YAML — the values are stored in the repo/org Actions
+in the committed YAML, the values are stored in the repo/org Actions
 secrets:
 
 ```yaml
@@ -76,7 +76,7 @@ per-instance sccache service launcher; changing it means updating that
 launcher and reinstalling the service
 (`decisions/20260606-windows-background-services-nssm.md`).
 
-## Windows — PowerShell profile
+## Windows: PowerShell profile
 
 Set `GODOT_SRC` and the S3 coordinates to your values, then add to
 `Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1`. The
@@ -107,7 +107,7 @@ function gscons {
 }
 ```
 
-## WSL / Linux — `~/.bashrc`
+## WSL / Linux: `~/.bashrc`
 
 ```bash
 # Godot V-Sekai linuxbsd build. sccache is the only object cache; S3 backend shares it across hosts.
@@ -149,7 +149,7 @@ pins `platform=windows use_mingw=yes` and `-j16`; WSL infers
 `platform=linuxbsd`, uses `-j$(nproc)`, and adds
 `debug_symbols=yes tests=yes`. Both share
 `compiledb=yes target=editor precision=double` and the sccache
-launchers — and neither enables a SCons `CacheDir`.
+launchers, and neither enables a SCons `CacheDir`.
 
 ## Verifying and maintaining the cache
 

@@ -1,4 +1,4 @@
-# RFD 1076 details: the shape, the patch, the bug Playwright caught, and what verified
+# RFD 1076 details: usd_viewer_app, its own app, reached through a port
 
 ## Why an app, not a bake-in
 

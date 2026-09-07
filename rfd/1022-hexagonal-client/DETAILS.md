@@ -1,4 +1,4 @@
-# RFD 1022 details: the shape, the port-as-test, the first port, method, risks, status
+# RFD 1022 details: A hexagonal client for the headless studio API
 
 ## The shape
 

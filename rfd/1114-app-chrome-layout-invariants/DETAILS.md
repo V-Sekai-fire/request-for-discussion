@@ -1,4 +1,4 @@
-# RFD 1114 details: tokens, forbidden changes, checklist
+# RFD 1114 details: App chrome layout invariants
 
 Sourced from `app-chrome-layout-protected.mdc`,
 `collapsed-rail-icons.mdc`, and `sidebar-z-index.mdc`

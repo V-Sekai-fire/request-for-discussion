@@ -1,3 +1,5 @@
+# RFD 2119 details: Salvage you can hold
+
 ## One invariant at two consistency levels
 
 |                    | Loose, between cycles                      | Claimed, at the cycle                 |

@@ -1,3 +1,5 @@
+# RFD 2044 details: Lean4 kernel cores flat c host adapters
+
 ## Context and problem statement
 
 The hexagonal cores (`rfd/2028-hexagonal-core-ports-adapters`) hold

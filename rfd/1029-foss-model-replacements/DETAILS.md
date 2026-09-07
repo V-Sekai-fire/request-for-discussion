@@ -1,4 +1,4 @@
-# RFD 1029 details: the three replacements
+# RFD 1029 details: FOSS model replacements
 
 ## PartField replacement (mesh segmentation)
 

@@ -1,4 +1,4 @@
-# Details: what the checks measure, and what they refused to be
+# RFD 2135 details: Checks run where the credentials already are
 
 ## The placement, spelled out
 
