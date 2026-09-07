@@ -1,6 +1,6 @@
 # rfd_dsl
 
-Author an RFD as Elixir; README.md and DETAILS.md are renderings of it. RFD 2232 says why.
+Author an RFD and a serial register as Elixir; the Markdown and the `.usda` are renderings. RFD 2232 says why.
 
     defmodule RFD2232 do
       use RFD.DSL
@@ -25,17 +25,40 @@ Author an RFD as Elixir; README.md and DETAILS.md are renderings of it. RFD 2232
       end
     end
 
-The block validates against RFD 1000 while the file compiles: a state outside the list,
-a missing Decision, a README over 40 lines, an em-dash join, a pompous copula or an
-`exact` on a soft noun is a compile error that names the rule.
+    defmodule Serials.VSekaiFabric do
+      use RFD.Register
 
-    mix rfd.render                 # every rfd/NNNN-slug/rfd.exs -> README.md, DETAILS.md
+      register "VSekaiFabric" do
+        layer arc: "1.3.6.1.4.1.66606.1.2", site: 2, site_name: "v-sekai-fabric", ...
+        thesis "Every serial this site has allocated. ..."
+
+        allocated do
+          serial 2000, "conventions"
+          serial 2229, "interchangeable-parts-consolidation", flight_level: :l3
+        end
+
+        deleted do
+          serial 2003, "castspell-sandbox-package-and-manifest-encoding"
+        end
+      end
+    end
+
+Both validate while the file compiles: a state outside the list, a missing Decision, a
+README over 40 lines, a serial listed twice, a serial from another site or a retired
+row naming no serial is a compile error that names the rule. Tropes are warnings.
+
+    mix rfd.render                 # rfd/NNNN-slug.exs -> rfd/NNNN-slug/{README,DETAILS}.md
+                                   # SERIALS*.exs      -> SERIALS*.usda
     mix rfd.render 2232-rfd-dsl-in-elixir
-    mix rfd.render --qmd ...       # also index.qmd with YAML front matter
-    mix rfd.check                  # refuse when a rendered file drifted from its source
-    mix test                       # the positive case and six negative controls
+    mix rfd.render --check         # fail when a rendered file on disk drifted
+    mix rfd.check                  # compile every source
+    mix rfd.serials [--base REF]   # the registers against the tree and a base revision
+    mix rfd.usda SERIALS.exs       # one register's layer on stdout
+    mix rfd.import [--force]       # README/DETAILS -> .exs (the one-off conversion)
+    mix test                       # the positive cases and the negative controls
 
-The README is the CommonMark `scripts/check-rfd-structure.py` and `scripts/render_site.py`
-read, so it reaches Quarto through the same pipeline as a hand-written one. The
-`flight_level` goes to the register row (`RFD.Doc.register_row/2`), never the README,
-as RFD 2177 decides. A directory without `rfd.exs` is untouched.
+The rendered files are build artifacts and `.gitignore` names them: the README is the
+CommonMark `scripts/check-rfd-structure.py` and `scripts/render_site.py` read, and the
+`.usda` is what `scripts/check-rfd-serials.py` and `pen-66606.usda` read. CI and the
+prek hooks render before any gate reads the tree. The `flight_level` goes to the
+register row, never the README, as RFD 2177 decides.

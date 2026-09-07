@@ -25,3 +25,10 @@ book.qmd
 pages/flight-level-*.qmd
 /rfd_dsl/_build/
 /rfd_dsl/deps/
+
+# RFD 2232: README.md, DETAILS.md and the serial registers are rendered from the
+# .exs sources by `mix rfd.render`; the sources are what is tracked.
+rfd/[0-9][0-9][0-9][0-9]-*/README.md
+rfd/[0-9][0-9][0-9][0-9]-*/DETAILS.md
+/SERIALS.usda
+/SERIALS-*.usda

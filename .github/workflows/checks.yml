@@ -29,6 +29,7 @@ jobs:
   prek:
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,8 +43,8 @@ jobs:
       # `usd-core` is: a toolchain bump should arrive as a diff somebody approves.
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: "27"
-          elixir-version: "1.18"
+          otp-version: "29"
+          elixir-version: "1.20.4"
       # DUAL-TRACK WITH transport-shepherd. Task #83 landed 17 Elixir gate ports;
       # the `all-shepherd-gates` prek hook shells to `mix gates <name> --self-test`
       # for each. The CI runner has no goal-manifest checkout, so shepherd is
@@ -58,6 +59,9 @@ jobs:
         working-directory: transport-shepherd
         run: mix deps.get
       - run: pip install prek
+      # The Markdown and the registers are rendered from the .exs sources (RFD 2232).
+      - run: mix rfd.render
+        working-directory: rfd_dsl
       # GH_TOKEN passthrough for the shepherd goal-manifests port, which asks the
       # organisation which repos are archived (same reason the goal-manifests
       # python job below carries it). Without it the shepherd hook reports FAIL
@@ -84,6 +88,7 @@ jobs:
   goal-manifests:
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -104,11 +109,13 @@ jobs:
   rfd-numbers:
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - uses: ./.github/actions/render-rfds
       # The self-test runs first. A gate that cannot reject a known-bad tree
       # certifies the defect, so it proves itself before it judges the repo.
       - run: python scripts/check-rfd-numbers.py --self-test
@@ -117,6 +124,7 @@ jobs:
   rfd-serials:
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -127,6 +135,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - uses: ./.github/actions/render-rfds
       - run: pip install -r scripts/requirements.txt
       - run: python scripts/check-rfd-serials.py --self-test
       - run: python scripts/check-rfd-serials.py --base origin/${{ github.event.pull_request.base.ref || 'main' }}
@@ -134,6 +143,7 @@ jobs:
   rfd-structure:
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -144,6 +154,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - uses: ./.github/actions/render-rfds
       # The CommonMark parser is the one dependency these gates take, and it
       # is pinned. RFD 1124 says why the AST is worth it.
       - run: pip install -r scripts/requirements.txt
@@ -156,11 +167,13 @@ jobs:
   site-pages:
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - uses: ./.github/actions/render-rfds
       - run: pip install usd-core==26.8
       - run: python scripts/render_site.py --self-test
       - run: python scripts/render_site.py --check
@@ -176,6 +189,7 @@ jobs:
   comment-ladder:
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -193,6 +207,7 @@ jobs:
   trope-density:
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -211,6 +226,7 @@ jobs:
   pr-description:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -230,6 +246,7 @@ jobs:
   rfd-canary:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -237,6 +254,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - uses: ./.github/actions/render-rfds
       - run: python scripts/check_rfd_canary.py --self-test
       - run: python scripts/check_rfd_canary.py --base origin/${{ github.event.pull_request.base.ref || 'main' }}
 
@@ -248,6 +266,7 @@ jobs:
   no-orphaned-branches:
     if: github.event_name == 'push' || github.event_name == 'schedule'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

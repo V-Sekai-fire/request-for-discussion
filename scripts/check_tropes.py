@@ -15,7 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
 TELLS = {
-    "em_dash_join": re.compile(r" [-—][-—]? "),
+    "em_dash_join": re.compile(r"(?<=\S) [-—][-—]? "),
     "counting_announcement": re.compile(
         r"\b(in|for|on)\s+(two|three|four|five|six)\s+(ways|reasons|counts|things|senses)\b",
         re.I,
@@ -29,6 +29,7 @@ TELLS = {
 }
 
 FILE_PATTERNS = (
+    re.compile(r"^rfd/[0-9]{4}-[^/]+\.exs$"),
     re.compile(r"^rfd/[^/]+/(README|DETAILS)\.md$"),
     re.compile(r"^logbook/.+\.md$"),
 )
@@ -60,9 +61,26 @@ def git_show(ref: str, path: str) -> str | None:
         ["git", "show", f"{ref}:{path}"],
         capture_output=True,
         text=True,
+        encoding="utf-8",
         cwd=ROOT,
     )
     return out.stdout if out.returncode == 0 else None
+
+
+def rendered(path: str) -> bool:
+    m = re.match(r"^rfd/([0-9]{4}-[^/]+)/(README|DETAILS)\.md$", path.replace("\\", "/"))
+    return bool(m) and os.path.isfile(os.path.join(ROOT, "rfd", m.group(1) + ".exs"))
+
+
+def prior_text(base: str, path: str) -> str:
+    text = git_show(base, path)
+    if text is not None:
+        return text
+    m = re.match(r"^rfd/([0-9]{4}-[^/]+)\.exs$", path.replace("\\", "/"))
+    if not m:
+        return ""
+    return "".join(git_show(base, f"rfd/{m.group(1)}/{n}") or ""
+                   for n in ("README.md", "DETAILS.md"))
 
 
 def changed_files(base: str) -> list[str]:
@@ -73,7 +91,7 @@ def changed_files(base: str) -> list[str]:
         cwd=ROOT,
         check=True,
     )
-    return [p for p in out.stdout.splitlines() if in_scope(p)]
+    return [p for p in out.stdout.splitlines() if in_scope(p) and not rendered(p)]
 
 
 def gate(base: str) -> int:
@@ -88,7 +106,7 @@ def gate(base: str) -> int:
         if not os.path.isfile(full):
             continue
         after = open(full, encoding="utf-8").read()
-        before = git_show(base, path) or ""
+        before = prior_text(base, path)
         d_now = density(after)
         d_was = density(before)
         if d_now > d_was + 0.001:
@@ -106,7 +124,8 @@ def report() -> int:
     scanned = 0
     for dirpath, _, filenames in os.walk(os.path.join(ROOT, "rfd")):
         for name in filenames:
-            if name in ("README.md", "DETAILS.md"):
+            if name in ("README.md", "DETAILS.md") or in_scope(
+                    os.path.relpath(os.path.join(dirpath, name), ROOT)):
                 rel = os.path.relpath(os.path.join(dirpath, name), ROOT)
                 d = density(open(os.path.join(dirpath, name), encoding="utf-8").read())
                 if d > 0:

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 K. S. Ernest (iFire) Lee
+# SPDX-License-Identifier: MIT
+
 defmodule RFDTest do
   use ExUnit.Case, async: true
 
@@ -73,10 +76,26 @@ defmodule RFDTest do
     assert ["README renders to " <> _] = RFD.Doc.problems(doc(problem: long))
   end
 
-  test "an em-dash join, a pompous copula and an exact on a soft noun are refused" do
-    assert [_] = RFD.Doc.problems(doc(decision: "Do the thing — it matters."))
-    assert [_] = RFD.Doc.problems(doc(problem: "This is what makes it work."))
-    assert [_] = RFD.Doc.problems(doc(related: "the exact moment it failed"))
+  test "an em-dash join, a pompous copula and an exact on a soft noun are named as tropes" do
+    assert [_] = RFD.Doc.tropes(doc(decision: "Do the thing — it matters."))
+    assert [_] = RFD.Doc.tropes(doc(problem: "This is what makes it work."))
+    assert [_] = RFD.Doc.tropes(doc(related: "the exact moment it failed"))
+    assert RFD.Doc.tropes(doc()) == []
+  end
+
+  test "front matter and a preamble render in place and the pointer is not doubled" do
+    d =
+      doc(
+        front_matter: "---\nname: x\n---",
+        preamble: "Shelved 2026-09-02: waiting.",
+        related: "See `DETAILS.md`.",
+        details: [{"More", "body"}]
+      )
+
+    r = RFD.Doc.readme(d)
+    assert String.starts_with?(r, "---\nname: x\n---\n\n# RFD 2999: a test RFD\n\n**State:**")
+    assert r =~ "**Scope:** the scope\n\nShelved 2026-09-02: waiting.\n\n## Decision\n"
+    assert length(Regex.scan(~r/DETAILS\.md/, r)) == 1
   end
 
   test "validate! raises with every reason at once" do

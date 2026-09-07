@@ -148,7 +148,7 @@ def _run(repo, *args):
 
 
 def self_test():
-    """Seven controls. Four must reject known-broken input."""
+    """Nine controls. Four must reject known-broken input."""
     results = []
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as repo:
         _run(repo, "init", "-q")
@@ -196,6 +196,15 @@ def self_test():
         _fixture(repo, "three.py", 6, 130)
         results.append(("deleting code past the 3%% rung is rejected",
                         any(f[0] == "three.py" for f in check(repo, "HEAD", False)[1])))
+
+        _fixture(repo, "ok.py", 18)
+        with open(os.path.join(repo, "ok.py"), encoding="utf-8") as fh:
+            body = fh.read()
+        with open(os.path.join(repo, "ok.py"), "w", encoding="utf-8") as fh:
+            fh.write("# Copyright (c) 2026 someone\n# SPDX-License-Identifier: MIT\n" + body)
+        _run(repo, "add", "-A")
+        results.append(("a licence header added to a file at its rung is accepted",
+                        not any(f[0] == "ok.py" for f in check(repo, "HEAD", False)[1])))
 
     bad = sum(1 for _, got in results if not got)
     for name, got in results:

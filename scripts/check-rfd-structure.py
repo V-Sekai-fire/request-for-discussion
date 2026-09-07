@@ -554,8 +554,9 @@ def _changed_rfd_prefixes(root, base):
         if not path.startswith("rfd/"):
             continue
         segs = path.split("/")
-        if len(segs) >= 2 and DIR_RE.match(segs[1]):
-            prefixes.add(segs[1])
+        name = segs[1][:-4] if len(segs) == 2 and segs[1].endswith(".exs") else segs[1]
+        if len(segs) >= 2 and DIR_RE.match(name):
+            prefixes.add(name)
     return prefixes
 
 

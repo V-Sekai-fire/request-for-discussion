@@ -31,6 +31,12 @@ def new_rfd_dirs(root, base):
         parts = line.split("/")
         if len(parts) == 3 and parts[0] == RFD_ROOT and parts[2] == "README.md":
             dirs.append(os.path.join(parts[0], parts[1]))
+        elif len(parts) == 2 and parts[0] == RFD_ROOT and parts[1].endswith(".exs"):
+            had = subprocess.run(
+                ["git", "-C", root, "cat-file", "-e", f"{base}:{RFD_ROOT}/{parts[1][:-4]}/README.md"],
+                capture_output=True)
+            if had.returncode != 0:
+                dirs.append(os.path.join(parts[0], parts[1][:-4]))
     return sorted(dirs)
 
 
