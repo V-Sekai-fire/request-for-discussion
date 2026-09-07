@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2118. `mix rfd.render` in rfd_dsl/ renders rfd/2118-a-baker-replaces-the-godot-editor/README.md and
+# RFD 2118. `mix rfd.render` renders rfd/2118-a-baker-replaces-the-godot-editor/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2118 do
   use RFD.DSL

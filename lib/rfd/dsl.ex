@@ -13,7 +13,7 @@ defmodule RFD.DSL do
           state :discussion
           flight_level :l2
           feature "one source file per RFD, the README and DETAILS rendered from it"
-          scope "rfd_dsl/, every rfd/NNNN-slug/rfd.exs"
+          scope "the Mix project at the root, every rfd/NNNN-slug.exs"
 
           decision \"\"\"
           ...

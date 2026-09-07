@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1172. `mix rfd.render` in rfd_dsl/ renders rfd/1172-a-diffusion-lm-does-not-land-on-the-npu/README.md and
+# RFD 1172. `mix rfd.render` renders rfd/1172-a-diffusion-lm-does-not-land-on-the-npu/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1172 do
   use RFD.DSL

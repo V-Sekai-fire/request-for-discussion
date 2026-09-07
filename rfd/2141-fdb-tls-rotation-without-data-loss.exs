@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2141. `mix rfd.render` in rfd_dsl/ renders rfd/2141-fdb-tls-rotation-without-data-loss/README.md and
+# RFD 2141. `mix rfd.render` renders rfd/2141-fdb-tls-rotation-without-data-loss/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2141 do
   use RFD.DSL

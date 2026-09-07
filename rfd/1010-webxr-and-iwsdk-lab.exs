@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1010. `mix rfd.render` in rfd_dsl/ renders rfd/1010-webxr-and-iwsdk-lab/README.md and
+# RFD 1010. `mix rfd.render` renders rfd/1010-webxr-and-iwsdk-lab/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1010 do
   use RFD.DSL

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1125. `mix rfd.render` in rfd_dsl/ renders rfd/1125-two-prose-gates/README.md and
+# RFD 1125. `mix rfd.render` renders rfd/1125-two-prose-gates/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1125 do
   use RFD.DSL

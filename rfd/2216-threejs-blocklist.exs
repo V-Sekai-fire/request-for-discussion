@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2216. `mix rfd.render` in rfd_dsl/ renders rfd/2216-threejs-blocklist/README.md and
+# RFD 2216. `mix rfd.render` renders rfd/2216-threejs-blocklist/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2216 do
   use RFD.DSL

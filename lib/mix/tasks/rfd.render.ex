@@ -4,7 +4,7 @@
 defmodule Mix.Tasks.Rfd.Render do
   @shortdoc "Render rfd/NNNN-slug.exs into rfd/NNNN-slug/ and SERIALS*.exs into SERIALS*.usda"
   @moduledoc """
-      mix rfd.render [--check] [--qmd] [NAME ...]
+      mix rfd.render [--check] [NAME ...]
 
   NAME is `NNNN-slug`, `rfd/NNNN-slug.exs`, a directory or `SERIALS*.exs`; with none,
   every source is rendered. `--check` writes nothing and fails on drift.
@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Rfd.Render do
 
   @impl true
   def run(args) do
-    {opts, names, _} = OptionParser.parse(args, strict: [check: :boolean, qmd: :boolean])
+    {opts, names, _} = OptionParser.parse(args, strict: [check: :boolean])
 
     sources =
       if names == [],
@@ -211,7 +211,7 @@ end
 defmodule RFD.Source do
   @moduledoc "Locate, compile and render the RFD and register sources."
 
-  def repo_root, do: Path.expand("..", File.cwd!())
+  def repo_root, do: File.cwd!()
   def rfd_root, do: Path.join(repo_root(), "rfd")
 
   def all do
@@ -286,8 +286,7 @@ defmodule RFD.Source do
     end
 
     wanted =
-      ([{"README.md", RFD.Doc.readme(doc)}, {"DETAILS.md", RFD.Doc.details(doc)}] ++
-         if(opts[:qmd], do: [{"index.qmd", RFD.Doc.qmd(doc)}], else: []))
+      [{"README.md", RFD.Doc.readme(doc)}, {"DETAILS.md", RFD.Doc.details(doc)}]
       |> Enum.reject(fn {_, body} -> is_nil(body) end)
 
     write(name, dir, wanted, opts)

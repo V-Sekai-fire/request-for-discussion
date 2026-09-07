@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1144. `mix rfd.render` in rfd_dsl/ renders rfd/1144-image-to-omnigen2/README.md and
+# RFD 1144. `mix rfd.render` renders rfd/1144-image-to-omnigen2/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1144 do
   use RFD.DSL

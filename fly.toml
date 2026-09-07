@@ -1,0 +1,31 @@
+# Fly.io config for the RFD site and its public MCP endpoint (RFD 2232).
+# TLS terminates at Fly's edge; the app serves plain HTTP on 8080 and
+# scales to zero when idle. The corpus is packed into the image at build
+# time (`mix rfd.pack`), so a cold start reads one file and compiles nothing.
+
+app = "weftspun-rfd"
+primary_region = "sjc"
+
+[build]
+  dockerfile = "Containerfile"
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

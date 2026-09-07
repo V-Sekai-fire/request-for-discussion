@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1073. `mix rfd.render` in rfd_dsl/ renders rfd/1073-dataset-billboard-gallery/README.md and
+# RFD 1073. `mix rfd.render` renders rfd/1073-dataset-billboard-gallery/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1073 do
   use RFD.DSL

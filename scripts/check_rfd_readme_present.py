@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Every RFD directory with a DETAILS.md carries a README.md beside it.
 
-render_site.py's RFD lister filters on README.md presence, so a directory
+the site lists a directory by its README.md, so a directory
 with only DETAILS.md renders no page and 404s on the site. The 2026-09-03
 QA sweep found 90 such directories that had accumulated silently.
 

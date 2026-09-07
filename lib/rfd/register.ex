@@ -4,7 +4,7 @@
 defmodule RFD.Register do
   @moduledoc """
   One site's serial register as data, and the `SERIALS*.usda` layer rendered from it.
-  `SERIALS.exs` at the repository root is the reference source; rfd_dsl/README.md
+  `SERIALS.exs` at the repository root is the reference source; README.md
   shows the block. A serial is appended once and never reused, so the compile refuses
   a serial listed twice, a serial from another site, and a retired row whose
   `recorded_in` names no serial in the register.

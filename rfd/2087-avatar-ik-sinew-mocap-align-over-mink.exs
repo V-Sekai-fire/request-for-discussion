@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2087. `mix rfd.render` in rfd_dsl/ renders rfd/2087-avatar-ik-sinew-mocap-align-over-mink/README.md and
+# RFD 2087. `mix rfd.render` renders rfd/2087-avatar-ik-sinew-mocap-align-over-mink/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2087 do
   use RFD.DSL

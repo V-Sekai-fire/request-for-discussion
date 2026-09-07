@@ -60,8 +60,8 @@ jobs:
         run: mix deps.get
       - run: pip install prek
       # The Markdown and the registers are rendered from the .exs sources (RFD 2232).
+      - run: mix local.hex --force && mix local.rebar --force && mix deps.get
       - run: mix rfd.render
-        working-directory: rfd_dsl
       # GH_TOKEN passthrough for the shepherd goal-manifests port, which asks the
       # organisation which repos are archived (same reason the goal-manifests
       # python job below carries it). Without it the shepherd hook reports FAIL
@@ -160,23 +160,6 @@ jobs:
       - run: pip install -r scripts/requirements.txt
       - run: python scripts/check-rfd-structure.py --self-test
       - run: python scripts/check-rfd-structure.py --changed origin/${{ github.event.pull_request.base.ref || 'main' }}
-
-  # THE SITE PAGES ARE GENERATED, so nothing here checks that they are committed --
-  # it checks that regenerating them changes nothing. A README edited without the
-  # renderer being run would otherwise publish the old text under the new title.
-  site-pages:
-    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-      - uses: ./.github/actions/render-rfds
-      - run: pip install usd-core==26.8
-      - run: python scripts/render_site.py --self-test
-      - run: python scripts/render_site.py --check
 
   # THE COMMENT LADDER, A JOB RATHER THAN A prek HOOK ALONE, AND THE REASON IS THE BASE.
   #

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2135. `mix rfd.render` in rfd_dsl/ renders rfd/2135-checks-run-where-the-credentials-already-are/README.md and
+# RFD 2135. `mix rfd.render` renders rfd/2135-checks-run-where-the-credentials-already-are/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2135 do
   use RFD.DSL

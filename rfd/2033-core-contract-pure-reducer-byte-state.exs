@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2033. `mix rfd.render` in rfd_dsl/ renders rfd/2033-core-contract-pure-reducer-byte-state/README.md and
+# RFD 2033. `mix rfd.render` renders rfd/2033-core-contract-pure-reducer-byte-state/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2033 do
   use RFD.DSL

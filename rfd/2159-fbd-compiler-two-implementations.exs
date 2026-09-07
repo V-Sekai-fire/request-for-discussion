@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2159. `mix rfd.render` in rfd_dsl/ renders rfd/2159-fbd-compiler-two-implementations/README.md and
+# RFD 2159. `mix rfd.render` renders rfd/2159-fbd-compiler-two-implementations/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2159 do
   use RFD.DSL

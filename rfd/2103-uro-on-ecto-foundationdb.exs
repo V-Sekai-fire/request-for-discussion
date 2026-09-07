@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2103. `mix rfd.render` in rfd_dsl/ renders rfd/2103-uro-on-ecto-foundationdb/README.md and
+# RFD 2103. `mix rfd.render` renders rfd/2103-uro-on-ecto-foundationdb/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2103 do
   use RFD.DSL

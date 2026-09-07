@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1039. `mix rfd.render` in rfd_dsl/ renders rfd/1039-trellis2-image-mesh-painting/README.md and
+# RFD 1039. `mix rfd.render` renders rfd/1039-trellis2-image-mesh-painting/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1039 do
   use RFD.DSL

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1117. `mix rfd.render` in rfd_dsl/ renders rfd/1117-text-to-image-to-3d-chain/README.md and
+# RFD 1117. `mix rfd.render` renders rfd/1117-text-to-image-to-3d-chain/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1117 do
   use RFD.DSL

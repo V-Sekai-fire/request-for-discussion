@@ -1,6 +1,8 @@
-# rfd_dsl
+# request-for-discussion
 
-Author an RFD and a serial register as Elixir; the Markdown and the `.usda` are renderings. RFD 2232 says why.
+Every RFD and both serial registers as Elixir sources; one Mix project renders, gates, serves and answers them over MCP.
+
+An RFD is `rfd/NNNN-slug.exs`; a site's serial register is `SERIALS*.exs`:
 
     defmodule RFD2232 do
       use RFD.DSL
@@ -49,16 +51,19 @@ row naming no serial is a compile error that names the rule. Tropes are warnings
 
     mix rfd.render                 # rfd/NNNN-slug.exs -> rfd/NNNN-slug/{README,DETAILS}.md
                                    # SERIALS*.exs      -> SERIALS*.usda
-    mix rfd.render 2232-rfd-dsl-in-elixir
     mix rfd.render --check         # fail when a rendered file on disk drifted
     mix rfd.check                  # compile every source
-    mix rfd.serials [--base REF]   # the registers against the tree and a base revision
+    mix rfd.serials [--base REF]   # the registers against the sources and a base revision
     mix rfd.usda SERIALS.exs       # one register's layer on stdout
-    mix rfd.import [--force]       # README/DETAILS -> .exs (the one-off conversion)
+    mix rfd.serve [--port 4000]    # the site and the MCP endpoint, locally
+    mix rfd.pack                   # priv/corpus.bin, what the release boots from
     mix test                       # the positive cases and the negative controls
 
 The rendered files are build artifacts and `.gitignore` names them: the README is the
-CommonMark `scripts/check-rfd-structure.py` and `scripts/render_site.py` read, and the
-`.usda` is what `scripts/check-rfd-serials.py` and `pen-66606.usda` read. CI and the
-prek hooks render before any gate reads the tree. The `flight_level` goes to the
-register row, never the README, as RFD 2177 decides.
+CommonMark the Python gates read, and the `.usda` is what `check-rfd-serials.py` and
+`pen-66606.usda` read. CI and the prek hooks render before any gate reads the tree.
+
+The same corpus is a site and a public, read-only MCP endpoint on Fly (`fly.toml`,
+`Containerfile`, the Deploy workflow). A new RFD is a new `.exs` and one `serial`
+line in the fabric register's `allocated` block; the endpoint's `get_register` tool
+names the next unused serial. RFD 2232 carries the argument.

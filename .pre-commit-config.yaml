@@ -289,7 +289,7 @@ repos:
           Elixir, thus the formatter is the first check it passes.
         entry: mix format --check-formatted
         language: system
-        files: '^([0-9]{4}-.*\.exs?|rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs)$'
+        files: '^([0-9]{4}-.*\.exs?|rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|lib/.*|test/.*|mix\.exs)$'
         pass_filenames: false
 
       # RFD 2232: every RFD is rfd/NNNN-slug.exs and every register is SERIALS*.exs;
@@ -297,31 +297,31 @@ repos:
       # below that read the tree read a fresh rendering.
       - id: rfd-dsl-render
         name: render the RFD and register sources
-        entry: sh -c 'cd rfd_dsl && mix rfd.render'
+        entry: mix rfd.render
         language: system
-        files: '^(rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|rfd_dsl/.*)$'
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|lib/.*|test/.*|mix\.exs)$'
         pass_filenames: false
 
       - id: rfd-dsl-check
         name: every RFD and register source compiles inside RFD 1000's shape
-        entry: sh -c 'cd rfd_dsl && mix rfd.check'
+        entry: mix rfd.check
         language: system
-        files: '^(rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|rfd_dsl/.*)$'
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|lib/.*|test/.*|mix\.exs)$'
         pass_filenames: false
 
       - id: rfd-dsl-serials
         name: the registers agree with the sources on disk
-        entry: sh -c 'cd rfd_dsl && mix rfd.serials'
+        entry: mix rfd.serials
         language: system
-        files: '^(rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|rfd_dsl/.*)$'
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|lib/.*|test/.*|mix\.exs)$'
         pass_filenames: false
 
       # The DSL's own controls: six known-broken documents must be refused.
       - id: rfd-dsl-test
         name: the RFD DSL still refuses known-broken documents
-        entry: sh -c 'cd rfd_dsl && MIX_ENV=test mix test'
+        entry: mix test
         language: system
-        files: '^rfd_dsl/.*$'
+        files: '^(lib/.*|test/.*|mix\.exs)$'
         pass_filenames: false
 
       - id: elixir-parses
@@ -438,9 +438,8 @@ repos:
         files: ^scripts/check_ggml_singleton\.py$
         pass_filenames: false
 
-      # A directory that carries DETAILS.md without a README.md renders no
-      # page on the site -- render_site.py's RFD lister filters on README
-      # presence. The 2026-09-03 QA sweep found 90 such directories.
+      # A directory that carries DETAILS.md without a README.md has no page;
+      # the DSL renders both, so this now guards the apparatus directories.
       - id: rfd-readme-present
         name: every RFD dir with DETAILS.md carries a README.md
         entry: python scripts/check_rfd_readme_present.py
@@ -471,24 +470,6 @@ repos:
         entry: python scripts/check_rfd_state_canonical.py --self-test
         language: python
         files: ^scripts/check_rfd_state_canonical\.py$
-        pass_filenames: false
-
-      # A prose entry count in pages/logbook.qmd drifts silently the moment an
-      # entry is added or removed. Anti-entropy check: if the page declares a
-      # count, disk must agree. Silent-skip case (no count declared) reports
-      # the observed count, so rule 3 is not violated.
-      - id: logbook-count
-        name: pages/logbook.qmd's entry count matches the entries on disk
-        entry: python scripts/check_logbook_count.py
-        language: python
-        pass_filenames: false
-        always_run: true
-
-      - id: logbook-count-self-test
-        name: the logbook-count gate still fails on a planted mismatch
-        entry: python scripts/check_logbook_count.py --self-test
-        language: python
-        files: ^scripts/check_logbook_count\.py$
         pass_filenames: false
 
       # DUAL-TRACK PARITY WITH transport-shepherd's ELIXIR GATE PORTS.

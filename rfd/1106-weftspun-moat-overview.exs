@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1106. `mix rfd.render` in rfd_dsl/ renders rfd/1106-weftspun-moat-overview/README.md and
+# RFD 1106. `mix rfd.render` renders rfd/1106-weftspun-moat-overview/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1106 do
   use RFD.DSL

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1037. `mix rfd.render` in rfd_dsl/ renders rfd/1037-composite-models-as-taskweft-domains/README.md and
+# RFD 1037. `mix rfd.render` renders rfd/1037-composite-models-as-taskweft-domains/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1037 do
   use RFD.DSL

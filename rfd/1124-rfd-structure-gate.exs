@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1124. `mix rfd.render` in rfd_dsl/ renders rfd/1124-rfd-structure-gate/README.md and
+# RFD 1124. `mix rfd.render` renders rfd/1124-rfd-structure-gate/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1124 do
   use RFD.DSL
