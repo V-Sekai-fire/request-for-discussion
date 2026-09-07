@@ -1,3 +1,6 @@
+# Copyright (c) 2026 K. S. Ernest (iFire) Lee
+# SPDX-License-Identifier: MIT
+
 defmodule RFD.MixProject do
   use Mix.Project
 

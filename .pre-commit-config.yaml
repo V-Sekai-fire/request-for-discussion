@@ -234,7 +234,7 @@ repos:
         name: trope density (report mode; self-test does the gating)
         entry: python scripts/check_tropes.py
         language: python
-        files: '^(rfd/[^/]+/(README|DETAILS)\.md|logbook/.*\.md|scripts/check_tropes\.py)$'
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|rfd/[^/]+/(README|DETAILS)\.md|logbook/.*\.md|scripts/check_tropes\.py)$'
         pass_filenames: false
 
       - id: trope-density-self-test
@@ -289,16 +289,31 @@ repos:
           Elixir, thus the formatter is the first check it passes.
         entry: mix format --check-formatted
         language: system
-        files: '^[0-9]{4}-.*\.exs?$'
+        files: '^([0-9]{4}-.*\.exs?|rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs)$'
         pass_filenames: false
 
-      # RFD 2232: an RFD with an rfd.exs source is rendered from it, and a README or
-      # DETAILS that no longer matches the source is refused rather than merged.
+      # RFD 2232: every RFD is rfd/NNNN-slug.exs and every register is SERIALS*.exs;
+      # the Markdown and the .usda are rendered from them and untracked, so the hooks
+      # below that read the tree read a fresh rendering.
+      - id: rfd-dsl-render
+        name: render the RFD and register sources
+        entry: sh -c 'cd rfd_dsl && mix rfd.render'
+        language: system
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|rfd_dsl/.*)$'
+        pass_filenames: false
+
       - id: rfd-dsl-check
-        name: rendered RFDs match their rfd.exs source
+        name: every RFD and register source compiles inside RFD 1000's shape
         entry: sh -c 'cd rfd_dsl && mix rfd.check'
         language: system
-        files: '^(rfd/[0-9]{4}-[^/]+/(rfd\.exs|README\.md|DETAILS\.md)|rfd_dsl/.*)$'
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|rfd_dsl/.*)$'
+        pass_filenames: false
+
+      - id: rfd-dsl-serials
+        name: the registers agree with the sources on disk
+        entry: sh -c 'cd rfd_dsl && mix rfd.serials'
+        language: system
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|rfd_dsl/.*)$'
         pass_filenames: false
 
       # The DSL's own controls: six known-broken documents must be refused.
@@ -329,7 +344,7 @@ repos:
         entry: python scripts/check-rfd-structure.py
         language: python
         additional_dependencies: [markdown-it-py==3.0.0, usd-core==26.8]
-        files: '^([0-9]{4}-.*/(README|DETAILS)\.md)$'
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|[0-9]{4}-.*/(README|DETAILS)\.md)$'
         pass_filenames: false
 
       # RFD 1000 owns numbering. The script scans the tree rather than a
@@ -343,7 +358,7 @@ repos:
           gives the rule.
         entry: python scripts/check-rfd-numbers.py
         language: python
-        files: '^([0-9]{4}-.*|scripts/check-rfd-numbers\.py)$'
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|[0-9]{4}-.*|scripts/check-rfd-numbers\.py)$'
         pass_filenames: false
 
       - id: rfd-numbers-self-test
@@ -362,7 +377,7 @@ repos:
         entry: python scripts/check-rfd-serials.py
         language: python
         additional_dependencies: [usd-core==26.8]
-        files: '^([0-9]{4}-.*|SERIALS\.usda)$'
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|SERIALS[^/]*\.exs|[0-9]{4}-.*|SERIALS\.usda)$'
         pass_filenames: false
 
       - id: dockerfile-and-server

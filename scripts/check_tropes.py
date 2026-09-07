@@ -29,6 +29,7 @@ TELLS = {
 }
 
 FILE_PATTERNS = (
+    re.compile(r"^rfd/[0-9]{4}-[^/]+\.exs$"),
     re.compile(r"^rfd/[^/]+/(README|DETAILS)\.md$"),
     re.compile(r"^logbook/.+\.md$"),
 )
@@ -106,7 +107,8 @@ def report() -> int:
     scanned = 0
     for dirpath, _, filenames in os.walk(os.path.join(ROOT, "rfd")):
         for name in filenames:
-            if name in ("README.md", "DETAILS.md"):
+            if name in ("README.md", "DETAILS.md") or in_scope(
+                    os.path.relpath(os.path.join(dirpath, name), ROOT)):
                 rel = os.path.relpath(os.path.join(dirpath, name), ROOT)
                 d = density(open(os.path.join(dirpath, name), encoding="utf-8").read())
                 if d > 0:

@@ -226,12 +226,35 @@ def check_against_base(base_text, text):
     return problems
 
 
+SOURCE = "SERIALS.exs"
+
+
 def base_register(root, base):
+    """The register at `base`: the rendered layer if that revision tracked it, else
+    the `SERIALS.exs` source rendered through `mix rfd.usda` (RFD 2232)."""
     r = subprocess.run(
         ["git", "show", f"{base}:{REGISTER}"],
         cwd=root, capture_output=True, text=True,
     )
-    return r.stdout if r.returncode == 0 else None
+    if r.returncode == 0:
+        return r.stdout
+    r = subprocess.run(
+        ["git", "show", f"{base}:{SOURCE}"],
+        cwd=root, capture_output=True, text=True,
+    )
+    if r.returncode != 0:
+        return None
+    import tempfile
+    with tempfile.NamedTemporaryFile("w", suffix=".exs", delete=False, encoding="utf-8") as fh:
+        fh.write(r.stdout)
+    r = subprocess.run(
+        ["mix", "rfd.usda", fh.name],
+        cwd=os.path.join(root, "rfd_dsl"), capture_output=True, text=True, shell=os.name == "nt",
+    )
+    os.unlink(fh.name)
+    if r.returncode != 0:
+        raise SystemExit(f"mix rfd.usda failed on {base}:{SOURCE}:\n{r.stdout}{r.stderr}")
+    return r.stdout
 
 
 def register_is_new(root, base):
@@ -243,7 +266,7 @@ def register_is_new(root, base):
     how a renumbering would get past this gate if it could.
     """
     r = subprocess.run(
-        ["git", "diff", "--name-status", f"{base}...HEAD", "--", REGISTER],
+        ["git", "diff", "--name-status", f"{base}...HEAD", "--", REGISTER, SOURCE],
         cwd=root, capture_output=True, text=True,
     )
     return r.returncode == 0 and r.stdout.strip().startswith("A")

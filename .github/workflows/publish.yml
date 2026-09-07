@@ -22,6 +22,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # README.md, DETAILS.md and SERIALS*.usda are rendered from the .exs sources (RFD 2232).
+      - uses: ./.github/actions/render-rfds
+
       - name: Set up Python
         run: pip install usd-core==26.8
 
@@ -43,7 +46,7 @@ jobs:
           path: |
             .quarto
             _freeze
-          key: quarto-site-${{ runner.os }}-${{ hashFiles('_quarto.yml', 'rfd-sheet.scss', 'rfd/**', 'logbook/**', 'pages/**', 'scripts/render_site.py', 'scripts/render_flight_level_pages.py') }}
+          key: quarto-site-${{ runner.os }}-${{ hashFiles('_quarto.yml', 'rfd-sheet.scss', 'rfd/**', 'SERIALS*.exs', 'logbook/**', 'pages/**', 'scripts/render_site.py', 'scripts/render_flight_level_pages.py') }}
           restore-keys: |
             quarto-site-${{ runner.os }}-
 
@@ -64,6 +67,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # README.md, DETAILS.md and SERIALS*.usda are rendered from the .exs sources (RFD 2232).
+      - uses: ./.github/actions/render-rfds
+
       - name: Set up Python
         run: pip install usd-core==26.8
 
@@ -79,7 +85,7 @@ jobs:
             .quarto
             _freeze
             ~/.TinyTeX
-          key: quarto-book-${{ runner.os }}-${{ hashFiles('_quarto.yml', 'rfd/**', 'logbook/**', 'scripts/render_site.py') }}
+          key: quarto-book-${{ runner.os }}-${{ hashFiles('_quarto.yml', 'rfd/**', 'SERIALS*.exs', 'logbook/**', 'scripts/render_site.py') }}
           restore-keys: |
             quarto-book-${{ runner.os }}-
 
