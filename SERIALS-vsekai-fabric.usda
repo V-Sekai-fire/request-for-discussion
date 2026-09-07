@@ -940,6 +940,10 @@ def Scope "Serials"
                 {
                     custom string slug = "close-out-gates-red-green-scout"
                 }
+                def "S2169"
+                {
+                    custom string slug = "abandon-strangler-fig-studio-core"
+                }
             }
         }
     }
