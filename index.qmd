@@ -2,11 +2,25 @@
 title: "Taskweft — Manuals"
 toc: false
 listing:
-  filter-ui: false
-  sort-ui: false
+  filter-ui: true
+  sort-ui: true
   type: table
   contents:
-    - "rfd/1175-game/README.md"
-  fields: [title, state]
+    - "rfd/1[0-9]*/index.md"
+    - "rfd/2[0-9]*/index.md"
+  sort:
+    - "rfd desc"
+  fields: [rfd, title, state, scope]
+  field-display-names:
+    rfd: "RFD"
+    title: "Title"
+    state: "State"
+    scope: "Scope"
+  exclude:
+    state: ["abandoned", "moved"]
   page-size: 50
+  feed: true
 ---
+
+The serial register: every Request-for-Discussion document by number,
+newest first. Flight Levels and the logbook are in the navbar.

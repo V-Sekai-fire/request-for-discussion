@@ -1,7 +1,6 @@
 # RFD 2210: atelier shipping surface
 
 **State:** discussion
-**Flight level:** L2 (coordination, one runtime across platforms; see RFD 2177)
 **Feature:** the atelier ships as one native Godot binary per platform;
 one runtime, two heads (interactive + headless capture)
 **Scope:** `3-interactor/entities-godot-sandbox`, `2-contract/ggml`,
