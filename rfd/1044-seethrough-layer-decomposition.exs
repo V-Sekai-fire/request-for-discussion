@@ -15,7 +15,8 @@ defmodule RFD1044 do
 
     decision ~S"""
     Model the pipeline as a taskweft domain, and let the planner pick the
-    order. `domain.ex` and `problem.ex` in this folder hold it.
+    order. `domain.ex` and `problem.ex` under
+    `apparatus/1044-seethrough-layer-decomposition/` hold it.
     RFD 1037 gives the convention, and both files validate against
     `Code.string_to_quoted/1`.
 

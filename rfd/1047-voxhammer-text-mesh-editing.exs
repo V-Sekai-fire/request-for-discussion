@@ -18,8 +18,8 @@ defmodule RFD1047 do
     three stages as a taskweft domain, because the guard that protects the
     unmasked region belongs in the plan and not in a comment.
 
-    `domain.ex` and `problem.ex` in this folder hold it. RFD 1037
-    gives the convention.
+    `domain.ex` and `problem.ex` in `interactor-voxhammer-text-mesh-editing`
+    hold it, one standalone repo per model. RFD 1037 gives the convention.
 
     See `DETAILS.md` for the model's shared-weight cost, the `predict()`
     interface, the unmasked-region guard, and why layering makes the edit

@@ -165,7 +165,7 @@ defmodule RFD1000 do
     wrong shape for it: a procedure is not a decision, and it is not a
     result either.
 
-    So an RFD may carry a `SKILL.md`, in the same folder, with the
+    So an RFD may carry a `SKILL.md`, in `apparatus/NNNN-slug/`, with the
     frontmatter a skill takes:
 
         ---
@@ -183,6 +183,30 @@ defmodule RFD1000 do
     The test for whether something belongs here: a reader following it in
     order should not need to have read either sibling. A skill that only
     makes sense after the DETAILS is a section of the DETAILS.
+    """
+
+    details "Apparatus lives in apparatus/NNNN-slug/", ~S"""
+    `rfd/NNNN-slug.exs` is the source. `mix rfd.render` writes `README.md`
+    and `DETAILS.md` into `rfd/NNNN-slug/`, and that directory holds those
+    two files and nothing else, so deleting it costs a render and no
+    information.
+
+    Everything else an RFD carries lives in `apparatus/NNNN-slug/`. A
+    `SKILL.md`, an HTN `domain.ex`/`problem.ex`/`plan.ex`, a measurement
+    probe, a `.cff` citation, a report template, a USD layer. The word is
+    the logbook's: an entry clips the experimental apparatus, enough to
+    re-run the test.
+
+    The rule is a gate, because it was not one before.
+    `scripts/check_rfd_dirs_rendered_only.py` fails a tracked file under
+    `rfd/NNNN-slug/`. Sixty-five of them had accumulated there by
+    2026-09-07: Cog predictors, five HTN triples, ten skills, six
+    citations, both fourloops layers. A `rm -rf rfd/*/` would have taken
+    all of them, leaving two symlinks and four gates pointing into the
+    hole.
+
+    Renders are ignored, apparatus is tracked, so the two never mix in a
+    diff.
     """
 
     details "The serial register", ~S"""

@@ -116,7 +116,8 @@ defmodule RFD1040 do
     """
 
     details "Measured: the image does not build, and did not run", ~S"""
-    `SKILL.md` beside this file carries what to do about it: the order the
+    `apparatus/1040-pixal3d-image-to-textured-mesh/SKILL.md` carries what to
+    do about it: the order the
     steps go in, and the errors that name the wrong cause. This section is
     the measurement, and that one is the procedure.
 

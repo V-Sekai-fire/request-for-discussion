@@ -46,8 +46,9 @@ defmodule RFD1048 do
     `apply_edit` holds one alternative per conditioning. Each one checks
     `/mode/conditioning`, thus the planner takes exactly one.
 
-    This folder holds `problem.ex` only. RFD 1000 keeps one source per
-    design, and the domain is that source.
+    `interactor-voxhammer-image-mesh-editing` holds `problem.ex`, and takes
+    the domain from RFD 1047's repo. RFD 1000 keeps one source per design,
+    and the domain is that source.
     """
 
     details "The model", ~S"""

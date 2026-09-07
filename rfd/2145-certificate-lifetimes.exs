@@ -193,15 +193,15 @@ defmodule RFD2145 do
     """
 
     details "Sources", ~S"""
-    Cited in `.cff` files alongside this document so a citation gate can
-    walk them without parsing prose:
+    Cited in `.cff` files under `apparatus/2145-certificate-lifetimes/references/`
+    so a citation gate can walk them without parsing prose:
 
-    - `references/10-rfc5280.cff` (mandatory `notAfter`, §4.1.2.5)
-    - `references/20-mozilla-root-store-policy.cff` (15-year public-trust cap)
-    - `references/30-cabforum-sc081v3.cff` (200 → 100 → 47 day schedule)
-    - `references/40-ncsc-pki-principles.cff` ("as short as practical")
-    - `references/50-nist-sp-800-57-part1.cff` (cryptoperiod framing)
-    - `references/60-webtransport-servercerthashes.cff` (14-day WT ceiling)
+    - `10-rfc5280.cff` (mandatory `notAfter`, §4.1.2.5)
+    - `20-mozilla-root-store-policy.cff` (15-year public-trust cap)
+    - `30-cabforum-sc081v3.cff` (200 → 100 → 47 day schedule)
+    - `40-ncsc-pki-principles.cff` ("as short as practical")
+    - `50-nist-sp-800-57-part1.cff` (cryptoperiod framing)
+    - `60-webtransport-servercerthashes.cff` (14-day WT ceiling)
     """
 
     drafted_by :ai

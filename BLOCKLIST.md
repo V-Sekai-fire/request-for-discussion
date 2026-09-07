@@ -1154,7 +1154,7 @@ What replaces it costs little: raw inline SVG inside the `.qmd`, which
 Quarto passes through untouched. That keeps the source rule intact --
 an SVG is text, diffable and editable like `.usda` -- while the
 rendered page gets the same figure the artifact delivery shows.
-`rfd/2136-the-gacha-critical-path/page.qmd` is the reference case.
+`apparatus/2136-the-gacha-critical-path/page.qmd` is the reference case.
 
 The blocklist covers figures that are published: RFD pages, logbook
 entries, artifact reports. A throwaway sketch in a PR description or
