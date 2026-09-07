@@ -22,7 +22,7 @@ ELF returns node/skeleton/expression/spring-bone data.
 ## Cascade
 
 `modules/sandbox` (libriscv) is on the KEEP list because its
-ELF-execution capability is what makes this work.
+ELF-execution capability is the reason for this work.
 
 ## Related
 
