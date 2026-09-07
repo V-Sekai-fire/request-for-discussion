@@ -122,16 +122,36 @@ defmodule RFD2235 do
     """
 
     details "What was measured", ~S"""
-    Thirty-four tests drive the agent over ex_mcp's memory transport with a
+    Forty-one tests drive the agent over ex_mcp's memory transport with a
     scripted editor: the grammar, the domain loader and its literal `@exec`
     walk, the planner (build then test; the five-step commit; replan taking the
     other decomposition on the failed action; no recovery when none exists),
     the end-to-end run with a permission per step, rejection and refusal, the
     replan budget, load and list from the store, the export, the store adapter
-    through the real helper, and the bridge running real commands. Dialyzer runs
-    on the whole application as a gate. On the desk the taskweft NIF and the
-    helper build with llvm-mingw (operator directive: not Visual Studio), and
-    the stdio bridge answers `initialize` two seconds after launch.
+    through the real helper, the fallback adapter through a fake mount (the
+    switch is written through the fallback before the retried write, a plain
+    SQL error does not switch, and a degraded boot names its reason on every
+    call), and the bridge running real commands. Dialyzer runs on the whole
+    application as a gate.
+
+    `mix taskweft_acp.bench` drives a ten-step plan through the agent with an
+    editor that answers instantly, five runs of ten steps, on this desk on
+    2026-09-07:
+
+    | store mode              | p50 ms/step | p95 ms/step |
+    | ----------------------- | ----------- | ----------- |
+    | floor (memory store)    | 0.31        | 0.41        |
+    | plain (helper + SQLite) | 1.64        | 1.95        |
+    | fabric (weft_fdb)       | not run     | not run     |
+
+    The fabric row waits for the cluster, which is 6PN-only, so it is measured
+    from the Fly machine once its credentials exist. Plain mode costs about
+    1.3 ms per step over the floor: one helper round trip and one SQLite
+    transaction per event. On the desk the taskweft NIF and the helper build
+    with llvm-mingw (operator directive: not Visual Studio), and the stdio
+    bridge answers `initialize` two seconds after launch. The fabric build
+    needs `FDB_API_VERSION=730` defined, as the bao plugin's cgo flags do; the
+    first Fly build failed without it.
     """
 
     drafted_by :ai
