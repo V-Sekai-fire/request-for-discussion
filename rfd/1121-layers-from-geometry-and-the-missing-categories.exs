@@ -6,7 +6,8 @@
 defmodule RFD1121 do
   use RFD.DSL
 
-  rfd 1121, "Layers come from geometry, and the missing categories come from a multiview rebuild" do
+  rfd 1121,
+      "Layers come from geometry, and the missing categories come from a multiview rebuild" do
     state :discussion
 
     feature "image-to-layers, corpus side"
@@ -76,37 +77,38 @@ defmodule RFD1121 do
     A caller who counts ranges misses it. `hm08-partition` proves this and names the block.
     """
 
-    details "The correction: the mesh is 19,158 vertices, and the joint cubes come in two ranges", ~S"""
-    `hm08-partition` states the mesh as 19,150 vertices and the unnamed block as one range,
-    `13606` to `14597`, which is 992 vertices and reads as 124 joint helper cubes of 8.
+    details "The correction: the mesh is 19,158 vertices, and the joint cubes come in two ranges",
+            ~S"""
+            `hm08-partition` states the mesh as 19,150 vertices and the unnamed block as one range,
+            `13606` to `14597`, which is 992 vertices and reads as 124 joint helper cubes of 8.
 
-    Both numbers are short by one cube. `basemesh_vertex_groups.json` gives `JointCubes` **two**
-    ranges, not one.
+            Both numbers are short by one cube. `basemesh_vertex_groups.json` gives `JointCubes` **two**
+            ranges, not one.
 
-        "JointCubes": [[13606, 14597], [19150, 19157]]
+                "JointCubes": [[13606, 14597], [19150, 19157]]
 
-    That totals 1,000 vertices, which is **125** cubes. The highest index in any of the 144
-    groups is `19157`, so the mesh holds 19,158 vertices.
+            That totals 1,000 vertices, which is **125** cubes. The highest index in any of the 144
+            groups is `19157`, so the mesh holds 19,158 vertices.
 
-    The measurement confirms it. `anny.Anny(topology=TopologyConfig(base_mesh="makehuman",
-    remove_unattached_vertices=False))` returns 19,158 vertices. The default returns 13,718,
-    because the default drops every unattached vertex, and all of the helper geometry is
-    unattached.
+            The measurement confirms it. `anny.Anny(topology=TopologyConfig(base_mesh="makehuman",
+            remove_unattached_vertices=False))` returns 19,158 vertices. The default returns 13,718,
+            because the default drops every unattached vertex, and all of the helper geometry is
+            unattached.
 
-    This repeats the exact error `hm08-partition` was written to catch, one level up. The original
-    claim counted the ranges in `groups_by_range` and missed the helper block. The correction
-    counted the same 12 ranges, stopped at `19149`, and missed the second `JointCubes` range. The
-    tidy arithmetic is what sold it. `992 = 124 * 8` divides evenly, so nobody asked whether 992
-    was all of them.
+            This repeats the exact error `hm08-partition` was written to catch, one level up. The original
+            claim counted the ranges in `groups_by_range` and missed the helper block. The correction
+            counted the same 12 ranges, stopped at `19149`, and missed the second `JointCubes` range. The
+            tidy arithmetic is what sold it. `992 = 124 * 8` divides evenly, so nobody asked whether 992
+            was all of them.
 
-    The consequence is the one the original file named. Eight vertices at `19150` to `19157` fall
-    through every mask **built from `groups_by_range`**. They either vanish from the corpus or
-    appear as one small floating box inside whichever layer catches the remainder.
+            The consequence is the one the original file named. Eight vertices at `19150` to `19157` fall
+            through every mask **built from `groups_by_range`**. They either vanish from the corpus or
+            appear as one small floating box inside whichever layer catches the remainder.
 
-    Those eight have a name. They are `joint-ground`, which is MakeHuman's ground joint and a
-    group of its own. It sits at the end of the mesh instead of in the contiguous block, which is
-    how one read of one range lost it.
-    """
+            Those eight have a name. They are `joint-ground`, which is MakeHuman's ground joint and a
+            group of its own. It sits at the end of the mesh instead of in the contiguous block, which is
+            how one read of one range lost it.
+            """
 
     details "Two more corrections, and the claim that was true all along", ~S"""
     **The cubes are not unnamed.** `hm08-partition` said 992 vertices belong to no group at all.

@@ -265,7 +265,7 @@ defmodule RFD1171 do
     than another afternoon.
     """
 
-    details "So the camera feeds all four movements, not just `be it`## So the camera feeds all four movements, not just `be it`", ~S"""
+    details "So the camera feeds all four movements, not just `be it`", ~S"""
         movement        what the camera gives          through
 
         make            a photograph of a person or    detection, then

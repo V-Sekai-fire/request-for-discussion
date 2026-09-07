@@ -6,13 +6,15 @@ defmodule Serials.Weftspun do
 
   register "Weftspun" do
     layer arc: "1.3.6.1.4.1.66606.1.1",
-      site: 1,
-      site_name: "weftspun",
-      category: 1,
-      category_name: "documents",
-      pen: "1.3.6.1.4.1.66606",
-      rule: "rfd/1000-conventions/DETAILS.md",
-      note: {:decommissioned, "Frozen 2026-08-31. No new serial is allocated under arc 66606.1.1. Existing serials stay in place and stay citable; slug edits are fine, because renaming a document does not renumber it. New RFDs in this repository take the next unused serial under site 2 (arc 66606.1.2) from SERIALS-vsekai-fabric.usda, whose 2026-08-29 decommission was reactivated on 2026-08-31 for this purpose. When site 2 fills up, RFD 1000 opens site 5 at arc 66606.1.5. See pen-66606.usda sitesDecommissioned for the full argument."}
+          site: 1,
+          site_name: "weftspun",
+          category: 1,
+          category_name: "documents",
+          pen: "1.3.6.1.4.1.66606",
+          rule: "rfd/1000-conventions/DETAILS.md",
+          note:
+            {:decommissioned,
+             "Frozen 2026-08-31. No new serial is allocated under arc 66606.1.1. Existing serials stay in place and stay citable; slug edits are fine, because renaming a document does not renumber it. New RFDs in this repository take the next unused serial under site 2 (arc 66606.1.2) from SERIALS-vsekai-fabric.usda, whose 2026-08-29 decommission was reactivated on 2026-08-31 for this purpose. When site 2 fills up, RFD 1000 opens site 5 at arc 66606.1.5. See pen-66606.usda sitesDecommissioned for the full argument."}
 
     thesis "Every serial this site has allocated, and every one it has retired. A serial is appended once. It is never removed and never reused, because it is the last arc of an OID and an arc names one document for as long as it exists. A slug follows its directory, because a retitle renames a document and does not renumber it."
 

@@ -43,7 +43,7 @@ jobs:
       # `usd-core` is: a toolchain bump should arrive as a diff somebody approves.
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: "28"
+          otp-version: "29"
           elixir-version: "1.20.4"
       # DUAL-TRACK WITH transport-shepherd. Task #83 landed 17 Elixir gate ports;
       # the `all-shepherd-gates` prek hook shells to `mix gates <name> --self-test`

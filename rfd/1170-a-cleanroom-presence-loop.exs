@@ -324,7 +324,7 @@ defmodule RFD1170 do
     not shown it can.
     """
 
-    details "But the frame rate is not the reason to choose## But the frame rate is not the reason to choose", ~S"""
+    details "But the frame rate is not the reason to choose", ~S"""
     Even at 245 fps, Mitsuba is the wrong instrument for this loop, and
     saying so matters more than the arithmetic above.
 

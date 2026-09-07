@@ -6,13 +6,15 @@ defmodule Serials.VSekaiFabric do
 
   register "VSekaiFabric" do
     layer arc: "1.3.6.1.4.1.66606.1.2",
-      site: 2,
-      site_name: "v-sekai-fabric",
-      category: 1,
-      category_name: "documents",
-      pen: "1.3.6.1.4.1.66606",
-      rule: "rfd/2000-conventions/index.md",
-      note: {:reactivated, "Reactivated 2026-08-31 when site 1 was frozen. The site was decommissioned on 2026-08-29 and moved into request-for-discussion, which is where its register now lives; the 2026-08-29 sentence promising no new allocations was retracted in pen-66606.usda sitesDecommissioned. From 2026-08-31 forward this is the workspace source of new RFD serials -- new RFDs get 2NNN numbers here."}
+          site: 2,
+          site_name: "v-sekai-fabric",
+          category: 1,
+          category_name: "documents",
+          pen: "1.3.6.1.4.1.66606",
+          rule: "rfd/2000-conventions/index.md",
+          note:
+            {:reactivated,
+             "Reactivated 2026-08-31 when site 1 was frozen. The site was decommissioned on 2026-08-29 and moved into request-for-discussion, which is where its register now lives; the 2026-08-29 sentence promising no new allocations was retracted in pen-66606.usda sitesDecommissioned. From 2026-08-31 forward this is the workspace source of new RFD serials -- new RFDs get 2NNN numbers here."}
 
     thesis "Every serial this site has allocated. A serial is appended once. It is never removed and never reused, because it is the last arc of an OID and an arc names one document for as long as it exists. A slug follows its directory, because a retitle renames a document and does not renumber it."
 
