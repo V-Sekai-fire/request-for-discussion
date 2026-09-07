@@ -76,6 +76,12 @@ CHECKS = {
 }
 
 
+def is_model_folder(path: Path) -> bool:
+    """A model folder is one with a server.py in it. RFD 1036's rules are about the
+    thing that serves the model, and a probe's Dockerfile is not that."""
+    return (path.parent / "server.py").is_file()
+
+
 def main(argv: list[str]) -> int:
     paths = [Path(a) for a in argv]
 
@@ -84,17 +90,27 @@ def main(argv: list[str]) -> int:
             paths += sorted(Path(".").glob(f"*/{name}"))
 
     failed = 0
+    checked = 0
+    skipped = []
     for path in paths:
         check = CHECKS.get(path.name)
         if not check:
             continue
 
+        if not is_model_folder(path):
+            skipped.append(path)
+            continue
+
+        checked += 1
         for problem in check(path):
             failed = 1
             print(f"FAIL {path} {problem}", file=sys.stderr)
 
+    for path in skipped:
+        print(f"skip {path}: no server.py beside it, thus not a model folder")
+
     if not failed:
-        print(f"ok {len(paths)} model image file(s)")
+        print(f"ok {checked} model image file(s), {len(skipped)} skipped")
     return failed
 
 

@@ -370,7 +370,7 @@ def check(root):
         problems += check_sections(name, toks, state)
         problems += check_citations(name, toks, nums)
 
-        skill = os.path.join(root, "rfd", d, "SKILL.md")
+        skill = os.path.join(root, "apparatus", d, "SKILL.md")
         if os.path.exists(skill):
             with open(skill, encoding="utf-8") as fh:
                 problems += check_skill(f"{d}/SKILL.md", fh.read())
@@ -468,7 +468,8 @@ def self_test():
             with open(os.path.join(tmp, "rfd", "1001-a-slug", "DETAILS.md"), "w", encoding="utf-8") as fh:
                 fh.write(details)
         if skill is not None:
-            with open(os.path.join(tmp, "rfd", "1001-a-slug", "SKILL.md"), "w", encoding="utf-8") as fh:
+            os.makedirs(os.path.join(tmp, "apparatus", "1001-a-slug"))
+            with open(os.path.join(tmp, "apparatus", "1001-a-slug", "SKILL.md"), "w", encoding="utf-8") as fh:
                 fh.write(skill)
         with open(os.path.join(tmp, "SERIALS.usda"), "w", encoding="utf-8") as fh:
             fh.write(deleted if deleted is not None else REGISTER)

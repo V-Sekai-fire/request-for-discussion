@@ -98,7 +98,7 @@ repos:
         name: the four-loop plan agrees with its graph, its sources and the schema layer
         entry: python scripts/check_fourloops_plan.py
         language: system
-        files: ^(fourloops-plan\.usda|fourloops-etnf\.usda|scripts/check_fourloops_plan\.py)$
+        files: ^(apparatus/1143-keypoints-to-anny/fourloops-(plan|etnf)\.usda|scripts/check_fourloops_plan\.py)$
         pass_filenames: false
         stages: [manual]
 
@@ -112,7 +112,7 @@ repos:
         entry: python scripts/check_fourloops_etnf.py
         language: python
         additional_dependencies: ["usd-core==26.8"]
-        files: ^(fourloops-etnf\.usda|scripts/check_fourloops_etnf\.py)$
+        files: ^(apparatus/1143-keypoints-to-anny/fourloops-etnf\.usda|scripts/check_fourloops_etnf\.py)$
         pass_filenames: false
         stages: [manual]
 
@@ -344,7 +344,7 @@ repos:
         entry: python scripts/check-rfd-structure.py
         language: python
         additional_dependencies: [markdown-it-py==3.0.0, usd-core==26.8]
-        files: '^(rfd/[0-9]{4}-[^/]+\.exs|[0-9]{4}-.*/(README|DETAILS)\.md)$'
+        files: '^(rfd/[0-9]{4}-[^/]+\.exs|rfd/[0-9]{4}-[^/]+/(README|DETAILS)\.md|apparatus/[0-9]{4}-[^/]+/SKILL\.md)$'
         pass_filenames: false
 
       # RFD 1000 owns numbering. The script scans the tree rather than a
@@ -388,7 +388,7 @@ repos:
           later, on a rented GPU.
         entry: python scripts/check-model-images.py
         language: system
-        files: '^[0-9]{4}-.*/(Dockerfile|server\.py|test_input\.json)$'
+        files: '^apparatus/[0-9]{4}-[^/]+/(Dockerfile|server\.py|test_input\.json)$'
 
   # Markdown hygiene. Structural only, deliberately.
   #
@@ -446,6 +446,22 @@ repos:
         language: python
         pass_filenames: false
         always_run: true
+
+      # rm -rf rfd/*/ should cost a render and nothing else. It cost 65 tracked
+      # files on 2026-09-07, so the invariant is a gate rather than a habit.
+      - id: rfd-dirs-rendered-only
+        name: nothing tracked lives under rfd/NNNN-slug/
+        entry: python scripts/check_rfd_dirs_rendered_only.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: rfd-dirs-rendered-only-self-test
+        name: the rfd-dirs-rendered-only gate still fails on a planted apparatus file
+        entry: python scripts/check_rfd_dirs_rendered_only.py --self-test
+        language: system
+        files: ^scripts/check_rfd_dirs_rendered_only\.py$
+        pass_filenames: false
 
       - id: rfd-readme-present-self-test
         name: the rfd-readme-present gate still fails on a planted DETAILS-only dir

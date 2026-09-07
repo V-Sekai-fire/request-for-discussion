@@ -22,10 +22,10 @@ defmodule RFD1036 do
     and that image expects Replicate's own runtime. The local worker
     starts a container and maps a port, and nothing more.
 
-    Each model gets a folder under `decisions/`, and each folder holds
-    this RFD, a `Dockerfile`, a `server.py`, and a `test_input.json`.
+    Each model gets a standalone repo, and each repo holds a `Dockerfile`,
+    a `server.py`, and a `test_input.json`. The RFD stays here.
 
-    Name the folder for its model, and never for a package format. A
+    Name the repo for its model, and never for a package format. A
     format is a decision this RFD already changed once. A folder name
     that carries one goes stale on the next change.
 

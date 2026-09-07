@@ -39,8 +39,8 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 PROJECT = HERE.parent
-DEFAULT_STAGE = HERE.parent / "rfd" / "1143-keypoints-to-anny" / "fourloops-plan.usda"
-DEFAULT_CHART = HERE.parent / "rfd" / "1143-keypoints-to-anny" / "fourloops-etnf.usda"
+DEFAULT_STAGE = HERE.parent / "apparatus" / "1143-keypoints-to-anny" / "fourloops-plan.usda"
+DEFAULT_CHART = HERE.parent / "apparatus" / "1143-keypoints-to-anny" / "fourloops-etnf.usda"
 
 PRIM_RE = re.compile(r'^\s*def\s+(?:\w+\s+)?"([A-Za-z0-9_]+)"', re.M)
 # A TYPELESS `def "Name"`, which is what a task is. Allowing `def Scope "Name"` here swept
@@ -267,8 +267,7 @@ def check(stage_path=DEFAULT_STAGE, chart_path=DEFAULT_CHART, root=None):
     check_order(text, problems)
     check_targets(text, problems)
     check_dag(text, problems)
-    if root is not None:
-        check_counts(text, root, problems)
+    check_counts(text, root, problems)
     chart = pathlib.Path(chart_path)
     if chart.is_file():
         check_chart(text, chart.read_text(encoding="utf-8"), problems)
@@ -395,6 +394,18 @@ def self_test():
             print(f"  {mark} {label}: {'rejected' if failed else 'accepted'} {detail[:60]}")
         finally:
             shutil.rmtree(tmp)
+
+    tmp = tempfile.mkdtemp()
+    try:
+        root = build(tmp)
+        found = check(root / "stage.usda", root / "chart.html", None)
+        rejected = any("does not exist" in line for line in found)
+        if not rejected:
+            ok = False
+        mark = "ok " if rejected else "BAD"
+        print(f"  {mark} a checkout with no workspace root: sources named, not skipped")
+    finally:
+        shutil.rmtree(tmp)
     return 0 if ok else 1
 
 

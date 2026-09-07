@@ -84,7 +84,7 @@ from pxr import Usd
 
 HERE = pathlib.Path(__file__).resolve().parent
 PROJECT = HERE.parent
-DEFAULT_LAYER = HERE.parent / "rfd" / "1143-keypoints-to-anny" / "fourloops-etnf.usda"
+DEFAULT_LAYER = HERE.parent / "apparatus" / "1143-keypoints-to-anny" / "fourloops-etnf.usda"
 
 # The scopes holding relations. Naming them rather than treating every scope as relations
 # keeps a prose scope from being read as a set of relations with no columns, which would
@@ -389,8 +389,7 @@ def check(layer_path=DEFAULT_LAYER, root=None):
     check_writers(stage, problems)
     check_orders(stage, problems)
     check_row_counts(stage, problems)
-    if root is not None:
-        check_counts(stage, root, problems)
+    check_counts(stage, root, problems)
     return problems
 
 
@@ -559,6 +558,19 @@ def self_test():
             print(f"  {mark} {label}: {'rejected' if failed else 'accepted'} {detail[:64]}")
         finally:
             shutil.rmtree(tmp)
+
+    tmp = tempfile.mkdtemp()
+    try:
+        root = pathlib.Path(tmp)
+        (root / "layer.usda").write_text(GOOD, encoding="utf-8")
+        found = check(root / "layer.usda", None)
+        rejected = any("does not exist" in line for line in found)
+        if not rejected:
+            ok = False
+        mark = "ok " if rejected else "BAD"
+        print(f"  {mark} a checkout with no workspace root: sources named, not skipped")
+    finally:
+        shutil.rmtree(tmp)
     return 0 if ok else 1
 
 
