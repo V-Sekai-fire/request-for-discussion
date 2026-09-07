@@ -27,7 +27,7 @@ defmodule RFD1120 do
     `thirdparty/3d_studio/` and `thirdparty/android-xr-face-bridge/`
     moved to `weftspun-3d-studio`'s own repo root, leaving that repo the
     browser client and the companion APK only.
-    
+
     See `DETAILS.md` for the exact path changes, the new
     `/opt/weftspun/<repo>/` deploy convention, and open follow-up work.
     """
@@ -58,7 +58,7 @@ defmodule RFD1120 do
     | `apps/usd_viewer_app/`               | `weftspun/weftspun-usd-viewer`                                  |
     | `thirdparty/3d_studio/`              | `weftspun-3d-studio`'s own repo root, `3d_studio/`              |
     | `thirdparty/android-xr-face-bridge/` | `weftspun-3d-studio`'s own repo root, `android-xr-face-bridge/` |
-    
+
     `git subtree split --prefix=apps/<app>` only carries history for
     commits where that content already lived under `apps/<app>/`. Each
     new repo's history starts at RFD 1076's move into `apps/`, not the
@@ -71,7 +71,7 @@ defmodule RFD1120 do
     monorepo checkout to `/opt/weftspun/src`, and every `.build` unit's
     `File=` path pointed inside it. With three repos, `weftspun-studio`'s
     own `scripts/deploy-weftspun-quadlet.sh` now:
-    
+
     1. Syncs itself to `/opt/weftspun/weftspun-studio` (an `rsync` of the
        working copy, as before).
     2. Clones or `git pull --ff-only`s `weftspun/weftspun-usd-viewer`
@@ -79,7 +79,7 @@ defmodule RFD1120 do
     3. Installs `weftspun.network` (from `weftspun-studio`'s own
        `deploy/quadlet/`) plus every `.build`/`.container`/`.volume` unit
        found under either app's own `deploy/quadlet/`.
-    
+
     Each `.build` unit's `File=` path now reads
     `/opt/weftspun/<repo-name>/...`, one directory per repo instead of
     one path inside a monorepo. `character_taxonomy` needs no quadlet

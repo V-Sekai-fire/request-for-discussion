@@ -47,7 +47,7 @@ defmodule RFD2023 do
     details "Decision outcome", ~S"""
     Chosen option: WebTransport over HTTP/3, provided by the engine's
     `modules/http3` (on `feat/module-http3`):
-    
+
     - `quic_picoquic_backend.{cpp,h}`, native QUIC via picoquic.
     - `quic_web_backend.cpp` + `quic_web_glue.js`, the web/wasm backend.
     - `http3_client.{cpp,h}`, `quic_client.{cpp,h}`, `quic_server.h`.
@@ -56,7 +56,7 @@ defmodule RFD2023 do
       `wt_browser_test.html`.
     - `lean/http3/PollingTermination.lean` proves the poll loop
       terminates.
-    
+
     One QUIC connection carries reliable streams and unreliable datagrams,
     so control messages and high-rate state share a connection.
     """

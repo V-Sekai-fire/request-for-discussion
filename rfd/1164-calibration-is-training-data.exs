@@ -19,7 +19,7 @@ defmodule RFD1164 do
     A calibration set obeys the training-data rules in full: it comes
     from a training-side corpus such as `coco_images_train2017`, never
     from the blinded holdout or anything derived from it.
-    
+
     `prep_calibration.py` already re-asserts the exclusion at read time
     and hard-fails on a blinded id. That was written as belt and braces
     and this is why it is load-bearing. `--calib` takes a training
@@ -31,15 +31,15 @@ defmodule RFD1164 do
     activation ranges, quantise. At optimization level 1 it is. At
     level 2 the Dataflow Compiler runs Quantization-Aware Fine-Tuning,
     and the log says plainly what that means:
-    
+
         [info] Starting Quantization-Aware Fine-Tuning
         [info] Using dataset with 1024 entries for finetune
         Epoch 1/4
-    
+
     Four epochs of gradient steps over the frames handed in as
     calibration, so the weights that reach the device were trained on
     that set rather than measured against it.
-    
+
     CLAUDE.md holds validation and test splits out of training, tuning
     and selection. A set passed to `--calib` meets all three and nothing
     at the call site says so. Handing the compiler the blinded holdout

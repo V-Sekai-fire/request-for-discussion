@@ -18,15 +18,15 @@ defmodule RFD2214 do
     to the native binary. Loader is `sqlite3_open()` on the filesystem
     path; the GDExtension surface RFD 2230 defines (`Ggml.load_model()`)
     reads it and hands bytes to ggml. Two schema shapes:
-    
+
     - **Shape A** (v1): whole GGUF as one BLOB in `model_weights(id, gguf)`.
       Simplest ship path.
     - **Shape B** (v2, if measurement asks for it): one row per tensor,
       `tensors(name, shape, dtype, offset, blob)`. Enables never-fully-
       resident-in-memory models on constrained hosts.
-    
+
     ZSTD-compress at the SQLite-page level. A gate lands to enforce it.
-    
+
     Files live in the native binary's install directory
     (`godot/data/models/<name>.zstd.sqlite`) or under
     `$XDG_DATA_HOME/atelier/models/`; downloaded at install time via the

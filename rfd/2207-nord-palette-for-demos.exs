@@ -19,7 +19,7 @@ defmodule RFD2207 do
     A demo or artifact that ships as a reviewable surface picks one of
     the following six FOSS-licensed palettes verbatim and sources its
     tokens from that palette's published spec:
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 
@@ -52,9 +52,9 @@ defmodule RFD2207 do
     variant. `prefers-color-scheme: dark` is a media query on top of
     the `:root` defaults so a viewer that never picked gets the dark
     values by default when their system prefers dark.
-    
+
     `docs/index.html` is the reference application. Structure:
-    
+
         :root {
           --nord0: #2E3440;   /* Polar Night, bg */
           --nord1: #3B4252;   /* Polar Night, panel */
@@ -70,7 +70,7 @@ defmodule RFD2207 do
           --nord4: #2E3440;
           /* … */
         }
-    
+
     Every surface pulls from these tokens; no hex literal appears
     outside `:root`.
     """
@@ -78,7 +78,7 @@ defmodule RFD2207 do
     details "Why not name a single palette", ~S"""
     Two failure modes, both cheaper to close with a peer list than
     with a rewrite later:
-    
+
     1. **Subject-matter mismatch.** A demo whose subject is a
        parchment interface reads uncanny in Nord's cool blues; Gruvbox's
        warm palette reads correctly. A palette-of-one rule would force
@@ -88,7 +88,7 @@ defmodule RFD2207 do
        contrast profiles; a reader with a specific accessibility
        preference is better served by *some* named palette than by any
        one particular one.
-    
+
     Both close by naming the shape of the choice ("pick a named FOSS
     design palette") rather than the choice itself.
     """
@@ -113,7 +113,7 @@ defmodule RFD2207 do
     A demo or artifact that ships as a reviewable surface picks one of
     the following six FOSS-licensed palettes verbatim and sources its
     tokens from that palette's published spec:
-    
+
     | palette | licence | source |
     |---|---|---|
     | Nord | MIT | nordtheme.com |
@@ -122,7 +122,7 @@ defmodule RFD2207 do
     | Tokyo Night | MIT | github.com/enkia/tokyo-night-vscode-theme |
     | Rose Pine | MIT | rosepinetheme.com |
     | Gruvbox | MIT | github.com/morhetz/gruvbox |
-    
+
     Nord is the default this session's Starforged surface adopted and
     what a new demo picks in the absence of a reason to pick otherwise.
     The five peers are named so the choice is not hardcoded to one
@@ -130,7 +130,7 @@ defmodule RFD2207 do
     pick Gruvbox; a demo tuned for a night-shift reader can pick Tokyo
     Night. What is banned is the un-tokenised amber-on-panel default
     that a first-draft artifact carries when nothing was picked.
-    
+
     Both light and dark variants are declared. `data-theme="dark"` and
     `data-theme="light"` on the root, plus a `prefers-color-scheme`
     media query, per the artifact-design contract.
@@ -143,7 +143,7 @@ defmodule RFD2207 do
     deliverable. A reviewer who opens a shipped demo and sees the
     default Claude look concludes, correctly, that nobody picked a
     palette. Picking one, any of the six above, closes that reading.
-    
+
     The rule is about *picking* rather than about *which one*. What the
     existing default fails at is being un-considered; the six peers all
     pass by virtue of being considered and readable.

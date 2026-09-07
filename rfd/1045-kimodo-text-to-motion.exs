@@ -17,10 +17,10 @@ defmodule RFD1045 do
     Return the SOMA result and the VRM result as separate outputs. The
     SOMA output is the model. The VRM output is a retarget, and a caller
     that has its own rig wants the SOMA.
-    
+
     Do not hide the retarget. A single VRM output makes the model look
     wrong when the retarget is what failed.
-    
+
     See `DETAILS.md` for the model's memory, the `predict()` interface,
     and the motion validation gate this model image runs.
     """
@@ -29,7 +29,7 @@ defmodule RFD1045 do
     Kimodo turns a sentence into motion. It emits SOMA, and the client
     needs VRM humanoid tracks. The retarget between them is the hard part,
     and it is not the model.
-    
+
     The model is small at 0.6 GB in bf16. The packaging risk is the
     skeleton contract.
     """
@@ -58,7 +58,7 @@ defmodule RFD1045 do
     | fps              | int   | 30      |
     | target_rig       | Path  | none    |
     | seed             | int   | -1      |
-    
+
     `target_rig` is optional. Without it the model image returns SOMA
     only, and it runs no retarget.
     """
@@ -66,7 +66,7 @@ defmodule RFD1045 do
     details "The validation gate", ~S"""
     RFD 1007 records the motion validation. A motion that leaves the floor
     or that inverts a knee must fail here, and not in the viewport.
-    
+
     Run the validation inside this model image, and return its verdict as a
     field. A caller then knows the motion is unusable before it loads it.
     """

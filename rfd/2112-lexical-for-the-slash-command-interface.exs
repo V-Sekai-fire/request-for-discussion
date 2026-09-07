@@ -34,9 +34,9 @@ defmodule RFD2112 do
     exits. There is no socket, no server, and no instance that outlives the run. The README says
     the same thing from the other side: the game has no renderer, no client, and no engine, and
     what you can see of it is what you can `SELECT`.
-    
+
     A slash command interface needs a live game and a place to type into. Neither exists yet.
-    
+
     The typing part is the harder half. When a player types `/commission`, the field must show the
     parameter as an inline block that the player cannot edit, with editable space around it. An
     `<input>` and a `<textarea>` hold plain text, so neither can show such a block. A
@@ -67,11 +67,11 @@ defmodule RFD2112 do
     details "Decision outcome", ~S"""
     Lexical wins on the interface, and loses on developer speed. The interface decides, because
     this field is the input path of the game and the developer cost is paid once.
-    
+
     ProseMirror is the stronger choice for a team writing boilerplate with a language model. That
     advantage does not reach the player. A caret that sticks on a parameter block does reach the
     player, on every command.
-    
+
     The mitigation is written into the work. The `lexical` and `@lexical/*` versions are pinned
     exactly, the official documents are the source, and any prompt to a language model carries the
     current API in the prompt itself, because a model answers from an older version otherwise.
@@ -81,7 +81,7 @@ defmodule RFD2112 do
     The game runs as one instance. Every player sees the same ward, and a command from one player
     changes what all of them see. `found_ward` drops and recreates every table, so `/restart`
     re-founds the ward for everyone at once.
-    
+
     One instance follows from the code rather than from a preference. `open_db` sets
     `PRAGMA locking_mode=EXCLUSIVE`, and the Queen is the single writer of the ward. The Fly app
     therefore stays one machine, which is the shape `min_machines_running = 1` and
@@ -94,14 +94,14 @@ defmodule RFD2112 do
     The Queen's rows are entities, and they take spatial coordinates. That puts the ward inside the
     zone and entity model the rest of the stack already uses, and it makes the interest filter
     apply to this game without inventing anything.
-    
+
     | the row in `queen.c`              | count                                       | what it becomes                          |
     | --------------------------------- | ------------------------------------------- | ---------------------------------------- |
     | a Spark, one SQLite database each | up to `MAX_SPARKS`, which is 64             | a moving entity, with a purse and wear   |
     | a venue from `VENUES`             | `NVENUES`, which is 6                       | a fixed entity at the place it was built |
     | the Queen                         | 1                                           | the authority, and the single writer     |
     | a contract on the board           | `BOARD_SIZE` 6, or 9 with the Transit Rails | a marker at the place the work is        |
-    
+
     `spark_t` holds `id`, `purse`, and `wear` today, and no position. Adding `pos_um_x`, `pos_um_y`,
     and `pos_um_z` is the change that connects the two models, because those are the fields
     `XRGridEntityPacket` already carries in int64 micrometres.
@@ -110,7 +110,7 @@ defmodule RFD2112 do
     details "How a local command becomes a global one", ~S"""
     The interest filter decides how many players see a change. RFD 2111 retires the word plane, and
     the filter lives in `fabric-fanout-edge`, which is a transport layer.
-    
+
     `lean-interest-mgmt/core/AuthorityInterest.lean` separates authority from interest. Exactly one
     zone advances an entity each tick, and a neighbour holds a read-only ghost. An entity enters
     that neighbour's interest when its k-tick kinematic expansion overlaps the neighbour's volume,
@@ -118,10 +118,10 @@ defmodule RFD2112 do
     subscriber: `ghost_aabb_of` widens each entity by `ENTITY_EXT_UM` of 500000 and by
     `GHOST_TICKS` of 2 along its velocity, and `aabb_overlaps` tests that against
     `subscriber_t.interest`.
-    
+
     So the reach of a command is the overlap between the entities it touches and the boxes the
     players hold. The Queen's own verbs cover the whole range.
-    
+
     | command                  | what it changes in `queen.c`                  | how far it reaches                                                                          |
     | ------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------- |
     | `look`                   | nothing                                       | The caller only. A read changes no entity, so the filter never runs.                        |
@@ -129,7 +129,7 @@ defmodule RFD2112 do
     | `/pay <spark>`           | one purse, in one Spark database              | Every subscriber whose box overlaps that Spark.                                             |
     | `/commission <venue>`    | `venue.built`, and the ward treasury          | The venue appears to every box that overlaps its place. The treasury reaches no box at all. |
     | `/restart`               | every table, through `found_ward`             | Every subscriber. No box excludes it.                                                       |
-    
+
     The Spark taking a contract is the one to hold on to. It is local by intent, and the filter
     turns it into a message to an arbitrary number of players, because the Spark leaves one set of
     boxes and enters another. Neither the player nor the command knows how many that is.
@@ -140,16 +140,16 @@ defmodule RFD2112 do
     carry the same ward to their own subscribers. When the primary goes, a secondary is hosted in
     its place, and a player may pick a secondary as a fallback while playing, so a promotion costs
     no reconnect.
-    
+
     The relay tree in `fanout.cpp` is already this shape. Its header says each relay process runs
     the leaf for its own subscriber set on its own NIC, so aggregate egress scales with the relay
     count. A secondary is one of those leaves.
-    
+
     The store plane supplies the promotion, and it needs no new mechanism.
     `thirdparty/store-plane/prove_handoff.c` proves the property the whole thing rests on: a
     database has no local file, so a different process reads it with no copy and no restore. A
     secondary therefore opens the same ward out of FoundationDB and is already current.
-    
+
     | the stream idea                           | what it is in the ward                                                      |
     | ----------------------------------------- | --------------------------------------------------------------------------- |
     | the primary stream                        | the process holding the current fence, which is the only one that may write |
@@ -157,31 +157,31 @@ defmodule RFD2112 do
     | hosting a secondary when the primary goes | the FENCE key moves, and the promoted process becomes the writer            |
     | a fallback chosen while playing           | a subscription to a second leaf, held open so promotion costs no reconnect  |
     | a viewer who switches away                | a subscriber held by a keepalive, with the slices stopped                   |
-    
+
     The fence is what makes promotion safe. `check_fence` reads the FENCE key on every write
     transaction and refuses the write with `SQLITE_READONLY` when the value has moved. Its comment
     records why it exists: the VFS locks are no-ops, so two writers both believed they held the
     write lock, both reported success, `PRAGMA integrity_check` passed, and one writer's 300 rows
     were gone. The fence turns that into a refusal the caller can see. So an old primary that comes
     back after a promotion is refused rather than silently losing the ward.
-    
+
     `PRAGMA locking_mode=EXCLUSIVE` in `open_db` does not block a promotion. `fdb_lock`,
     `fdb_unlock`, and `fdb_check_lock` all return success without doing anything, and the pragma is
     there to stop SQLite re-reading page one, which over a network database is a round trip per
     query. A dead primary holds nothing that a new one must break.
-    
+
     A tab that goes to the background stops being worth sending to. The browser throttles a hidden
     tab and reports the change through `visibilitychange`, so the client stops asking for slices and
     holds the session with a keepalive. The leaf keeps the `subscriber_t` and sends nothing. When
     the tab comes back the slices resume, with no reconnect and no second authorization. RFD 2050
     already sets a five-second transaction limit, which is the natural place to start for the
     keepalive interval.
-    
+
     The keepalive is also what makes a fallback cheap. A player picks a second leaf while playing
     and holds it by keepalive alone, so it costs a seat and no egress until the primary goes and
     the fallback starts sending. A fallback that streamed continuously would double that player's
     share of the cap in the next section.
-    
+
     One thing is worth stating plainly. `queen` implements none of this today, and the fence lives
     in the VFS rather than in the game, so promotion is supported and unwritten.
     """
@@ -192,16 +192,16 @@ defmodule RFD2112 do
     subscriber's slice with Sparks alone, and `fanout_one` stops at the cap, so the six venues, the
     Queen, and every contract marker fall off the end. A full ward is 64 Sparks, 6 venues, the
     Queen, and up to 9 contracts, which is 80 entities against a cap of 64.
-    
+
     The client cannot detect the loss. The receiver recovers the count as `len / 100`, so a
     truncated batch looks exactly like a small one.
-    
+
     `/commission` shows the second hazard. It changes two things at once: a venue, which has a
     place, and the treasury, which does not. An interest box can carry the first and can never
     carry the second. The ward scalars `treasury`, `debt`, `issued`, `retired`, and `spent` are not
     spatial, and no `Aabb` describes them. They need the reliable control stream, and RFD 2049
     holds the channel classes for it.
-    
+
     The third hazard follows from the second. `honest()` checks that
     `treasury + purses + retired + spent == issued` across the ward and every Spark database. That
     sum is global. A player holding one interest slice sees a few Sparks and cannot compute it, so
@@ -212,7 +212,7 @@ defmodule RFD2112 do
     `fabric-asset-edge` serves the built client on Fly. It is a transport layer, so it holds the
     listening socket. It shares nothing per tick, so it needs no ring, and it belongs to no service.
     That is the same reason its README already gives for standing alone.
-    
+
     `queen` gains a transport layer of its own for the live game, because it has none today. RFD 2111
     renames these git repositories, and the names here are the names on disk.
     """
@@ -248,11 +248,11 @@ defmodule RFD2112 do
     The existing `check` mode already holds the game to its arithmetic, and it stays the gate: one
     seed makes one ward, and `honest()` runs inside every cycle. `docker compose run --rm ci` runs
     that against a real FoundationDB.
-    
+
     For the interface, add Playwright tests for the caret crossing a block in one key press, for a
     block that cannot be edited in place, for backspace removing a block whole, and for the
     serialized command matching what the server accepts.
-    
+
     Two constraints carry into any Fly app here. Every `*.fly.dev` host is on the HSTS preload
     list, so a browser upgrades the request to HTTPS and a 443 listener is required. An IPv6-only
     app can defeat Chromium's resolver where curl succeeds, so a test navigates to the bracketed

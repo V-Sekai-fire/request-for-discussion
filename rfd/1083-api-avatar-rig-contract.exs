@@ -24,7 +24,7 @@ defmodule RFD1083 do
     repair, and never reuses VRM-loader flags on an AIGC GLB, since a
     VRM upload and an AIGC rig follow deliberately separate paths (RFD
     1104 gives the VRM side).
-    
+
     See `DETAILS.md` for the coordinate system, the full requirement and
     failure-code tables, the Blender export steps, and the retest
     procedure.
@@ -52,7 +52,7 @@ defmodule RFD1083 do
     | Y    | Up                                          |
     | -Z   | Character forward, faces the default camera |
     | X    | Right                                       |
-    
+
     Blender scripts run in Z-up internally; glTF import and export
     convert to and from this contract.
     """
@@ -78,11 +78,11 @@ defmodule RFD1083 do
     | `mesh_bone_vertical_mismatch` | no, advisory         | fails                                              |
     | `hips_not_at_mesh_torso`      | no, advisory         | fails                                              |
     | `api_validation_failed`       |,                    | fails, when `rig_info.validation.passed === false` |
-    
+
     Client-only structural codes: `no_model_root`, `empty_mesh_bounds`,
     `empty_bone_bounds`, `missing_hips_bone`, `no_bones_in_glb`,
     `mesh_bone_feet_mismatch`.
-    
+
     Severity split: the API fails a job only on a critical code
     (`character_upside_down`, `character_facing_backwards`,
     `missing_skinned_mesh`, `insufficient_joints`). Advisory codes still
@@ -96,7 +96,7 @@ defmodule RFD1083 do
     | -------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
     | VRM load | A `.vrm` file, loot assets, and so on         | `vrmLoader.normalizeVRM` only; no contract flags, no `preserveExportedOrientation`. RFD 1104 gives the full pipeline.                                                                          |
     | AIGC GLB | Avatar-from-image or template rig, on the DGX | Validates against this contract. Targeted skinned-mesh repair runs when `needsSkinnedMeshRigRepair` fires (a contract FAIL, a feet/XZ mismatch, or a template-rig export). Feet anchor to y=0. |
-    
+
     The DGX template rig should export a GLB in the same coordinate
     frame as `template.vrm`
     (`humanoid_template_id: "template"` maps to
@@ -113,17 +113,17 @@ defmodule RFD1083 do
     | API export gate         | `3DAIGC-API/core/utils/aigc_rig_contract.py`: `validate_aigc_rigged_glb()`                                                             |
     | Blender template rig    | `3DAIGC-API/scripts/blender/apply_humanoid_template_rig.py`                                                                            |
     | Job payload             | `rig_info.validation = { passed, codes, metrics }`, on template rig completion                                                         |
-    
+
     ### The template-rig Blender path
-    
+
     `3DAIGC-API/scripts/blender/apply_humanoid_template_rig.py`:
-    
+
     1. Uniform-scale from the armature's bone span to the target mesh height (Blender Z-up, after the glTF import).
     2. Yaw or flip the armature to face glTF -Z, before parenting; this step must not rotate the skinned mesh.
     3. Move the foot bones to the mesh floor (the minimum Z, in Blender).
     4. Center on Blender's XY ground plane.
     5. Envelope the skin, then export the GLB with `export_apply=True`.
-    
+
     Do not align on Blender's Y axis for height; that caused the
     inverted rigs found in June 2026. Do not yaw the armature after
     parenting; that rotates the mesh away from the upload, also found
@@ -133,7 +133,7 @@ defmodule RFD1083 do
     details "Validation timing, client side", ~S"""
     1. Pre-process: the raw GLB, right after load, before `processModel`'s scale and ground step.
     2. Post-viewport-layout: after that scale and ground step.
-    
+
     Grep the remote log for `[API-Contract]`.
     """
 

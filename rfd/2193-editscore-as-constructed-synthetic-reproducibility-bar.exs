@@ -30,7 +30,7 @@ defmodule RFD2193 do
     4,364 ms and differs; Metal 545 ms and differs. Metal is sixty
     times faster; three seed-zero runs produced three digests, so
     divergence is GPU accumulation order.
-    
+
     Two blockers. First, `feature.editscore` in
     `anny-render-corpus/pixi.toml` takes torch from a CUDA index with
     no Apple wheels; the verifier does not run where needed. Second,

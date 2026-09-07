@@ -22,11 +22,11 @@ defmodule RFD1143 do
     the Referee; repair by refitting. The artifact is a render png. It is
     the largest of the four at size L, and it runs fourth in the task order
     because the harness comes first.
-    
+
     Two scorers rather than one, because they answer different questions.
     EditScore reads the image and the Referee reads the body, and a fit
     that looks right while the joints are wrong passes the first alone.
-    
+
     **The hazard is the joint count.** The detector emits 17 keypoints and
     the render asset emits 23. A comparison across those two takes an
     explicit subset, or it compares different things and reports a number
@@ -38,7 +38,7 @@ defmodule RFD1143 do
     stages, its artifact and one line of hazard. A prim holds the wiring
     and cannot hold the argument, so the reason a loop is shaped this way
     lived in a logbook entry that the plan named as a source.
-    
+
     All four loops are wanted. What was missing is a document per loop:
     the plan holds the wiring for four, and one logbook entry held the
     argument for all of them. This RFD is loop 1's own.

@@ -71,7 +71,7 @@ defmodule RFD2060 do
     1Password, signs an RS256 JWT, exchanges it for an installation access
     token, and exports it as `GH_TOKEN`. `gh` then uses that token with no
     `gh auth login`.
-    
+
     An installation token is org-scoped by construction, expires ~1 hour
     after minting, and acts as the App rather than the personal account —
     covering all three of the top drivers in one mechanism, where a
@@ -79,7 +79,7 @@ defmodule RFD2060 do
     human-account secret. The cost is a token-minting step (JWT →
     installation token) and guarding the App private key, which 1Password
     holds.
-    
+
     The everyday installation is granted `administration: write`,
     `contents: write`, `workflows: write`, `actions: read`, `metadata:
     read` on all repositories in the org, the set the repo work (push,

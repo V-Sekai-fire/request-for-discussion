@@ -17,7 +17,7 @@ defmodule RFD1028 do
     Any model shipped to paying users must clear commercial use. The gate
     is the hard prerequisite in MODEL_LICENSES.md. The repository keeps a
     FOSS blocklist for permissive licenses only.
-    
+
     See `DETAILS.md` for the deleted models and the blocklisted models,
     each with its license and its replacement.
     """
@@ -39,11 +39,11 @@ defmodule RFD1028 do
     details "Deleted models", ~S"""
     PartField, PartPacker, and FastMesh fail the gate. Their weight
     licenses permit non-commercial use only.
-    
+
     - PartField uses the NVIDIA license section 3.3.
     - PartPacker uses the NVIDIA Source Code License section 3.3.
     - FastMesh uses the S-Lab non-commercial license.
-    
+
     The pass tracks in issue #6. These models are not in the catalog. The
     repository does not reference them in the UI. Their residual
     references remain in docs/api/api.md. The delete pass removes them.
@@ -60,7 +60,7 @@ defmodule RFD1028 do
       needs the same review.
     - CGAL uses the GPL license with a commercial dual license. The
       project excludes GPL on license grounds. The blocklist removes it.
-    
+
     The FOSS replacement for raw mesh generation is TRELLIS.2. It uses the
     MIT license. The catalog already carries it.
     """

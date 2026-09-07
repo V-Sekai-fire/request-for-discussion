@@ -67,7 +67,7 @@ defmodule RFD2083 do
     details "Ported RFDs", ~S"""
     The following RFDs in this repo carry forward `weftspun/h2o-bench-tpcc`'s
     zonefabric design, filed the same day as this decision:
-    
+
     - `rfd/2082-zonefabric-scaling`
     - `rfd/2072-actor-lite-worker-pool`
     - `rfd/2075-fdb-over-cockroachdb-for-zone-state`

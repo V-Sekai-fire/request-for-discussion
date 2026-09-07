@@ -16,7 +16,7 @@ defmodule RFD1041 do
     decision ~S"""
     Return the labels as data, and return the split meshes as files. A
     caller that only needs the label array must not pay for a mesh split.
-    
+
     See `DETAILS.md` for the model's memory and license, the `predict()`
     interface, the output shape, and why the label array leads.
     """
@@ -24,7 +24,7 @@ defmodule RFD1041 do
     problem ~S"""
     P3-SAM segments a mesh into parts. It replaces PartField, which
     RFD 1028 removed for a non-commercial weight license.
-    
+
     The model is small at 0.8 GB in bf16. The packaging risk is not the
     memory. It is the output shape.
     """
@@ -53,7 +53,7 @@ defmodule RFD1041 do
     | segment_every_part | bool | false   |
     | max_parts          | int  | 32      |
     | seed               | int  | -1      |
-    
+
     `segment_every_part` is the mode PartSAM and P3-SAM share. It returns
     every part it finds, and it ignores `max_parts`.
     """
@@ -61,7 +61,7 @@ defmodule RFD1041 do
     details "The output", ~S"""
     `predict()` returns a `BaseModel`. It carries `labels`, which is one
     integer per face, and `parts`, which is a list of GLB files.
-    
+
     A face-length integer array on a 210000 vertex mesh is large. Write it
     as a JSON file, and not as an inline list. RFD 1033 gives the vertex
     cap.

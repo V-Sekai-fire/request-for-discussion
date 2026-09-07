@@ -16,18 +16,18 @@ defmodule RFD2157 do
     decision ~S"""
     New repo `taskweft-fbd-compiler`, Lean 4 v4.34.0-rc1 (matches RFD
     2144), MIT. Pipeline:
-    
+
         PLCopen FBD XML
           -> Lean 4 parser (Std.Xml, stdlib only)
           -> FBD AST (full IEC 61131-3 standard block library)
           -> RISC-V instruction encoder + ELF64 writer, both in Lean
           -> plan.elf bytes to disk, no external assembler or linker
           -> godot-sandbox loads
-    
+
     **ABI:** matches `gdscript.elf`'s syscall table.
     **GDScript I/O:** `get_variable`/`set_variable` for state,
     `sandbox.call('fn', args)` for actions.
-    
+
     RFD 2156 is the parallel GDScript-side path. `DETAILS.md` carries
     AST, ABI, staging.
     """
@@ -63,7 +63,7 @@ defmodule RFD2157 do
     Stage 1 lists every standard block in the AST but implements the
     emit for only the subset our own emitter produces today (SR_L, AND,
     MOVE, TON). Later stages fill in the rest as consumers name them.
-    
+
         inductive Block where
           | sr_l  | rs   | sr        ; bistables
           | and_ | or_  | not_ | xor ; boolean
@@ -73,7 +73,7 @@ defmodule RFD2157 do
           | add  | sub  | mul  | div | mod  ; arithmetic
           | eq   | ne   | lt   | gt  | le | ge  ; comparison
           | f_trig | r_trig                    ; edges
-    
+
     Each carries its typed inputs and outputs. `POU` wraps a variable
     list and a network of `Block` instances connected by `Wire`s.
     """
@@ -84,13 +84,13 @@ defmodule RFD2157 do
     its `gdscript.elf` sample. The exact numbers come from godot-sandbox's
     `syscalls.hpp`; pinning that header's version is a follow-on so ABI
     drift is caught. Stage-1 uses:
-    
+
         ecall #1  print(cstr)
         ecall #10 get_variable(cstr_name) -> Variant
         ecall #11 set_variable(cstr_name, Variant)
         ecall #20 register_callable(cstr_name, fn_ptr)
         ecall #21 call_callable(cstr_name, args...)
-    
+
     The RECTGTN `done_*` booleans become variables the host reads with
     `get_variable`; RECTGTN actions register as callables the host
     invokes with `call_callable`.

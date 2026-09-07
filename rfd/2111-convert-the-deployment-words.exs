@@ -31,12 +31,12 @@ defmodule RFD2111 do
     `adapters/` layout. It took the pattern from Cockburn and added four words
     that Cockburn does not use: core, domain logic, edges, and the `*_source` /
     `*_sink` pair.
-    
+
     A second vocabulary grew later, in code rather than in an RFD. The `Weft`
     moduledoc in `fabric-weft-plane` defines plane, edge plane, and domain. Ten
     or more READMEs repeat those definitions. `fabric-zone-domain` and
     `fabric-behaviour-domain` carry the same sentence word for word.
-    
+
     `fabric-harness` states the risk in its own README: a decision written twice
     drifts, and the stale copy still reads as authoritative. `Weft.VocabularyTest`
     exists to catch that. It reads the files of one git repository only, and it
@@ -60,7 +60,7 @@ defmodule RFD2111 do
 
     details "The Netflix terms", ~S"""
     The article defines five terms. Each quotation below is from it.
-    
+
     | term            | definition                                                                                               |
     | --------------- | -------------------------------------------------------------------------------------------------------- |
     | Entity          | "domain objects (e.g., a Movie or a Shooting Location), they have no knowledge of where they're stored" |
@@ -68,7 +68,7 @@ defmodule RFD2111 do
     | Interactor      | "classes that orchestrate and perform domain actions"                                                    |
     | Data source     | "adapters to different storage implementations"                                                          |
     | Transport layer | "can trigger an interactor to perform business logic. We treat it as an input for our system"            |
-    
+
     The rule that holds them together is that all dependencies point inward.
     """
 
@@ -79,7 +79,7 @@ defmodule RFD2111 do
     | edge plane   | transport layer | an edge plane terminates a transport and triggers an interactor             |
     | domain       | service         | the microservice is the unit that deploys, and the ring decides its members |
     | store plane  | data source     | it implements repositories over FoundationDB and SQLite                     |
-    
+
     "Service" is the weakest of the four, because the Netflix article names
     microservices without defining one. It is the only deployment word the
     formulation has, and the ecosystem uses it the same way. This RFD takes it
@@ -101,7 +101,7 @@ defmodule RFD2111 do
     | port            | a TCP or UDP listening socket                             | ordinary |
     | actor           | a runtime process with a single writer                    | weft     |
     | controller      | the human or the AI that controls an avatar               | weft     |
-    
+
     "Contract" is not one of the five Netflix terms, and this RFD adds it. The
     article has no word for the interface an interactor and a transport both
     compose against, because it writes about classes inside one component rather
@@ -111,7 +111,7 @@ defmodule RFD2111 do
     `fabric-interactor`'s README says the boundary is held by the linker. Both are
     the agreement at a seam, checked rather than assumed, so one meaning covers
     them.
-    
+
     weft and Netflix agree on "entity". Netflix says an entity does not know
     where it is stored. weft says an entity is the unit the data plane moves.
     Both keep the entity away from its storage, so one meaning covers both.
@@ -130,7 +130,7 @@ defmodule RFD2111 do
     | the WebTransport sink behind it                    | data source     |
     | a recorded fixture under CI                        | data source     |
     | the members of `fabric-zone-domain`                | one service     |
-    
+
     `fabric-fanout-edge` shows that the pattern is in the code already. Its
     README says that a WebTransport sink can replace the default sink, and that
     nothing above it changes. That is one repository with two data sources.
@@ -141,11 +141,11 @@ defmodule RFD2111 do
     logic" of RFD 2028, and a field on the wire in RFD 2091. The first becomes
     "service". The second becomes "entity" and "interactor". The third needs its
     own decision, because a change on the wire is a protocol change.
-    
+
     The word "edge" had two meanings. RFD 2028 said "concrete I/O at the edges",
     and an edge plane was a process. RFD 2028 now says "outside the interactor",
     and the process is a transport layer. No meaning is left to collide.
-    
+
     The word "port" had two meanings. Netflix uses no word "port", so the
     listening socket keeps it, and `fabric-zone-domain` needs no edit.
     """
@@ -154,7 +154,7 @@ defmodule RFD2111 do
     Netflix says "repository" for an interface to entities. This project says
     "repository" for a git repository, in RFD 2000, RFD 2062, RFD 2063, and
     RFD 2064. That is a new word with two meanings, and this RFD makes it.
-    
+
     The resolution is to write "git repository" in full every time, and to keep
     "repository" alone for the interface. Keeping Cockburn's word "port" for the
     interface would avoid this, and it would revive the collision with the
@@ -171,14 +171,14 @@ defmodule RFD2111 do
     details "The name shape", ~S"""
     A converted name puts the type first and drops the `fabric-` prefix:
     `<type>-<name>`. `fabric-authority-plane` becomes `interactor-authority`.
-    
+
     Type first sorts the git repositories by role. Every interactor is then
     adjacent, and the number of each type is the length of a run, so the list
     above can be read off the organisation page. Type last sorted them by
     subsystem, which kept `fabric-store-domain` beside `fabric-store-plane` and
     put the seven planes in seven places. One order is available or the other,
     not both, and role is what a reader of this RFD is looking for.
-    
+
     The `fabric-` prefix goes because the organisation name already carries it.
     That also frees the bare word, which one git repository takes below.
     """
@@ -187,7 +187,7 @@ defmodule RFD2111 do
     Thirty git repositories are renamed: twenty-five carry a retired word, three
     carry the right word in the wrong order, and two state a type that is not
     theirs.
-    
+
     | now                            | after                       |
     | ------------------------------ | --------------------------- |
     | `fabric-authority-plane`       | `interactor-authority`      |
@@ -220,11 +220,11 @@ defmodule RFD2111 do
     | `fabric-godot-core`            | `entities-godot`            |
     | `fabric-interactor`            | `contract-command`          |
     | `fabric-service-meta`          | `fabric`                    |
-    
+
     GitHub redirects a renamed git repository, so a `git subtree` remote and a
     Lake `require ... from git` continue to resolve. Each pin gets updated in the
     same pass.
-    
+
     Three git repositories hold the RFD 2028 triad on disk: `loot`, `combat`,
     and `progression`. Each `core/` becomes `entities/`, each `ports/` becomes
     `repositories/`, and each `adapters/` becomes `datasources/`.
@@ -233,28 +233,28 @@ defmodule RFD2111 do
     details "The names the shape does not decide", ~S"""
     Six entries above do not follow from the conversion table, and each one is a
     decision this RFD makes rather than a rule it applies.
-    
+
     `fabric-edge` holds both an ingest edge and a gateway edge over picoquic,
     and the two also exist as git repositories of their own. It is one transport
     layer that the other two are built from, not an umbrella over them, so it
     takes the name of the transport it terminates: `transport-picoquic`. Bare
     `transport` would read as a name that went missing.
-    
+
     `gyreplane` carries the retired word inside a compound. It is a process that
     holds entities, so the word is retired there as well and the name is
     regularised to `interactor-gyre`. A compound is not an exemption.
-    
+
     `fabric-flow-adapters` and its `-project` companion carry RFD 2028's
     "adapters", which this RFD retires for directories. The retirement extends to
     git repository names. A word retired in the tree and live in the name is the
     same drift this RFD exists to stop, and the name is the copy a reader sees
     first.
-    
+
     `fabric-godot-core` becomes `entities-godot`, and the rename is of the git
     repository name only. The `core/` directory inside it is the Godot engine's,
     it comes from upstream, and it is not the "core" of RFD 2028. Renaming it
     would fork the vocabulary of an engine this project tracks rather than owns.
-    
+
     `fabric-interactor` is not an interactor. It holds the contract that
     interactors and transports compose against, `include/weft/interactor.h`
     declares both, and its README states the reason it is a git repository of
@@ -265,7 +265,7 @@ defmodule RFD2111 do
     here that Netflix does not supply, and the entry above says where it comes
     from. `fabric-harness` is the same argument about the bus and the limits, and
     becomes `contract-bus` when that pass is taken.
-    
+
     `fabric-service-meta` is not a service. It holds the `.meta` manifest that
     names every git repository here, and the conventions over them. `service-meta`
     would assert the thing that is false, and `meta` alone collides with a company
@@ -274,7 +274,7 @@ defmodule RFD2111 do
     is the git repository the other names are listed in. `openusd-fabric` keeps
     the OpenUSD scene-data meaning and keeps its qualifier, the same resolution
     this RFD uses for "git repository".
-    
+
     Fourteen `lean-*` git repositories are not hexagon cores, and they keep the
     language-first name while five siblings move. `lean-` marks a Lean workspace
     that this RFD does not classify. The convention applies where there is a word
@@ -286,7 +286,7 @@ defmodule RFD2111 do
     that STE forbids a nominalized verb, and that "interact" fails to
     discriminate, because a transport layer and a data source interact as well.
     Both objections hold. The word is kept anyway.
-    
+
     The alternatives were checked against the words this workspace already uses,
     across every checkout. `tick` appears 1091 times and this RFD itself says the
     process holds a tick. `warp` collides with the GPU warp in `SIMT.lean` and
@@ -295,7 +295,7 @@ defmodule RFD2111 do
     house word for the code shape, and a transport layer has that shape too, so
     it recreates the collision this RFD closes. `loom` was the only clean
     candidate at zero uses, and it is a metaphor that would have to be taught.
-    
+
     Netflix supplies "interactor", two git repositories already carry it, and a
     word with a stated weakness costs less than a word this project invents. The
     objection is recorded here so that the next reader of eight new names finds

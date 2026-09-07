@@ -17,7 +17,7 @@ defmodule RFD1031 do
     Do not make CGAL a required dependency. Keep it optional, or drop the
     alpha wrap step from the build. The fork still produces GLBs without
     CGAL.
-    
+
     See `DETAILS.md` for what the alpha wrap does, the permissive
     replacement options, and the blocklisted wrap tools.
     """
@@ -28,7 +28,7 @@ defmodule RFD1031 do
     adds geometry refinement and PBR textures under the same license. It
     runs on GPU backends through ggml, and it exports textured GLB
     without CUDA.
-    
+
     The fork adds CGAL as an optional build dependency. CGAL uses the GPL
     license, and RFD 1028 excludes GPL on license grounds.
     """

@@ -33,7 +33,7 @@ defmodule RFD2085 do
     loot-action loop, and five hexagonal cores (Combat, Loot, Presence,
     Progression, Budgeter) behind ports. That slice targets SteamVR, one
     melee combo, one loot drop, four players.
-    
+
     The Gyre is a proposed setting: a sci-fi, gig-economy-survival MUD
     where players are "Sparks" occupying disposable "Frames" on a decaying
     station, working contracts to pay down a Debt Clock. The design lives
@@ -47,9 +47,9 @@ defmodule RFD2085 do
     campaigns "feel like anime": exploration-led, with far fewer combat
     encounters per session than D&D's recommended pacing, run for 2-4
     players plus NPC party members.
-    
+
     Apply that directly:
-    
+
     - Party size stays 2-4. A contract board scales its harder contracts
       to whatever party size shows up, rather than assuming a fixed four.
     - Rook, Splicer Jax, and other named NPCs are recruitable companions
@@ -72,7 +72,7 @@ defmodule RFD2085 do
     The Gyre's target client is a website, not the SteamVR build `rfd/0045`
     targets. Save data (Debt Clock balance, Frame state, inventory) needs
     to persist per player across sessions, tied to a GitHub OAuth login.
-    
+
     This is new client and persistence-adapter work, not a change to the
     core reducers. The Progression core (`rfd/0043`) already owns profile
     and inventory commits through a port; a web/OAuth build needs a new
@@ -106,9 +106,9 @@ defmodule RFD2085 do
 
     details "World map and zones (room graph)", ~S"""
     Six zones, three to four rooms each.
-    
+
     ### The Reclamation Wards (spawn zone)
-    
+
     - The Decanting Floor is a freezing, sterile room filled with
       hundreds of suspended Frames. Automated robotic arms attach players
       to their new bodies.
@@ -118,9 +118,9 @@ defmodule RFD2085 do
     - Intake Records is a small office of humming servers where a player
       can review their current Debt Clock balance and Frame warranty
       status.
-    
+
     ### The Tangle (scavenging and gathering)
-    
+
     - Collapsed Aeroponics is a humid, rusted dome where modified fungal
       blooms have taken over the old air scrubbers. Players can harvest
       bio-matter here, but risk inhaling corrosive spores.
@@ -129,9 +129,9 @@ defmodule RFD2085 do
     - Scrap Canyon is a collapsed maintenance corridor, floor to ceiling
       in decades of dumped hardware, the station's best salvage and its
       least stable footing.
-    
+
     ### The Under-Market (safe zone and hub)
-    
+
     - The Splicer's Den is a makeshift clinic lit by harsh LED strips.
       Players spend chits here to patch their Integrity or install
       unregulated augments.
@@ -141,9 +141,9 @@ defmodule RFD2085 do
     - The Transit Rails are the station's rattling internal shuttle line.
       Riding it skips travel time between distant zones, for a small
       chit fare.
-    
+
     ### The Sub-Net (the "dungeon")
-    
+
     - Uplink Node Alpha is a physical junction box sparking with loose
       wires. A player with the right augment can plug their Frame
       directly in.
@@ -153,9 +153,9 @@ defmodule RFD2085 do
     - The Firewall Reef is a maze of self-patching defensive subroutines
       rendered as jagged coral, the station's most valuable data and its
       most aggressive automated defenses.
-    
+
     ### The Underhull (hazard zone)
-    
+
     - The Radiation Seam is a cracked section of outer hull venting the
       gas giant's ambient radiation directly into the corridor. Fast
       Integrity drain, fast salvage.
@@ -163,9 +163,9 @@ defmodule RFD2085 do
       some not fully decommissioned. A slow, tense room, not a rush.
     - Airlock Seven is the only working route to the station's exterior.
       A short EVA contract type launches from here.
-    
+
     ### The Commons (social zone)
-    
+
     - Other Sparks unwind at Cycle's End Tavern between contracts, a
       source of rumor-board side content and NPC banter.
     - The Chapel of the Backup is a quiet room where Sparks who fear a
@@ -198,7 +198,7 @@ defmodule RFD2085 do
     | Rail Courier        | Exchange Plaza → any zone    | Delivery                                                    | 5-8 min   | Small chits, low risk      |
     | Signal Boost        | Broadcast Row                | Social/fetch                                                | 8-10 min  | Rumor unlock, small chits  |
     | The Long Corridor   | Scrap Canyon → The Underhull | Pure exploration, no check required                         | 10-15 min | Station lore, a Rumor lead |
-    
+
     Seven of these nine contracts resolve without a fight. Drone
     Decommission is the one combat-typed contract, and its stealth or
     hacking bypass keeps even that one avoidable for a party that would
@@ -241,7 +241,7 @@ defmodule RFD2085 do
     | Loop 3-4 (repair and hacking)       | 55-95   | Sump Pump Repair, Ghost Line, real Integrity risk, still no required combat                                             |
     | Closing set piece                   | 95-115  | Reef Breach (a hacking contract, not combat) or Drone Decommission via its stealth bypass                               |
     | Wrap-up                             | 115-120 | Turn-in, Debt Clock check, Backup Snapshot purchase before logout                                                       |
-    
+
     A session that skips Drone Decommission entirely, or takes its
     bypass, sees zero required combat encounters across the full 120
     minutes. A session that takes it head-on sees exactly one.
@@ -252,7 +252,7 @@ defmodule RFD2085 do
     two rooms only (Decanting Floor, Splicer's Den), pure exploration, no
     items or NPCs. Not the full room graph or contract catalog above;
     those stay design, not yet built.
-    
+
     The MUD engine (`mud/guest/mud_guest.cpp`) previously served one
     hardcoded setting, Middleham. The PR adds a `domain` boot field
     (`"middleham"` default, `"the_gyre"` new) rather than a new engine:
@@ -261,7 +261,7 @@ defmodule RFD2085 do
     `DOMAIN_THE_GYRE` branch in the constructor, `clone_rooms()`, and
     `objective_complete()` cover the new one. `mud/web/index.html`/`mud.js`
     get a mode selector, one `localStorage` session id per mode.
-    
+
     Verified: a native (non-riscv64) link of `mud_guest.cpp` driving
     `mud_boot()`/`mud_step()` through the whole Gyre loop, real narration
     text, `objective_complete()` true after both rooms are visited
@@ -270,7 +270,7 @@ defmodule RFD2085 do
     driven with real Playwright, both Chromium and Camoufox, against a
     throwaway local stub, before the real spec (`mud/web/test/gyre.spec.ts`)
     was written.
-    
+
     Not verified: a `riscv64-musl` + `libriscv` build/run of the guest
     code (no cross toolchain available when this was written). No real
     FDB/H2O build or deploy. `gyre.spec.ts` needs a real `MUD_BASE_URL`

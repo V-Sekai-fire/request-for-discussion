@@ -20,12 +20,12 @@ defmodule RFD1135 do
     `priv/python/check_pixi_free.py` fails the build on a call to the other
     environment manager, and it reads prose without complaining, so the rule
     stays writable.
-    
+
     An embedded interpreter starts once, with one dependency set. So a second
     dependency set is a second app: its own mix project, its own setup cell,
     its own runtime. The gate holds that too. It reads the `pyproject.toml`
     cell of every notebook in an app and fails when two of them differ.
-    
+
     This is what the corpus repository's environments were for. OmniGen2 pins
     torch 2.6.0+cu124 and EditScore pins cu128, and no interpreter holds
     both. That separation stays, as apps beside each other rather than
@@ -39,7 +39,7 @@ defmodule RFD1135 do
     that, a helper shelled into five environments in another repository. The
     notebook described three packages while the loop depended on five
     environments it never names, so it ran on one desk and nowhere else.
-    
+
     The failure was not theoretical. Loop 1 stopped with `No module named
     'drjit'`, because it called the `anny` environment for a renderer that
     only the default environment carries. The notebook cannot show that.

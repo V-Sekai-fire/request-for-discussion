@@ -27,7 +27,7 @@ defmodule RFD2162 do
     `vertex_bone_indices` and `vertex_bone_weights`. `emit_video_usdz.py`
     writes them under the mesh's `SkelBindingAPI` and populates
     `SkelAnimation.jointTransforms` from each candidate's `pose_soma`.
-    
+
     Also update `maskscore_rung_1_stubs.py` to include the 5 pose edits in
     the 5-stub (mesh/depth/pose/keypoints/multimodal) emit so all 15 edits
     appear in the ETNF parquets.

@@ -18,10 +18,10 @@ defmodule RFD1092 do
     failure here. Its path:
     `/home/sifr/3DAIGC-API/memory-bank/kimodo-text-to-motion-ops.md`, on
     the DGX host, not in this repository.
-    
+
     Run prefetch, restart, and test directly on the DGX. Do not ask the
     user to run those scripts by hand.
-    
+
     Verified working, this session's own check: job `544b726e…`
     produced `studio_motion.json`, the expected output.
     """

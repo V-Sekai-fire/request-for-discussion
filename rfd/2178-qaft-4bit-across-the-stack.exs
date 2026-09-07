@@ -25,7 +25,7 @@ defmodule RFD2178 do
     - Class A (upstream QAFT available): use verbatim. Gemma-4-12B QAT Q4_0 today.
     - Class B (upstream QAFT feasible locally): the workspace produces one from published weights via a QAFT fine-tune on the RTX 3090. Small models (Qwen3-TTS-1.7B, Kimodo, SkinTokens, MoGe-3, rf-detr-Seg, WavLM, wav2vec2, ipa-whisper) fit in one overnight run each.
     - Class C (upstream QAFT infeasible locally): Wan-VACE 14B, Pixal3D 24 GB base. QAFT needs multi-day runs; parked until compute expands or an upstream Q4 release lands.
-    
+
     See [DETAILS.md](DETAILS.md) for the per-model class, size, and compute estimate. See RFD 1027 (QAFT-first weights) for the QAFT-first rule.
     """
 
@@ -40,7 +40,7 @@ defmodule RFD2178 do
     each model's own pretraining data or a distillation-appropriate
     substitute. "Fits" = QAFT run fits 24 GB VRAM. "Overnight" = <12 h.
     "Multi-day" = >36 h continuous.
-    
+
     | Model | Params | Upstream QAFT? | Class | QAFT compute | Notes |
     | --- | ---: | :---: | :---: | --- | --- |
     | Gemma-4-12B | 12B | ✓ Q4_0 GGUF (Google) | A | 0 (verbatim) | The anchor case; RFD 1027's canonical example |
@@ -65,7 +65,7 @@ defmodule RFD2178 do
 
     details "Sequencing", ~S"""
     Class-B QAFT rungs, cheapest first, so each result unblocks the next:
-    
+
     1. **Voice-adjacent small models first**, Qwen3-TTS-1.7B, wav2vec2,
        Parakeet, ipa-whisper. Overnight batch. Unblocks RFD 2167
        (voice-reward distillation) because both the reward LoRA base and

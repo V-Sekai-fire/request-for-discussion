@@ -22,7 +22,7 @@ defmodule RFD1104 do
     (`getWorldDirection().z > 0.5`), never an unconditional
     `rotateY(π)`. `processModel` early-returns for any VRM or
     `vrmBindPassthrough` model: no autoscale, no AIGC yaw repair.
-    
+
     See `DETAILS.md` for the passthrough policy, the display-path rules,
     the export-path steps, the implementation map, and the retest
     checklist.
@@ -54,7 +54,7 @@ defmodule RFD1104 do
     | Run AIGC rig repair (`alignSkinnedMeshToRig`, skeleton display offsets) | Skip repair when `userData.vrmNormalized` is set               |
     | Build skeleton visualization from humanoid `Normalized_*` nodes         | Build it from the primary skinned mesh (`AvatarBody` skeleton) |
     | Always export with `rotateY(π)`                                         | Yaw only when `getWorldDirection().z > 0.5`                    |
-    
+
     Reference pattern this project follows (this project's own earlier
     code, and `@pixiv/three-vrm`): `VRMUtils.rotateVRM0` adds
     `scene.rotation.y += Math.PI` only when needed;
@@ -66,32 +66,32 @@ defmodule RFD1104 do
     details "Upload path", ~S"""
     Entry: drag-drop or the file picker, into `SceneManager.loadVRM`,
     into `VRMLoader.processVRM` with `passthrough: true`.
-    
+
     Passthrough policy, uploads only:
-    
+
     1. Facing (VRM0): `applyVrm0SceneForwardFix(vrm.scene)`, on the scene root only, when `forward.z > 0.5`.
     2. Flags: set `vrm.scene.userData.vrmNormalized = true` and `vrm.scene.userData.vrmBindPassthrough = true`.
     3. No scale, center, floor snap, rebind, bone rename, or AIGC rig repair on upload.
-    
+
     Log line: `[VRM] Upload passthrough, scene yaw only if needed; no
     scale/rebind/rename`.
-    
+
     `processModel` must early-return for a VRM or a
     `vrmBindPassthrough` model: no autoscale, no AIGC yaw repair. Never
     call `validateAigcRigContract` or `normalizeRiggedModelTransforms`
     repair paths on an uploaded VRM.
-    
+
     ### Remote log check (`?remoteLog=1`, writes `logs/remote-log.txt`)
-    
+
     After a re-upload, grep for:
-    
+
     ```
     [VRM] Multi-skin layout after normalize
     rotated scene root (all skins move together)
     ```
-    
+
     Regression signals, meaning the bug returned:
-    
+
     ```
     rotated armature via hips parent
     VRM0 normalization: rotated model to face camera { beforeZ: 1, afterZ: -1 }
@@ -112,12 +112,12 @@ defmodule RFD1104 do
     details "Export path", ~S"""
     Entry: the Save panel, `VRMExporter.exportToVRM`, or
     `SceneManager.exportToVRM`.
-    
+
     1. Rebind skinned meshes before the glTF parse, when `userData.vrm` or `vrmNormalized` is set.
     2. Yaw only if the model's world-forward has `z > 0.5`, the same rule as upload; never a blind `rotateY(π)` on an already-correct upload.
     3. Strip internal flags from the exported GLB: `vrmNormalized`, `preserveExportedOrientation`, `fromAigc`, and so on (`glbExportUtils.stripInternalExportUserData`).
     4. Restore the viewport quaternion after export, if a temporary yaw was applied.
-    
+
     Round-trip test: export a multi-skin reference model, re-import it,
     and confirm the eyes and finger bones still align in skeleton mode.
     """

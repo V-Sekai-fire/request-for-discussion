@@ -20,7 +20,7 @@ defmodule RFD2196 do
     Skip ETNF/6NF normalization for anything destined for HF. Push with
     LFS + `hf_transfer`, not xet, whose finalize call times out on multi-GB
     commits.
-    
+
     The viewer's contract is enforced silently by an auto-indexer that
     either succeeds or falls back to a "Preview" badge. The five rules and
     the errors each surfaces are in `DETAILS.md`, one section per rule.
@@ -61,13 +61,13 @@ defmodule RFD2196 do
     The HF viewer paginates one wide table per split. Split into satellite
     tables (Hermes / ETNF / 6NF style) and the viewer's `train[0..N]`
     browsing collapses. Rules:
-    
+
     - One row per logical example. NULLs are fine.
     - Nested lists and structs are fine (multiple images per row,
       conversation turns), one row per example still.
     - Do NOT emit `entity`, `entity_score`, `entity_conversation` as
       separate parquet files thinking the viewer will join them.
-    
+
     Companion skill: `hf-datasets-no-etnf`.
     """
 
@@ -76,21 +76,21 @@ defmodule RFD2196 do
     page. Above 300 MB it hard-fails. With images embedded (~1 MB each), a
     1000-row shard is one 1 GB row group by pyarrow default, always
     oversized.
-    
+
     Write with:
-    
+
     ```python
     pq.write_table(tbl, path,
                    compression="zstd", compression_level=9,
                    row_group_size=100)   # 100 rows × ~1 MB = ~100 MB
     ```
-    
+
     `row_group_size` is the maximum number of rows per group. Set it so
     `rows_per_group × avg_row_bytes < 200 MB` (30 % safety margin).
-    
+
     For an already-published shard, rewrite in place, no re-extraction
     needed:
-    
+
     ```python
     tbl = pq.read_table(path)
     pq.write_table(tbl, path_tmp, compression="zstd",
@@ -103,7 +103,7 @@ defmodule RFD2196 do
     The auto-indexer scans `data/` for files matching that name pattern and
     groups them into splits. Bigger shards (up to ~1 GB) work but slow the
     viewer's first paint. Aim for ~500 MB for image-embedded data.
-    
+
     Layout examples:
     ```
     data/train-00000-of-00110.parquet     # single split
@@ -114,7 +114,7 @@ defmodule RFD2196 do
 
     details "Rule 4: image column = `struct<bytes:binary, path:string>`", ~S"""
     Exact Arrow type:
-    
+
     ```python
     import pyarrow as pa
     image_type = pa.struct([("bytes", pa.binary()), ("path", pa.string())])
@@ -123,12 +123,12 @@ defmodule RFD2196 do
     # multiple images per row (viewer renders a gallery)
     schema = pa.schema([..., ("images", pa.list_(image_type))])
     ```
-    
+
     Row shape:
     ```python
     {"bytes": <raw png/jpg bytes>, "path": "images/whatever.png"}
     ```
-    
+
     What does NOT work:
     - `pa.binary()` alone (no thumbnail rendering)
     - `{"path": "images/x.png"}` referencing a file elsewhere in the repo
@@ -141,9 +141,9 @@ defmodule RFD2196 do
     raises `RuntimeError: Internal error: timed out reading request body`
     on the finalize call. Observed at 94 GB / 110 shards. Multiple retries
     did not help; batching into 15-file commits did not help.
-    
+
     Reliable recipe:
-    
+
     ```sh
     pip install hf_transfer
     HF_HUB_DISABLE_XET=1 \
@@ -153,7 +153,7 @@ defmodule RFD2196 do
       REPO_ID LOCAL_DIR \
       --num-workers 8
     ```
-    
+
     Notes:
     - `upload-large-folder` doesn't accept `--path-in-repo`. Structure
       `LOCAL_DIR` so its tree already matches the repo (put parquet under
@@ -166,7 +166,7 @@ defmodule RFD2196 do
     - Deletes and small commits work fine over the standard
       `HfApi().create_commit` path; only large adds need the LFS+hf_transfer
       route.
-    
+
     Companion skill: `hf-upload-large`.
     """
 
@@ -175,16 +175,16 @@ defmodule RFD2196 do
     the file to BOTH `~/.cache/huggingface/hub/…/blobs/` AND the requested
     `local_dir` (on macOS the intended hardlink often becomes a copy). Cost
     observed: 86 GB target dir → 170 GB actual disk.
-    
+
     For one-shot streaming pipelines, bypass the cache with direct HTTPS:
-    
+
     ```python
     import os, requests
     from huggingface_hub import HfApi
     TOKEN = HfApi().token or os.environ["HF_TOKEN"]
     S = requests.Session()
     S.headers["Authorization"] = f"Bearer {TOKEN}"
-    
+
     url = f"https://huggingface.co/datasets/{REPO}/resolve/main/{name}"
     with S.get(url, stream=True) as r:
         r.raise_for_status()
@@ -194,10 +194,10 @@ defmodule RFD2196 do
     # process...
     local_path.unlink()
     ```
-    
+
     For repeated reads, let the cache do its job, the doubling pays for
     retry and dedup.
-    
+
     Companion skill: `hf-download-streaming`.
     """
 
@@ -208,7 +208,7 @@ defmodule RFD2196 do
     each path to only the LAST row that claimed it. When the tar stream
     delivers that image, all other claiming rows are orphaned and dropped
     silently at the end.
-    
+
     Fix: `img2rows: dict[str, list[int]]` with `defaultdict(list)`, and on
     each tar member deliver the bytes to every interested row. Bytes are
     shared by reference, no memory blowup.
@@ -231,29 +231,29 @@ defmodule RFD2196 do
     `chibifire/zenodo-second-hand-fashion-v3`: on-disk parquet held
     `list<struct<slot, damage, damage_image, damage_location>>` (list of
     struct); the README's `dataset_info.features` block declared
-    
+
        , name: damage
           sequence:
            , name: slot ...
-    
+
     which HF-datasets' YAML loader reads as `Sequence(dict(...))`, and
     that translates to `struct<slot: list, damage: list, ...>` (**struct
     of lists**) in Arrow, the historical tfds convention. The viewer
     tried to cast on-disk list-of-struct to declared struct-of-lists and
     died with `UnexpectedError` on that split, viewer red.
-    
+
     The two Features shapes:
-    
+
     | YAML | datasets class | Arrow shape |
     |---|---|---|
     | `sequence: {...}` | `Sequence(dict)` | `struct<field: list<T>>` (struct of lists) |
     | `list: [{...}]`   | `List(dict)`     | `list<struct<field: T>>` (list of struct) |
-    
+
     For a single-typed sequence (`sequence: string`) both YAML keywords
     land at `list<T>` and the distinction does not matter. For a sequence
     of records the distinction is the whole rule: pick the keyword whose
     Arrow shape matches what you actually wrote, or the auto-cast fails.
-    
+
     The fix is one YAML character (`sequence:` -> `list:`) or a parquet
     rewrite that flips the shape; the character fix is trivial and
     correct-by-construction when the parquet was already list-of-struct.

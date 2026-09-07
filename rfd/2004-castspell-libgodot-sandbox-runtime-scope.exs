@@ -48,7 +48,7 @@ defmodule RFD2004 do
     expands through the `METHOD`/`VMETHOD` macros. Those macros build a
     named, string-dispatched syscall (`operator()`) that calls back into a
     live, running Godot process on the host side to actually execute.
-    
+
     Confirmed directly in `program/cpp/docker/api/vector.cpp`:
     `Vector3::dot()`, `cross()`, `length()`, and similar are hand-written
     inline RISC-V assembly issuing `ecall` (syscall `ECALL_VEC3_OPS`), not
@@ -58,7 +58,7 @@ defmodule RFD2004 do
     carrying an opaque host-side registry index. This confirms these
     types are thin remote handles in `godot-sandbox`'s own design, not
     real local value types.
-    
+
     `zone-server-h2o` runs no live Godot process outside the sandbox
     itself, so it cannot answer these syscalls the way a real Godot host
     does.
@@ -74,7 +74,7 @@ defmodule RFD2004 do
 
     details "Proposal", ~S"""
     ### Embed `libgodot` per zone
-    
+
     Decide the runtime this way. Embed a real, headless Godot engine
     instance, via `libgodot` (`core/extension/libgodot.h`,
     `GodotInstance`, merged in Godot 4.6), inside each CastSpell
@@ -84,7 +84,7 @@ defmodule RFD2004 do
     "only one per process" constraint maps cleanly onto one `libriscv`
     `Machine` per zone, since each sandboxed guest is already its own
     isolated process-like boundary.
-    
+
     Build this from `fabric-godot-core`'s own pinned release tag,
     `v2026.06.27.1907-multiplayer-fabric` (Godot 4.7.0-beta per that tag's
     own `version.py`), not upstream `godotengine/godot` generically. Reading
@@ -93,9 +93,9 @@ defmodule RFD2004 do
     `platform/linuxbsd/detect.py`'s `supported_arches`, and
     `modules/sandbox` (vendored as its own subrepo). None of this is a
     "does our fork have this yet" open question. It already does.
-    
+
     ### Build configuration
-    
+
     Build headless (`DisplayServerHeadless`, a real, shipped dummy
     display backend, removing the X11/Wayland/D-Bus/fontconfig/
     speech-dispatcher dependencies `platform/linuxbsd` otherwise pulls in
@@ -107,7 +107,7 @@ defmodule RFD2004 do
     same `platform/linuxbsd` code every other Linux architecture uses. It
     needs building the existing, already-supported headless target for
     `arch=rv64`, not designing a new platform backend.
-    
+
     Disable `modules/sandbox` for this one embedded-build target
     specifically, even though the fork's normal client build keeps it
     enabled. That module lets a normally-running Godot client host further
@@ -117,7 +117,7 @@ defmodule RFD2004 do
     binary size and surface for no requirement that calls for it. Exclude
     it via SCons `disable_modules=sandbox` or an
     equivalent `custom.py`/`modules.cfg` entry for this target only.
-    
+
     Build with `threads=no`, Godot's own single-thread build mode. The
     Web/WASM export already proves this mode in production. `libriscv`'s
     thread model needs it too. `lib/libriscv/threads.hpp` and both
@@ -126,7 +126,7 @@ defmodule RFD2004 do
     microthreading in both cases, not real concurrent host threads.
     Godot's default build assumes genuine parallel execution instead
     (`WorkerThreadPool` behind physics and rendering).
-    
+
     Run real audio headless, not silence. Reading
     `servers/audio/audio_driver_dummy.cpp` directly confirms
     `AudioDriverDummy` is not a stub. Its `mix_audio()` calls the real
@@ -136,13 +136,13 @@ defmodule RFD2004 do
     documented, guarded synchronous path
     (`ERR_FAIL_COND(use_threads == true)` inside it). The embedding host
     should poll that path directly, not run it on a background thread.
-    
+
     Call `set_use_threads(false)`, and poll `mix_audio()` from the
     same tick loop that calls `iteration()`, to get real mixed audio
     headless. The Web export's documented audio glitching traces to that
     platform's real-time `AudioWorklet` output driver. It does not carry
     over to this already-synchronous `Dummy` driver path.
-    
+
     Virtualize filesystem access, and stub or virtualize networking,
     through `libriscv`'s own broad Linux syscall-emulation tier,
     `Machine<W>::setup_linux_syscalls(filesystem, sockets)`
@@ -152,14 +152,14 @@ defmodule RFD2004 do
     whitelisting) and full socket calls, already proven against a real
     statically linked `riscv64-unknown-linux-gnu` binary in
     `libriscv/libriscv`'s own `binaries/linux64/` example.
-    
+
     Avoid runtime `dlopen`. `libriscv`'s own docs state dynamic library
     loading needs extra host-side whitelisting, not out-of-the-box
     support. Statically link every GDExtension a CastSpell instance needs
     at guest-build time instead.
-    
+
     ### The spike: part 1 (boot and run) is done
-    
+
     The spike this item gates on ran, on real hardware, against real
     toolchains, not just source-reading. Part (1), boot and run correctly
     under `libriscv`, stands resolved and achieved. A minimal host
@@ -173,12 +173,12 @@ defmodule RFD2004 do
     `_ready()`/`_process()` script output, five real `iteration()` calls,
     and a clean shutdown, confirmed byte for byte via a host-level
     `strace -f` capture.
-    
+
     Getting there needed two changes: switching the embedded engine's own
     guest libc from glibc to musl, and seven fixes to `libriscv` itself.
     All seven fixes are real and upstream-worthy. None of them change
     Godot's own code.
-    
+
     A genuine glibc `tcache` heap-consistency defect blocked every
     attempt under glibc specifically. Disassembly down to the exact
     faulting instruction confirmed this defect. It is independent of
@@ -186,9 +186,9 @@ defmodule RFD2004 do
     mechanism, so switching to it sidesteps that defect entirely. The cost
     is that musl still needs to reach real POSIX-completeness parity with
     glibc as CastSpell's actual requirements grow.
-    
+
     The `libriscv` fixes cover four areas:
-    
+
     - Guest pipes forced non-blocking. A real host-level block on one
       syscall would otherwise stall `libriscv`'s single-threaded
       cooperative scheduler indefinitely.
@@ -202,11 +202,11 @@ defmodule RFD2004 do
       `-1` instead of passing it through, breaking every relative-path
       `*at()` call while leaving absolute-path calls (the only ones
       exercised until this spike) unaffected.
-    
+
     One of `libriscv`'s own open, unresolved upstream issues,
     `libriscv/libriscv#296`, independently reports the same underlying
     symptom class this spike's fixes resolve.
-    
+
     Full detail, the reproducible spike script, and the `libriscv` patch
     itself live at `v-sekai-multiplayer-fabric/godot-riscv-spike`, a
     separate repository this RFD points to rather than duplicates. Audio
@@ -214,9 +214,9 @@ defmodule RFD2004 do
     this specific spike, since the harness used a
     headless-with-no-audio-driver-needed test scene. That remains to
     confirm separately once real implementation starts.
-    
+
     ### The spike: part 2 (performance) is not done
-    
+
     Part (2), performance measurement against the real 10Hz/200-entity/
     many-zones budget, is not yet done. No performance numbers exist yet
     for this exact configuration, in Godot's own docs, in `libriscv`'s own
@@ -224,17 +224,17 @@ defmodule RFD2004 do
     binary), or from this spike (which validated correctness, not speed,
     under an interpreted, non-JIT `libriscv` configuration throughout).
     This stays the actual gate before real implementation work starts.
-    
+
     ### Maintainer feedback
-    
+
     `fwsgonzo` (`libriscv`/`godot-sandbox`'s maintainer) confirmed this
     direction directly. It is technically achievable, and open to a real
     PR, conditioned on care and an explicit disable option, matching "the
     ethos of `godot-sandbox`."
-    
+
     Three concrete implications follow for the eventual implementation,
     not yet built:
-    
+
     - Virtual filesystem access should default-deny, scoped per
       `Sandbox` instance. It should build on `libriscv`'s existing
       `-A/--allow <file>` allowlist and its `sandbox_libdir`/`real_libdir`
@@ -247,7 +247,7 @@ defmodule RFD2004 do
     - The embedded-engine mode should be a distinct, explicitly opt-in
       mode layered on top of `godot-sandbox`'s existing narrow API, not a
       change to that default. This gives it a real off switch.
-    
+
     Signal handling already has real, working coverage (`sigaction`,
     `sigaltstack`, `tkill`, `tgkill`, confirmed via direct source read).
     It is stronger than expected going in, and worth a focused review
@@ -256,9 +256,9 @@ defmodule RFD2004 do
     default-deny direction. Expect them to become virtualized,
     allowlist-gated calls in the real implementation, not to stay a
     direct proxy to the real host filesystem.
-    
+
     ### Fallback options, ranked below the chosen one
-    
+
     1. Fall back to vendoring `godot-cpp`'s (`godotengine/godot-cpp`, MIT)
        `Vector3`/`Basis`/`Quaternion`/`Transform3D` and relevant `Variant`
        scalar sources, hand-written and purely local (no engine
@@ -309,7 +309,7 @@ defmodule RFD2004 do
     zero local computation at all. This settles the question the prior draft
     of `rfd/2001-zonefabric-roadmap-vs-mas-bandwidth-fps/index.md` flagged as
     suggestive, not conclusive.
-    
+
     Resolved, part (1) of the `libgodot`-in-sandbox spike. A real
     host program called `libgodot_create_godot_instance()` directly and drove
     `GodotInstance::iteration()` in a manual loop. It booted the pinned
@@ -317,7 +317,7 @@ defmodule RFD2004 do
     (`rvlinux`), not just `qemu-riscv64`. The run produced real script
     output, five real `iteration()` calls, and a clean shutdown, confirmed
     via `strace -f`.
-    
+
     Open, part (2): measure real boot time and per-`iteration()`
     cost against the actual budget (10Hz, 200 entities/zone, many
     zones/process). Confirm the one-`GodotInstance`-per-`libriscv`-

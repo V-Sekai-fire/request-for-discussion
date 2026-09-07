@@ -41,7 +41,7 @@ defmodule RFD2090 do
     tofu variable." `rfd/0089` archives `infra`. Even without that, using
     a test-seeding dev image for a real production deploy is a real
     correctness problem, not a stopgap worth keeping.
-    
+
     `config.exs`'s `COMPILE_PHASE` flag existed to let `mix compile`
     (the Docker build step) succeed with no real secrets present, by
     returning a placeholder value instead of raising. This only works
@@ -73,7 +73,7 @@ defmodule RFD2090 do
 
     details "Decision outcome", ~S"""
     Chosen: **option 2.** `mix.exs` gains a `releases:` block:
-    
+
     ```elixir
     defp releases do
       [
@@ -88,11 +88,11 @@ defmodule RFD2090 do
       ]
     end
     ```
-    
+
     `linux_musl` matches Fly's own runner and this repo's existing
     Alpine-based images, avoiding a glibc/musl mismatch between the build
     and run stages.
-    
+
     `config/runtime.exs` now holds everything that previously depended on
     `Helpers.get_env`/`COMPILE_PHASE`: `URL`, `ROOT_ORIGIN`,
     `FRONTEND_URL`, both `Repo`s' connection config and CockroachDB mTLS
@@ -105,11 +105,11 @@ defmodule RFD2090 do
     are unaffected. `config.exs`/`prod.exs` keep only what is genuinely
     safe to bake in at compile time: `ecto_repos`, `hammer`, logger
     format, `pow`'s static config, and similar.
-    
+
     `Uro.Config.Helpers` (the `COMPILE_PHASE` module) is deleted —
     confirmed via `grep -rln "Uro\.Config\.Helpers\|compile_phase"
     lib/` that nothing outside `config/*.exs` referenced it.
-    
+
     `lib/uro/release.ex` adds `Uro.Release.migrate/0`, run via the
     release's own `eval` command
     (`bin/uro eval "Uro.Release.migrate()"`), since a compiled release has
@@ -117,7 +117,7 @@ defmodule RFD2090 do
     it. This runs `Ecto.Migrator.with_repo/2` against
     `Uro.Repo.Migration` only, matching `AGENTS.md`'s documented DDL/DML
     role split.
-    
+
     `docker/uro/Dockerfile` is a real two-stage build: a build stage
     (Elixir/Alpine, plus `zig`, `cmake`, `ninja-build`, and the
     `riscv-none-elf-gcc` toolchain `.github/workflows/casync-interop.yml`
@@ -139,7 +139,7 @@ defmodule RFD2090 do
     (outbound TLS to CockroachDB, S3-compatible storage, and OTLP all need
     real CA verification), which is a smaller, simpler runtime surface
     than an Erlang-installed image.
-    
+
     Bad: the build stage is heavier than before, Zig, CMake, Ninja, and a
     RISC-V cross-compiler, on top of what `mix compile` already needed per
     `zone-backend`'s own `docs/decisions/0017`. `config/runtime.exs` is a

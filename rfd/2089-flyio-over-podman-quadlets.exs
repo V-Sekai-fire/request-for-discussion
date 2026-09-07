@@ -39,7 +39,7 @@ defmodule RFD2089 do
     `gha-runner-quadlet`, and `sccache-cache-quadlet`, each with an
     `install.sh` and a real `.container` unit. All seven last received a
     push on 2026-06-13.
-    
+
     Independently of that decision, real production work on `zone-backend`
     continued against Fly.io. `docs/decisions/0011-fly-redeploy-scope-uro-and-crdb-only.md`
     records a Fly app loss and a scoped redeploy of `multiplayer-fabric-uro`
@@ -51,7 +51,7 @@ defmodule RFD2089 do
     whatever Dockerfile previously set that override was never committed
     anywhere), and `multiplayer-fabric-uro` had 14 secrets staged but never
     deployed.
-    
+
     This mismatch, a published RFD choosing quadlets, while the actual
     service that exists and needs fixing runs on Fly, needed a real
     decision, not a silent continuation of whichever path happened to have
@@ -81,9 +81,9 @@ defmodule RFD2089 do
     `rfd/0061` is superseded. `infra` and all seven quadlet repos are
     archived (GitHub's archive, not deletion, history stays reachable,
     nothing currently depends on them being writable).
-    
+
     The concrete evidence this decision is grounded in, not asserted:
-    
+
     - `multiplayer-fabric-crdb`: three real, distinct bugs found and fixed
       by iterating against actual Fly boot logs, not guessed, the lost
       entrypoint, a missing `chmod +x` on its replacement, and a
@@ -117,7 +117,7 @@ defmodule RFD2089 do
     source of drift: two competing, both-real deploy configs for the same
     service (`AGENTS.md`'s Fly secrets vs. `zone-backend-quadlet`'s
     `/etc/zone-backend/env`) is worse than committing to one.
-    
+
     Bad: this reverses a published, deliberate decision
     (`rfd/0061`) made after weighing Harvester HCI, Fly.io, and quadlets
     directly against each other. That record's own stated reasons for
@@ -126,7 +126,7 @@ defmodule RFD2089 do
     re-derivation of why quadlets were rejected the first time. A future
     RFD revisiting deployment target again should read both `rfd/0061`
     and this record.
-    
+
     `zone-server-h2o` and `zone-client-godot` are not yet covered by a
     real Fly.io production deployment; see `rfd/0091` and `rfd/0092`.
     """

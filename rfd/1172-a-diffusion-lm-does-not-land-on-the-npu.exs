@@ -17,7 +17,7 @@ defmodule RFD1172 do
 
     decision ~S"""
     It cannot, and the XDNA blocklist row stands unchanged.
-    
+
     Three facts settle it, each sourced in DETAILS.md. The vendor's LLM flows
     exclude this NPU generation: every supported path requires the newer 50 TOPS
     part, and the one prototype flow that reaches ours measured 2.3 tokens per
@@ -27,7 +27,7 @@ defmodule RFD1172 do
     published NPU deployment of a dLLM anywhere runs an 8B model on a phone
     accelerator in the 45 TOPS class, and it rewrote the algorithm to get there.
     Ours peaks at 10.
-    
+
     If diffusion text generation earns a place in this workspace, it runs on the
     3090 or a rented GPU. DiffusionGemma 26B-A4B and LLaDA2.1-mini, both Apache
     2.0, are the sizes that fit a desk card.
@@ -66,11 +66,11 @@ defmodule RFD1172 do
     | Mercury 2 (Inception Labs)         | undisclosed            | closed, API only | commercial    | claimed 1,009 tok/s on datacenter GPUs; trails frontier AR on reasoning by its own account |
     | Gemini Diffusion (Google)          | undisclosed            | closed, waitlist | none readable | experimental demo, no public API                                                           |
     | Seed Diffusion Preview (ByteDance) | undisclosed            | closed           | none readable | code model; claimed 2,146 tok/s on H20                                                     |
-    
+
     Strongest overall and strongest open with a commercially usable licence are
     the same row: LLaDA2.1-flash. The closed models publish speed, not a
     benchmark table that beats it.
-    
+
     1. https://huggingface.co/inclusionAI/LLaDA2.1-flash
     2. https://github.com/inclusionAI/LLaDA2.X
     3. https://ai.google.dev/gemma/docs/diffusiongemma
@@ -85,21 +85,21 @@ defmodule RFD1172 do
     supported path requires the 50 TOPS XDNA2 generation. GAIA on a 7840U falls
     back to CPU and iGPU with the NPU idle. The third-party NPU runtimes say the
     same, citing tile-structure differences.
-    
+
     1. https://ryzenai.docs.amd.com/en/latest/hybrid_oga.html
     2. https://ryzenai.docs.amd.com/en/1.4/npu_oga.html
     3. https://github.com/amd/GAIA
-    
+
     The one path that reaches Phoenix loses to its own CPU. The Ryzen AI 1.2-era
     eager-mode flow offloads GEMMs at w4abf16 (AWQ INT4 weights via Quark, bf16
     activations) and is labelled prototyping-only. A published project measured a
     7B autoregressive model at 2.3 tok/s on the Phoenix NPU against 7.8 tok/s on
     the same package's CPU. That is the baseline rule: the floor sits in the same
     table, and the floor wins by 3.4x.
-    
+
     1. https://ryzenai.docs.amd.com/en/1.2/llm_flow.html
     2. https://www.hackster.io/ru3ll/ray-empowering-your-digital-life-943398
-    
+
     The dLLM pattern is strictly heavier than the AR pattern that already loses.
     Bidirectional attention over the full sequence, dozens of denoising passes
     per generation, no KV cache in the standard formulation. The single published
@@ -108,7 +108,7 @@ defmodule RFD1172 do
     changing the algorithm: multi-block speculative decoding plus an approximate
     prefix cache with staged token stabilisation. Nothing comparable exists for
     any AMD NPU, XDNA1 or XDNA2.
-    
+
     1. https://arxiv.org/abs/2606.13740
     """
 
@@ -126,9 +126,9 @@ defmodule RFD1172 do
     with quality controls: coherence gate (no comma degeneration, no excessive
     repetition, 10-word minimum), relevance gate (topic keywords), and a negative
     control (steps=16 must fail).
-    
+
     bf16 + torch.compile (WSL2, Triton 3.6, PyTorch 2.11):
-    
+
     | steps | batch | wall s | tok/s | pass |
     | ----: | ----: | -----: | ----: | ---- |
     |   128 |     1 |   6.83 |  18.7 | OK   |
@@ -136,16 +136,16 @@ defmodule RFD1172 do
     |    32 |     1 |   1.71 |  74.9 | OK   |
     |    16 |     1 |   0.85 | 149.9 | FAIL |
     |    32 |     4 |   4.71 | 108.7 | OK   |
-    
+
     Best passing configuration: steps=32, batch=4, 108.7 tok/s at 15.9 GiB VRAM.
     NF4 quantization saves VRAM (6.5 GiB) but degrades quality at steps=32,
     capping its best passing throughput at 46.5 tok/s (steps=64, batch=8).
-    
+
     The 108.7 tok/s is 9.2x below Mercury's claimed 1,000 tok/s. The gap is
     hardware-bound: Mercury runs on datacenter GPUs with multi-GPU parallelism
     and a production serving stack. On a single 3090, software optimisation
     (compile, batching, step reduction) is exhausted.
-    
+
     Unconfirmed, stated rather than smoothed over: Mercury 2 and Gemini
     Diffusion parameter counts; independent replication of the 892 and 1,009
     tok/s claims; whether the Hexagon deployment's code is public.

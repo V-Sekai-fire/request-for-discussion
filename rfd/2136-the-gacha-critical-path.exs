@@ -23,7 +23,7 @@ defmodule RFD2136 do
     until the one below it demonstrably runs. That replaces the parallel
     tracks with a sequence where every step shows something, and it
     puts Pixal3D and EditScore on the spine where they belong.
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 
@@ -44,9 +44,9 @@ defmodule RFD2136 do
     until the one below it demonstrably runs. That replaces the parallel
     tracks with a sequence where every step shows something, and it
     puts Pixal3D and EditScore on the spine where they belong.
-    
+
     The ladder, bottom to top:
-    
+
     0. **Language prompt → image.** OmniGen2 renders a reference image
        from a text prompt. Pixal3D takes an image, not text, so this rung
        is the ground the rest stands on. An image comes out.
@@ -79,7 +79,7 @@ defmodule RFD2136 do
        VRM per pull, downloadable.
     9. **Public.** The page is hosted with a sponsor link and an
        automation-disclosure page.
-    
+
     Each rung is a demo you can show. A rung is "done" when it produces
     its output from the previous rung's output, and a control run on a
     known-broken input fails. The order stays fixed: skipping a rung is

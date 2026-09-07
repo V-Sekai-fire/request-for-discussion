@@ -25,7 +25,7 @@ defmodule RFD2072 do
 
     details "Target", ~S"""
     Top 10 TechEmpower R23 data update test.
-    
+
     | Rank  | Framework             | RPS           | Lang  | ORM     |
     | ----- | --------------------- | ------------- | ----- | ------- |
     | 1     | may-minihttp          | 1,327,378     | Rust  | Raw     |
@@ -38,7 +38,7 @@ defmodule RFD2072 do
     | 8     | lithium-postgres      | 1,073,846     | C++   | Full    |
     | 9     | lithium-postgres-beta | 1,068,560     | C++   | Full    |
     | 10    | hyper-db              | 1,066,644     | Rust  | Raw     |
-    
+
     h2o is already rank #2 with 1,226,814 RPS. All top 10 use Postgres
     with raw SQL (no ORM). The h2o-bench-tpcc target is to match this
     performance with TPC-C transactions (heavier per request) on
@@ -67,30 +67,30 @@ defmodule RFD2072 do
 
     details "Three components", ~S"""
     ### 1. SPSC lock-free ring buffer (`spsc_ring.c`)
-    
+
     Single-producer/single-consumer ring with atomic load/store.
     Power-of-two capacity (mask-based indexing). No CAS, no mutexes.
-    
+
     - Producer (H2O thread): `atomic_store_release(head)`
     - Consumer (worker thread): `atomic_store_release(tail)`
     - Invariant: `tail <= head <= tail + capacity`
-    
+
     Verified by CBMC (`test/cbmc/spsc_harness.c`) and Lean 4
     (`test/verification/TpccVerification/Spsc.lean`).
-    
+
     ### 2. Worker threads (`worker_pool.c`)
-    
+
     Each worker:
-    
+
     - Owns one SPSC ring (1024 slots)
     - Owns one libpq connection (pipeline mode)
     - Runs a tight loop: pop -> execute -> return
     - Returns results via `h2o_multithread_send`
-    
+
     Dispatch: round-robin across workers (atomic fetch_add).
-    
+
     ### 3. Return path
-    
+
     `h2o_multithread_send()` wakes the H2O event loop to send the
     HTTP response. No shared state on the return path.
     """

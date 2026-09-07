@@ -67,16 +67,16 @@ defmodule RFD2058 do
     channel and a reliable bit), so the receiver delimits messages on the
     shared stream and recovers the channel. This matches the picoquic
     `wt_baton` reference and the webtransportd frame spec.
-    
+
     A fresh stream per message exhausts the connection's stream credit,
     and the exhaustion starves the connect-accepted response on the
     control stream, so the late session stays in connecting. The
     persistent stream holds the stream count at one per session regardless
     of message rate.
-    
+
     Five supporting invariants keep the server alive under concurrent
     load:
-    
+
     - The inbound packet queue takes a mutex shared by the picoquic
       network thread and the main thread. A Lean+Plausible model proves
       the locked queue stays size-honest for every schedule, and finds the

@@ -18,7 +18,7 @@ defmodule RFD1115 do
     through `resolveVrmBoneTrackName`, never a raw skeleton bone name.
     Every frame, after `mixer.update(delta)`, call `humanoid.update()`,
     then `vrm.update(delta)`. The mixer root stays `vrm.scene`.
-    
+
     When `primaryAnimationVrm` is set, `_getActiveAnimationControls()`
     returns VRM controls only. `_silenceOrphanFbxMixer()` stops any
     leftover FBX mixer, on every preset swap and every Kimodo apply. A
@@ -26,7 +26,7 @@ defmodule RFD1115 do
     never cross-fade-stacked. A VRM0 upload gets the standard axis flip
     on every bone, legs, shoulders, and arms alike. Skipping the
     shoulder tracks alone twists the arms.
-    
+
     See `DETAILS.md` for the forbidden-change list, the protected files,
     and the pre-merge test commands.
     """
@@ -95,7 +95,7 @@ defmodule RFD1115 do
       src/__tests__/vrmMixamoPlaybackGuard.test.js
     npm run test:anim-smoke   # optional; needs a LAN HTTPS dev URL, ?animSmoke=1
     ```
-    
+
     Re-test by hand too: upload a passthrough VRM, apply the Walking
     preset, then apply a Kimodo motion.
     """

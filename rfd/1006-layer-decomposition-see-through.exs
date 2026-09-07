@@ -16,7 +16,7 @@ defmodule RFD1006 do
     decision ~S"""
     Add a layer decomposition stage between text to image and image to
     3D. The stage runs the See-Through model.
-    
+
     The task decomposes one image into RGBA body-part layers. It returns
     a layers zip, a PSD, a composite URL, and a layer count. The Studio
     pipeline stores the artifacts on the layer_decomposition node.
@@ -34,7 +34,7 @@ defmodule RFD1006 do
     - Cog model: weftspun/see-through (branch cog)
     - Executor: `src/library/taskManager.js`
     - URLs: `src/library/taskModelUrl.js`
-    
+
     **WITHDRAWN 2026-08-29: See-Through is a reference, not a model here.**
     RFD 1166 dropped it from the candidate ranking because every checkpoint
     its inference scripts load states no licence, and the depth one is a

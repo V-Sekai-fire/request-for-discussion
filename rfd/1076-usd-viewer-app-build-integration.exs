@@ -17,7 +17,7 @@ defmodule RFD1076 do
     `usd_viewer_app` becomes its own deployed app, the separation
     `character_taxonomy/` already has: its own `Dockerfile`, `fly.toml`,
     and Quadlet pair, served by `server.js`, a small static server.
-    
+
     `weftspun_studio` stops holding the gallery's bytes on disk. RFD
     1022/0023's ports-and-adapters split gives the shape:
     `WeftspunStudio.Ports.GallerySource` (one `fetch/2`), and
@@ -25,7 +25,7 @@ defmodule RFD1076 do
     adapter, the shape `Adapters.ReplicateJobs` already has.
     `router.ex`'s gallery routes forward through the port at an
     unchanged path; `GALLERY_URL` (env) names the deployed app.
-    
+
     The `usd-viewer` fix stays as a `patch-package` patch, applied by
     `npm ci`'s own `postinstall`. See `DETAILS.md` for the fix, a Vite
     base-path bug Playwright caught live, and what verified end to end.
@@ -120,7 +120,7 @@ defmodule RFD1076 do
     `usd-viewer@0.0.0` npm package, file by file, found one real
     divergence: `render-delegate.js`. Three fixes lived there, none
     written down before this session read the minified diff directly:
-    
+
     1. The `./`-prefix fix RFD 1073's own `DETAILS.md` already files.
        `UsdUtils.CreateNewUsdzPackage` writes asset references as
        `./name` but stores zip entries flat; the pristine package's
@@ -131,7 +131,7 @@ defmodule RFD1076 do
        `map`/`emissiveMap` texture, absent from the pristine package.
     3. A material-side fix: `new s({side:d.side})`, preserving the flat
        quad's double-sided setting, versus the pristine `new s({})`.
-    
+
     `patch-package` (new devDependency) captures this as
     `usd_viewer_app/patches/usd-viewer+0.0.0.patch`, generated with
     `--include 'render-delegate\.js$'` to exclude the `100644`→`100755`
@@ -148,7 +148,7 @@ defmodule RFD1076 do
     sets `build.rollupOptions.external` to a predicate matching any
     `/gallery/`-prefixed id, so Rollup ships the reference as a literal
     string.
-    
+
     A second, real bug surfaced only once Playwright drove the actual
     running proxy chain, not `curl`: Vite's default `base` ("/") makes
     the bundled entry script reference `/assets/index-*.js`,

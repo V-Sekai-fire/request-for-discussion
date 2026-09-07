@@ -61,10 +61,10 @@ defmodule RFD2027 do
     components as dependencies, because the channel's own resolver
     installs the set and the umbrella holds the full list in one file that
     a reader and a tool both read.
-    
+
     Each distribution channel carries one thin umbrella that depends on
     every component and installs nothing of its own:
-    
+
     - Scoop carries a metapackage manifest whose `depends` names each app,
       so `scoop install sinew/sinew` installs them all.
     - Homebrew carries a formula whose `depends_on` names each app, so
@@ -72,7 +72,7 @@ defmodule RFD2027 do
     - The zone backend carries a `docker-compose.yml` whose `services`
       name each backend process, so `docker compose up` starts the whole
       stack.
-    
+
     The umbrella holds the component list and no build steps, so adding a
     component touches one line in the umbrella beside the new component's
     own entry.

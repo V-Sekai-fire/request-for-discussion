@@ -22,7 +22,7 @@ defmodule RFD1117 do
     to the new-task form. A text-to-image completion never auto-loads
     into the 3D viewport on its own. The T-pose and A-pose chips stay
     mutually exclusive.
-    
+
     On the backend, `get_dinov3_encoder_layers()` is the only path to
     the DINOv3 layers; `image_feature_extractor.py` holds no second
     extractor class. YAML `init_params` metadata passes through

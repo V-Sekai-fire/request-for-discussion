@@ -16,13 +16,13 @@ defmodule RFD1161 do
     decision ~S"""
     Abandoned on 2026-08-28. The accelerator work is scoped to
     rf-detr keypoint and RFD 1157, and this scored 14 of 25 against RFD 1157's 18.
-    
+
     Read the sampling loop before ranking. One question settles this
     model: does it emit its sequence in one pass or one step at a time.
     If one pass, rank it high. It is small, its input is text rather
     than a mesh, and it would be the cheapest whole model this workspace
     could put on the device.
-    
+
     **Un-abandoned 2026-09-04.** RFD 2199 parked, zoo-DETR revive
     rejected, vision-Hailo culled. Kimodo is the sole latency-critical
     Hailo-10H track that fits. `nv-tlabs/kimodo` is "kinematic motion
@@ -35,7 +35,7 @@ defmodule RFD1161 do
     Kimodo text-to-motion is 0.3 B parameters: 0.6 GB at bf16 and 0.17
     GB at four bits. It is the smallest model in the catalog and fits
     the device many times over.
-    
+
     Size is not what decides it. Autoregressive per-step generation
     carries the shape-grows-per-step obstacle every language model here
     has against a compiler that emits fixed shapes. A fixed-length
@@ -60,7 +60,7 @@ defmodule RFD1161 do
 
     details "The 2026-09-04 rescore, against the current landscape", ~S"""
     Four premises of the 14/25 scoring turned out to be stale:
-    
+
     0. **Zoo-DETR resurrection rejected 2026-09-04.** The `detr_resnet_v1_18_bn`
        zoo entry parses clean on hailo10h but does object detection not
        keypoints; adapting it to the 133-keypoint expanded schema is 1-2
@@ -89,9 +89,9 @@ defmodule RFD1161 do
        half. That premise is closed. Kimodo compile now runs on the
        local Fedora WSL container (`weftspun-hailo-dfc:latest`)
        the same way RFD 2199's work did.
-    
+
     Rescore against those three inputs, honestly:
-    
+
     - **value axis**: rises. Motion becomes the primary latency-
       critical Hailo-10H track that still fits without an un-park
       condition on the encoder-LN diagnosis. Kimodo's diffusion
@@ -112,7 +112,7 @@ defmodule RFD1161 do
       look if compile fails. Kimodo lands into a compile+measure
       pipeline shape already spec'd
       (`logbook-rfd-2199-compile-measure-spec.md`).
-    
+
     Composite lands above 14/25 on the current landscape. Not asked to
     pin a specific number; the honest read is that Kimodo is now the
     best remaining latency-critical Hailo-10H candidate that has both
@@ -121,7 +121,7 @@ defmodule RFD1161 do
 
     details "Un-park scope", ~S"""
     Sequenced work items, with ownership:
-    
+
     1. **HERO**: upstream sampler port. `nv-tlabs/kimodo` →
        `3-interactor/kimodo-text-to-motion/server.py`. Currently
        `_run_upstream()` raises `NotImplementedError`. Weeks of Python
@@ -173,7 +173,7 @@ defmodule RFD1161 do
     details "What re-triggers a second abandonment", ~S"""
     If any of these lands, RFD 1161 gets abandoned again with a
     retraction pointer to whichever entry names the reason:
-    
+
     - LN-vs-BN probe surfaces an LN-axes wall in Kimodo's denoiser
       that no BN swap resolves (same failure class as RFD 2199's
       fork-encoder-LN option, and the same recipe-swap accuracy delta

@@ -19,7 +19,7 @@ defmodule RFD2230 do
     Operator, 2026-09-05, verbatim: *"Are you able to move the ggml
     model adapters and process from c++ to godot-sandbox gdscript
     if we add ggml to entities-godot?"*.
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 
@@ -47,7 +47,7 @@ defmodule RFD2230 do
     Operator, 2026-09-05, verbatim: *"Are you able to move the ggml
     model adapters and process from c++ to godot-sandbox gdscript
     if we add ggml to entities-godot?"*.
-    
+
     **Answer:** yes, cleanly, with a native/adapter split. The
     precondition, adding ggml as a shared module under
     `entities-godot-sandbox`, is exactly the shape RFD 2229's
@@ -60,7 +60,7 @@ defmodule RFD2230 do
     hosts `2-contract/ggml/` (RFD 2188 canonical source) plus ggml's
     Vulkan backend (MoltenVK on macOS). Exposes a small GDExtension
     surface, GDScript-callable:
-    
+
     ```gdscript
     var model := Ggml.load_model("res://models/motion-bricks.gguf")
     var lora := Ggml.load_lora("res://models/motion-bricks-walk.lora")
@@ -68,37 +68,37 @@ defmodule RFD2230 do
     var tokens := Ggml.tokenize("walk forward 60 frames")
     var out := model.run_inference(tokens, {"max_new_tokens": 60})
     ```
-    
+
     The native module handles: model file mmap, KV cache, backend
     dispatch (CPU / Metal / Vulkan / WebGPU), sampler primitives,
     tensor arithmetic. Nothing about a specific model's chat template
     or LoRA layout lives here.
-    
+
     **Layer 2, GDScript, per-model adapters.** One `.gd` file per
     model. Each adapter is a Resource subclass extending
     `GgmlAdapter`:
-    
+
     ```gdscript
     # res://adapters/motion_bricks.gd
     class_name MotionBricksAdapter extends GgmlAdapter
-    
+
     const MODEL_PATH := "res://models/motion-bricks.gguf"
     const TOKENIZER := "sentencepiece-motion"
-    
+
     func format_prompt(motion_desc: String, frames: int) -> String:
         return "<motion>%s</motion><frames>%d</frames>" % [motion_desc, frames]
-    
+
     func decode_output(tokens: PackedInt32Array) -> Array:
         # motion-bricks specific: tokens -> pose keyframes
         ...
     ```
-    
+
     Adapters run under Godot's script permission system + the
     existing `modules/sandbox/` capabilities: an adapter loaded at
     runtime from disk (or from the SQLite model bundle per RFD 2214)
     cannot escape the GDScript sandbox, cannot open arbitrary files,
     cannot spawn processes. Same shape RFD 2213 relies on for VRM.
-    
+
     **Layer 3, game / video code.** Consumers instantiate adapters
     by resource path, feed them domain input, get domain output. The
     game never touches ggml types directly.
@@ -106,13 +106,13 @@ defmodule RFD2230 do
 
     details "What this consolidates", ~S"""
     Names the RFD 2229 candidates that this RFD acts on:
-    
+
     | project | before | after |
     |---|---|---|
     | motion-bricks-cpp | own C++ module + own ggml pin + own CMake | one shared `modules/ggml/` + `motion_bricks.gd` adapter |
     | kimodo | own C++ module + own ggml pin | shared `modules/ggml/` + `kimodo.gd` adapter |
     | skin-tokens-cpp | own C++ module + own ggml pin | shared `modules/ggml/` + `skin_tokens.gd` adapter |
-    
+
     Result: **one native module, N GDScript adapter files**, instead
     of N per-project C++ modules with parallel build systems and
     parallel ggml pins.
@@ -122,7 +122,7 @@ defmodule RFD2230 do
     RFD 2213 puts godot-vrm inside a sandbox as a compiled ELF via
     libriscv (`modules/sandbox/`). Adapter-in-GDScript trades vs
     adapter-in-ELF:
-    
+
     | | GDScript adapter | RISC-V ELF adapter |
     |---|---|---|
     | build | none (script edit + reload) | cross-compile to riscv-elf |
@@ -130,9 +130,9 @@ defmodule RFD2230 do
     | third-party untrusted code | can't run C/Rust | can run any language |
     | performance | GDScript VM (fine for orchestration) | libriscv (fine for compute) |
     | sandbox | Godot script permissions | libriscv memory isolation |
-    
+
     **Recommended pick per case:**
-    
+
     - **Adapter is orchestration + tensor-shape juggling** (tokenizer
       setup, LoRA scaling factors, chat template, prompt formatting,
       output post-processing): **GDScript**. This is where all three
@@ -140,7 +140,7 @@ defmodule RFD2230 do
     - **Adapter runs third-party untrusted code** (a downloaded
       planner from a scene marketplace, a mod-supplied model wrapper):
       **RISC-V ELF via libriscv** (same as RFD 2213's VRM path).
-    
+
     The workspace ships trusted models we hold; GDScript adapters
     cover every current case. The ELF path stays available for the
     mod-supplied case if it appears.
@@ -148,7 +148,7 @@ defmodule RFD2230 do
 
     details "Sequencing", ~S"""
     Follow-up L1 RFDs, one per step:
-    
+
     1. Add `2-contract/ggml/` as a module under
        `entities-godot-sandbox/modules/ggml/`. Wire the GDExtension
        surface. First `Ggml.load_model()` + `Ggml.run_inference()`
@@ -185,7 +185,7 @@ defmodule RFD2230 do
     The three consuming projects (motion-bricks-cpp, kimodo,
     skin-tokens-cpp) are pre-ship, no downstream depends on their
     current C++ ABI. This migration doesn't break anyone external.
-    
+
     Internal churn: RFD 2212's planned `modules/motionbricks/`
     becomes `modules/ggml/`; RFD 2214's model bundle loader still
     returns the same bytes, the caller changes from C++ (`mb_model_load_from_memory`)

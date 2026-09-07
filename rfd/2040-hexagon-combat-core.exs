@@ -42,7 +42,7 @@ defmodule RFD2040 do
     as a pure reducer (`rfd/2033-core-contract-pure-reducer-byte-state`)
     over deterministic state
     (`rfd/2034-deterministic-cores-integer-seeded-rng`).
-    
+
     Driving ports: `input_source` (player commands with timestamps and
     targets), `tick_source` (the constant-step clock), `behavior_source`
     (enemy intents). Driven ports: `state_sink` (authoritative entity

@@ -31,7 +31,7 @@ defmodule RFD2065 do
     game client, a dedicated server, and a platform manager that installs
     and updates the other two (and itself). The platform manager began as
     a Godot placeholder with a single stub button and no real logic.
-    
+
     MSIX requires a native `.exe` as its `Executable=` entry point. The
     earlier approach used a .NET 8 self-contained launcher stub (~60 MB)
     to wrap the Godot dedicated-server export. The `zone-backend` Elixir
@@ -64,15 +64,15 @@ defmodule RFD2065 do
     application (`fabric_platform_central`). Declare `aria_storage` as a
     dependency so the updater delegates all casync work to the existing
     implementation.
-    
+
     **Single executable**: Use [Burrito](https://github.com/burrito-elixir/burrito).
     Burrito wraps a `mix release` into a self-extracting Zig-wrapper
     binary that bundles ERTS + all BEAM code. The output is
     `burrito_out/fabric_platform_central.exe`, one file, no separate
     `.bat`, no shim, no sidecar.
-    
+
     **MSIX layout** (simplified by Burrito):
-    
+
     ```
     bin\
       fabric-platform-central.exe   ← Burrito single binary (MSIX Executable=)
@@ -82,9 +82,9 @@ defmodule RFD2065 do
       StoreLogo.png
     AppxManifest.xml
     ```
-    
+
     **Update logic** in `lib/fabric_platform_central/updater.ex`:
-    
+
     ```elixir
     def update(target, install_dir, opts \\ []) when target in [:client, :server, :self] do
       {repo_base, index_file} = @targets[target]
@@ -99,28 +99,28 @@ defmodule RFD2065 do
       end
     end
     ```
-    
+
     **CI checks** (`.github/workflows/ci.yml`), runs on every push and
     PR:
-    
+
     ```yaml
     - run: mix compile --warnings-as-errors
     - run: mix format --check-formatted
     - run: mix test
     ```
-    
+
     **Release workflow** (`.github/workflows/release-msix.yml`), fires on
     `v*` tag push:
-    
+
     1. `erlef/setup-beam`, OTP 27 + Elixir 1.18
     2. `goto-bus-stop/setup-zig@v2.2.1`, Zig 0.14.0 (required by Burrito)
     3. `mix release` → `burrito_out/fabric_platform_central.exe`
     4. `packaging/msix/pack.ps1 -BurritoExe ... -Version ...` → signed
        MSIX
     5. Attach to GitHub Release
-    
+
     **`mix.exs` release config**:
-    
+
     ```elixir
     defp releases do
       [

@@ -55,7 +55,7 @@ defmodule RFD2020 do
     4.7 commit, because it gives the patch branches and the assembly a
     fixed target, so builds are reproducible and upstream churn cannot
     break an assembly.
-    
+
     - The fork's `master` is the frozen base. Its tip is `8a337510` (Godot
       `4.7.0-beta`, per `version.py`).
     - Every feature branch in the `merge` `gitassembly` recipe stands

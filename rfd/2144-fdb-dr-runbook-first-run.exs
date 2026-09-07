@@ -19,15 +19,15 @@ defmodule RFD2144 do
     Bao secret hygiene, R2 key rotation, Tigris fan-out refresh, scale to
     three at `double` redundancy. The CA in 1P closes RFD 2141's prereq; the
     runbook stops being theatre.
-    
+
     RFD 2141's phases 2–3 rotate the machine leaves to certificates the
     restored Bao PKI mount signs, once Bao is unsealed against the restored
     FDB. Until then, the cluster runs on the break-glass CA.
-    
+
     `WEFT_FDB_CLUSTER_ID` was not stored, so a fresh one was minted and
     written to 1P as `weftspun-fdb cluster id`. Coordinator addresses
     change on a rebuild anyway, so the identity change rides along.
-    
+
     Measurements — R2 snapshot age, `fdbrestore` timings, twelve inline
     defects the runbook did not name — move to `DETAILS.md`.
     `logbook-rfd2144-dr-runbook-first-run.md` records what was measured
@@ -66,7 +66,7 @@ defmodule RFD2144 do
                    totalBytes=99644  restorable=true  expiredPct=0.00
         ContiguousLogEndVersion: 118325089882 (maxLogEnd -0.00 days)
         MaxRestorableVersion:    118325089881 (maxLogEnd -0.00 days)
-    
+
     99 644 bytes of snapshot. RFD 2143's measurement on 2026-08-31 was
     `Sum of key-value sizes = 0 MB`, and this snapshot's size agrees: the
     cluster held Bao's PKI mount metadata and little else. The recovered
@@ -78,7 +78,7 @@ defmodule RFD2144 do
     Twelve defects surfaced during the run that the RFD 2143 runbook did
     not name. They are named here so a second run does not rediscover
     them.
-    
+
     **1. `WEFT_FDB_CLUSTER_ID` had no home.** The entrypoint requires it,
     the fly.toml deliberately does not default it, and no 1P item held it.
     A fresh one was minted (`openssl rand -hex 8`) and stored to 1P as
@@ -87,7 +87,7 @@ defmodule RFD2144 do
     rebuild anyway, the identity change costs nothing extra. Every future
     DR needs to either mint fresh or restore this from somewhere, and the
     runbook is now updated to say so.
-    
+
     **2. Bao root token and unseal key were in `notesPlain`.** The
     `weftspun-bao root` login item stored both as free-text notes rather
     than in CONCEALED fields. A routine `op item get --format=json` walk
@@ -95,7 +95,7 @@ defmodule RFD2144 do
     session's transcript. Rotation moved to end-of-DR (`bao token
     revoke -self`, `bao operator rekey`), and the notes field is empty
     afterward.
-    
+
     **3. `fly storage create --name <existing>` refuses to reattach.** The
     error is `Name has already been taken`. There is no CLI flag for the
     attach case, and no other subcommand does it. The recovery got its
@@ -103,7 +103,7 @@ defmodule RFD2144 do
     weftspun-fdb-blob`) and pasted them into `fly secrets set --stage`
     from the operator's own terminal. A followup is a script that walks
     this dance rather than a paragraph in the runbook.
-    
+
     **4. Health checks fail closed during initial deploy.** `backup_fresh`
     and `backup_fresh_dr` publish a file only when the backup agents are
     running and their newest object is fresh. On a fresh cluster with no
@@ -111,7 +111,7 @@ defmodule RFD2144 do
     past their grace periods. `--strategy immediate` is what makes the
     deploy return anyway. Once the cluster is up and the DR-tag backup
     starts, the checks recover on the next poll.
-    
+
     **5. `zsh` `read -p` never fires in the AI session's `!` context.**
     The prompt is written to `/dev/tty` and the tool captures stdout, so
     the user sees nothing, `read` returns an empty string, and the
@@ -119,7 +119,7 @@ defmodule RFD2144 do
     The credentials pipeline switched to `op read | fly secrets set` via
     shell substitution, which puts no value in the transcript regardless
     of the shell.
-    
+
     **6. The entrypoint spawns no `backup_agent` for R2-only setups.**
     `fdb-entrypoint.sh` gates the `[backup_agent]` config block on
     `$backup = 1`, which is set only inside the AWS/Tigris credentials
@@ -130,14 +130,14 @@ defmodule RFD2144 do
     found. Workaround: start `backup_agent` by hand over SSH under mTLS.
     Filed as followup: gate the block on `$backup = 1 || $backup_r2 = 1`
     and pick `blob_credentials` from whichever file exists.
-    
+
     **7. `weftspun/service-openbao` is not in `default.xml`.** The DR
     runbook needs the deployment config for `weftspun-bao`, and the
     config lives in a repo that is not one of the manifest's 135
     projects. The run cloned the repo by hand into scratchpad. Add it to
     the goal manifest, or the next DR discovers this the same way. RFD
     2140 references the repo but does not require it to be checked out.
-    
+
     **8. `openssl genpkey -algorithm EC` produces params Go rejects.**
     The Bao listener refused to start with `x509: invalid ECDSA
     parameters`. `openssl genpkey` with `-pkeyopt ec_paramgen_curve:P-256`
@@ -151,7 +151,7 @@ defmodule RFD2144 do
     TLS listener needs the SEC1 form. The break-glass CA generator has
     the same defect on P-384; the Bao boot CA had to be minted in a
     second scratchpad slot rather than reusing the FDB CA.
-    
+
     **9. Three different unseal keys in 1P, only one worked.** The
     canonical `openbao-fdb-ca-init.json` in the OpenBao document, the
     `unseal_key` CONCEALED field on the `weftspun-bao root` login, and
@@ -164,7 +164,7 @@ defmodule RFD2144 do
     end-of-DR pass rewrote `unseal_key` (CONCEALED) with the working
     value, cleared `notesPlain` of the leaked keys, and left a note
     naming the stale init doc, the source of truth is now one field.
-    
+
     **10. OpenBao's `sys/rekey/init` returns 405 unsupported operation,
     until enabled by a listener flag.** Vault registers the unauthenticated
     Shamir rekey endpoints by default; OpenBao gates them on
@@ -176,7 +176,7 @@ defmodule RFD2144 do
     `op://Personal/weftspun-bao root/unseal_key` holds. **Verified:**
     `bao operator seal` followed by `bao operator unseal <new-key>` cycles
     without error.
-    
+
     **11. `sys/generate-root-token/attempt` returns 403; the
     unauthenticated `sys/generate-root/attempt` is behind the same
     listener flag.** OpenBao's authenticated variant (with `-token` in the
@@ -194,7 +194,7 @@ defmodule RFD2144 do
     what `op://Personal/weftspun-bao root/password` holds. **Verified:**
     `bao token lookup` under the new token reports `policies=[root]`,
     `orphan=true`; only three accessors remain (was five).
-    
+
     **12. `awk -F=` truncates the trailing `=` in base64 values.** A
     44-char base64-encoded 32-byte unseal key stored as 43 chars in 1P
     during rekey capture, because `awk -F= '/^uk=/{print $2}'` splits
@@ -213,19 +213,19 @@ defmodule RFD2144 do
     intermediate this DR also minted (`pki-wt/`) is now RETRACTED by
     RFD 2145 down to 3 years; re-mint before its `notAfter` and rotate at
     year 1. See RFD 2145's `references/` for the CFF citations.
-    
+
     Minted P-384 self-signed root, five-year validity:
-    
+
         fingerprint  71:D6:EE:B6:E1:93:78:F6:70:05:72:1D:F4:BD:24:3A:B7:C3:9A:91:28:FE:A2:D2:60:E5:B8:8F:0F:1E:0F:15
         subject      CN=weftspun-fdb-ca, O=chibifire
         algorithm    ECDSA P-384
-    
+
     Stored to 1Password: `FDB-CA cert` (uuid
     `iwkxxgvlszvnidwfscr6asctpm`), `FDB-CA key` (uuid
     `nkrahus5ruqycjqa2i3jsswd5y`). The leaves the run mints are P-256,
     two-year, CN `fdb-<machine_id>.chibifire.com`, matching
     `WEFT_FDB_TLS_VERIFY` (`S.CN>=fdb-,S.CN<=.chibifire.com`).
-    
+
     The break-glass CA does not become the cluster CA. Once Bao is
     unsealed against the restored FDB, RFD 2141's phases 2–3 rotate every
     leaf to a certificate signed by the CA Bao's PKI mount holds, and
@@ -244,7 +244,7 @@ defmodule RFD2144 do
         T+9m    fdbcli status: "The database is available."
         T+10m   fdbbackup describe -d $R2_URL: Restorable: true
         T+10m   fdbrestore start -w -r $R2_URL
-    
+
     The full T+ timeline for the rest, Bao restore, cert rotation, scale
     to three, key rotation, lands as it happens in
     `logbook-rfd2144-dr-runbook-first-run.md`.

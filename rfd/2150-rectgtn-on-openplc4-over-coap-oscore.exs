@@ -20,7 +20,7 @@ defmodule RFD2150 do
     with OpenPLC v4 to a shared library or RISC-V binary; a Godot game
     loads that binary through Godot Sandbox. Hand the same FBD network
     to a converter for a node-graph editor.
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 
@@ -43,7 +43,7 @@ defmodule RFD2150 do
     OpenPLC v4's toolchain (MATIEC-derived) supports the five IEC 61131-3
     languages. Two survive the workspace's blocklist as RECTGTN targets;
     the other three are blocklisted or deprecated.
-    
+
     | rank | lang | verdict | why |
     |---|---|---|---|
     | 1 | **FBD** | the only target | State machine encoded as `SR_L` flip-flops (one per step) + `AND` gates (one per transition) + `MOVE` blocks (one per action). Every downstream consumer; OpenPLC v4, glTF Interactivity, VRChat Udon, UE Blueprint, Resonite ProtoFlux, Godot Sandbox loading OpenPLC's compiled binary; speaks this shape. RFD 2149's Lean analyser reads the compact GRAFCET *input* to the emitter, not the FBD output, so verification is unaffected. |
@@ -51,7 +51,7 @@ defmodule RFD2150 do
     |; | ~~ST~~ | **blocklisted** | Textual imperative subset adds a second parser the Lean analyser has to see through. FBD stays graph-shaped. `BLOCKLIST.md`. |
     |; | ~~LD~~ | **blocklisted** | Relay logic carries simple bool combinational + timers/counters; RECTGTN's ETNF tuple state does not survive the projection. `BLOCKLIST.md`. |
     |; | ~~IL~~ | deprecated | IEC 61131-3 Ed. 3 (2013) withdrew it. Never a target; needs no blocklist row. |
-    
+
     The emitter refuses to produce ST, LD, or IL bodies and errors out
     naming the row above. A silent skip on a bad target reads exactly
     like a pass (CLAUDE.md rule 3); this is that rule applied here.
@@ -79,7 +79,7 @@ defmodule RFD2150 do
           | REST upload                           OpenPLC Runtime v4 (MIT)
           v
         running program on the target
-    
+
     **taskweft ships PLCopen XML.** The downstream compile step
     (`openplc-cli compile`, part of the OpenPLC Editor v4 distribution) is
     invoked by the operator, in their environment, against their target
@@ -87,20 +87,20 @@ defmodule RFD2150 do
     to the XML we hand it and not to the compiled program the runtime
     loads (OpenPLC Runtime v4 is MIT, and its `strucpp` runtime library
     ships a GCC-style runtime exception explicitly permitting this).
-    
+
     **Two gates precede the boundary.** RFD 2149's Lean analyser reads
     the compact GRAFCET (before emit) and refuses charts with unreachable
     steps or unintended concurrent pairs; RFD 2150 stage 1's emitter is
     gated by its own tests to produce only FBD inline bodies (ST and LD
     blocklisted, structurally, per the ~~struck~~ rows above). What
     crosses the boundary is *verified* PLCopen XML.
-    
+
     **One gate follows the boundary, downstream.** `openplc-cli compile`
     fails on any XML the Editor's compiler cannot reduce; a failure there
     is a bug either in the emitter or in a downstream ecosystem change,
     and the operator surfaces it back to us on the XML with the same
     compact GRAFCET input, which reproduces deterministically.
-    
+
     **What is not in scope here.** Running `openplc-cli` inside taskweft's
     build, or bundling the Editor with taskweft. Both would pull GPL-3.0
     into the taskweft build graph, which the workspace does not want.
@@ -111,7 +111,7 @@ defmodule RFD2150 do
     details "PLCopen XML SFC skeleton, with FBD inline bodies", ~S"""
     The XML the emitter produces, for one SFC POU. Actions and guards are
     FBD networks (no ST), matching the blocklist row above.
-    
+
         <pou name="rectgtn_plan" pouType="program">
           <interface>
             <localVars>
@@ -150,7 +150,7 @@ defmodule RFD2150 do
             </SFC>
           </body>
         </pou>
-    
+
     A conjunction guard (`done_lake AND done_render`) inserts a chain of
     `<block typeName="AND">` between the input variables and the
     condition's output. A time-delayed transition (`t/X_i/PT1H`) inserts
@@ -165,16 +165,16 @@ defmodule RFD2150 do
     7252) is REST over UDP; OSCORE (RFC 8613) supplies end-to-end message
     security independent of the underlying transport, so an intermediary
     CoAP proxy in the shop-floor network cannot read or forge payloads.
-    
+
     The runtime exposes four CoAP resources, each OSCORE-protected:
-    
+
     | method | path | body | reply |
     |---|---|---|---|
     | PUT  | `/rectgtn/program` | PLCopen XML | 2.04 Changed on success |
     | POST | `/rectgtn/run`     | (empty)     | 2.05 Content, running program name |
     | GET  | `/rectgtn/state`   |             | 2.05 Content, CBOR-encoded variable snapshot |
     | POST | `/rectgtn/stop`    | (empty)     | 2.04 Changed |
-    
+
     CBOR (RFC 8949) on state replies matches the workspace's existing
     wire encoding on `2-contract/bus`. Payloads that would exceed CoAP's
     block boundary use CoAP's Block-Wise transfer (RFC 7959); this is a
@@ -204,15 +204,15 @@ defmodule RFD2150 do
 
     details "Translator scope for stage 1", ~S"""
     The stage-1 emitter, `Taskweft.OpenPLC.PLCopen`, covers:
-    
+
     1. sequential chains of `Step`s linked by transitions
     2. AND-divergence + AND-convergence
     3. boolean internal variables (from `V` in the compact GRAFCET)
     4. `stored` actions setting an internal variable
     5. time-delayed transitions (`t/X_i/PT1H` → SFC's `TIME` receptivity)
-    
+
     Constructs staged for later, matching RFD 2148's own staging:
-    
+
     1. OR-divergence (needs a translation to SFC's simultaneous-divergence
       with mutually-exclusive receptivities)
     2. MacroStep and EnclosingStep
@@ -252,11 +252,11 @@ defmodule RFD2150 do
     with OpenPLC v4 to a shared library or RISC-V binary; a Godot game
     loads that binary through Godot Sandbox. Hand the same FBD network
     to a converter for a node-graph editor.
-    
+
     Language ranking collapses to **FBD only**. **SFC is blocklisted**
     (new row in `CLAUDE.md`, argument in `BLOCKLIST.md`). ST and LD
     were already blocklisted; IL is deprecated.
-    
+
     Coordination rides linking: Elixir NIF → LibGodot → Godot Sandbox
     → OpenPLC compiled `.riscv`. One address space. No wire.
     """

@@ -19,7 +19,7 @@ defmodule RFD2182 do
 
     decision ~S"""
     chibifire.com runs the atelier-workshop (the pipeline), V-Sekai is its co-founded partner project that receives the shuttle (the portable-character deliverable), and the market is avatar-first social VR.
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 
@@ -53,7 +53,7 @@ defmodule RFD2182 do
     - Operator: `chibifire.com` (K. S. Ernest (iFire) Lee, github.com/fire). Owns the atelier-workshop; ships the shuttle.
     - Partner project: V-Sekai (charter at `V-Sekai/manuals-vsk/decisions/20200608-vsekai-charter.md`). iFire is a founding team member; the shuttle enters V-Sekai because both projects share the same intent: open, self-hosted, remixable social VR.
     - Market: avatar-first social VR. Generic vocabulary per CLAUDE.md; no third-party social-VR trademarks in shipping prose.
-    
+
     Canonical positioning: chibifire operates an atelier-workshop that shuttles characters into V-Sekai, its partner project in the avatar-first social-VR market.
     """
 

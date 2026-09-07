@@ -18,7 +18,7 @@ defmodule RFD2198 do
     overlay, contingent on shipping-viable speed. Current bf16 sharded on
     two GPUs is a measurement substrate: ~1000 s per edit vs OmniGen2's
     ~72 s. Three levers, ordered by session-cost per expected impact:
-    
+
     - **Step-count sweep** across 2/4/8/16/32/50 timesteps. No training,
       one ladder on shard-90 held-out. Session-scoped.
     - **LCM-style distillation on block diffusion** using upstream

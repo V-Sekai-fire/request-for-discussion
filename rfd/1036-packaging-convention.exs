@@ -17,21 +17,21 @@ defmodule RFD1036 do
 
     decision ~S"""
     Package each model as a plain Docker image that serves HTTP.
-    
+
     No Cog. Cog wraps a `Predictor` class and builds an image around it,
     and that image expects Replicate's own runtime. The local worker
     starts a container and maps a port, and nothing more.
-    
+
     Each model gets a folder under `decisions/`, and each folder holds
     this RFD, a `Dockerfile`, a `server.py`, and a `test_input.json`.
-    
+
     Name the folder for its model, and never for a package format. A
     format is a decision this RFD already changed once. A folder name
     that carries one goes stale on the next change.
-    
+
     See `DETAILS.md` for target, rules, the two-stage Dockerfile, files,
     composites, and unconverted folders.
-    
+
     Committed 2026-09-02: the convention has been in force for months;
     CLAUDE.md closes compute (local desktop GPU only; RunPod/Vast.ai
     blocklisted). Earlier rental-target framing retracted in DETAILS.md.
@@ -56,7 +56,7 @@ defmodule RFD1036 do
     and it targets one host. RFD 1055 now runs the worker on this box's
     own 4090 first, plain Docker, no rental. vast.ai stays priced for
     later, the same plain-Docker shape once this box is not enough.
-    
+
     The rule that replaced it is in the README, and the reason Cog does
     not fit either host is beside it. This entry stays so a reader who
     finds a Cog reference elsewhere knows which way the decision went.
@@ -69,7 +69,7 @@ defmodule RFD1036 do
     here runs unchanged if the operator later stands up a peer machine
     with equivalent hardware; RFD 1027 records that every model in the
     catalog reaches a 24 GB card.
-    
+
     An earlier draft named "RTX 4090 with 24 GB, at about 0.35 to 0.37
     US dollars per hour on demand, and 0.13 interruptible" as the target
     and Vast.ai as a future host. Retracted: no budget for
@@ -100,10 +100,10 @@ defmodule RFD1036 do
     The `contract` stage carries the server and `usd-core`, and no model.
     It builds in seconds on any machine, and `WEFTSPUN_STUB=1` makes
     `/predict` answer with the real shape and no GPU.
-    
+
     The `worker` stage is the real image. It carries CUDA, the upstream
     source, and the weights.
-    
+
     That split is what makes the contract testable. RFD 1040 records a run
     of it in Docker on a machine with no NVIDIA device.
     """
@@ -130,15 +130,15 @@ defmodule RFD1036 do
     RFD 1040 is the worked example. It carries a `Dockerfile`, a
     `server.py`, and a `test_input.json`, and RFD 1040 records a run of
     the contract stage in Docker.
-    
+
     Fourteen model folders still carry a `cog.yaml` and a `predict.py`.
     This folder carries a fifteenth `cog.yaml`, the template the other
     fourteen copied. They describe the same models, and they name a
     package format this RFD no longer selects.
-    
+
     The folder names no longer carry that format. Each folder is now
     named for its model alone.
-    
+
     Convert one when the model is next worked on, and not in a sweep. A
     folder converted without a build produces a `server.py` that nobody
     ran, which is what the Cog files already are.

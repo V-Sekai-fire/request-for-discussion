@@ -23,19 +23,19 @@ defmodule RFD1102 do
     the local desktop GPU per CLAUDE.md via ggml's Vulkan backend
     (RFD 2231's substitute), and feeds the two pipelines the workspace
     operates:
-    
+
     - **MaskScore corpus construction** (RFD 1173): eight stubs across
       mesh/depth/pose/keypoints/multimodal/speech/text/video. Five
       shipped on HF (RFD 2164 speech + Rung 1 walking skeleton).
     - **The gacha critical path** (RFD 2136): ten-rung ladder from a
       language prompt to a public roll-button-dispensed VRM.
-    
+
     Consumer projects wrap the shared `2-contract/ggml/` runtime; the
     native `modules/ggml/` module (RFD 2230) exposes a GDExtension
     surface (`Ggml.load_model`, `Ggml.run_inference`, `Ggml.load_lora`)
     consumed by per-model GDScript adapter files loaded under Godot's
     script sandbox.
-    
+
     `DETAILS.md` carries the current per-task table (with per-model
     GGUF sizes and port-needed flags), the six-step migration recipe,
     the two pipeline diagrams, and the packaging pointer.
@@ -94,7 +94,7 @@ defmodule RFD1102 do
     details "Migration recipe (per model)", ~S"""
     Same recipe RFD 2229 named as the interchangeable-parts consolidation
     shape, one row per consumer:
-    
+
     1. **Q4 quantize**, QAT if we train the model, PTQ per the CLAUDE.md
        Post-training-quantization blocklist exemption (a vendor's own
        runtime is exempt from the QAT-only rule) otherwise. Target Q4_0
@@ -137,7 +137,7 @@ defmodule RFD1102 do
 
     details "Pipeline: Gacha critical path (RFD 2136)", ~S"""
     Ten rungs, each producing an output the next rung consumes:
-    
+
         0. Language prompt → image           (OmniGen2, Q4 GGUF + Flow LCM LoRA GGUF)
         1. Image → mesh                      (Pixal3D, Q4 GGUF)
         2. Mesh → judged                     (EditScore over Qwen3-VL-8B Q4 GGUF)
@@ -148,7 +148,7 @@ defmodule RFD1102 do
         7. Prompt list → pool                (~50 VRMs, judged, seed-reproducible)
         8. Pool → roll button                (native Godot binary head per RFD 2210)
         9. Public                            (hosted with sponsor link)
-    
+
     Runtime motion: motion-bricks.cpp (already ggml/GGUF) generates
     keyframe-driven animation from the shipped VRM. Apache-2.0 code,
     NVIDIA Open Model License on weights (same license class already

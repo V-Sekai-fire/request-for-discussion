@@ -53,7 +53,7 @@ defmodule RFD2044 do
     The first option links a heavy runtime and marshals Lean objects
     across every boundary; the second option loses the spec and proof
     leverage.
-    
+
     Each core models a pure reducer over byte-serialized state, so it is
     bytes to bytes. The compute kernels are authored in Lean and lowered
     to Slang through

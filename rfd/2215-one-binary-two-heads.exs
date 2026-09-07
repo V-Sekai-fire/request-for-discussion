@@ -16,7 +16,7 @@ defmodule RFD2215 do
     decision ~S"""
     One source tree, one CI workflow, one native binary per platform
     (macOS / Windows / Linux), two invocation flags:
-    
+
     - **Head A, game.** Native window; loads Starforged fixture
       (`starforged.sqlite`), calls `taskweft`'s planner (RFD 2205),
       surfaces the decision-point menu via a Godot Control-node VN
@@ -27,7 +27,7 @@ defmodule RFD2215 do
       binary. `godot --headless --write-movie shot<NN>.<container> ...`
       captures the runway scene per shot; video muxed via CineForm per
       RFD 1123 (ffmpeg blocklisted, see memory `ffmpeg-blocklisted`).
-    
+
     Same `.tscn` / `.tres` assets, same binary, different invocation
     flag.
     """

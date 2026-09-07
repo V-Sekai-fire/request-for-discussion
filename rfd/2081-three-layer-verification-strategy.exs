@@ -43,7 +43,7 @@ defmodule RFD2081 do
     about TPC-C semantics. Lean 4 proves the specification is sound but does
     not verify the C implementation. plausible-witness-dag searches for
     runtime invariant violations via HTTP but cannot prove absence of bugs.
-    
+
     Together they cover the gap: CBMC catches implementation bugs, Lean 4
     catches specification bugs, plausible-witness-dag catches integration
     bugs.
@@ -65,7 +65,7 @@ defmodule RFD2081 do
     `resolve` function takes a candidate predicate and a deterministic
     readback, escalating through L0/L1/L2 until it finds a witness or
     proves none exists.
-    
+
     Escalation ladder: L0 (10 txns, W=1), L1 (100 txns, W=5), L2 (1000 txns, W=20).
     """
 

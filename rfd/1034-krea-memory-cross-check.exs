@@ -17,7 +17,7 @@ defmodule RFD1034 do
     Check the rule against the one model with a measured number. Krea 2
     Turbo is that model. `scripts-cheatsheet.md` records 57 GB on disk,
     and a 32 GB reserve per worker.
-    
+
     See `DETAILS.md` for the parameter estimate by part, and how it
     compares against the measured reserve and disk size.
     """
@@ -48,10 +48,10 @@ defmodule RFD1034 do
     details "The result", ~S"""
     The 32 GB reserve agrees with 33.8 GB. The worker does not hold every
     part at the same time.
-    
+
     The 57 GB on disk is larger than 33.8 GB. The folder carries fp32
     copies as well, thus the disk size is not the load size.
-    
+
     This agreement raises the confidence in the method. It does not raise
     the confidence in the parameter counts of the other models. There is
     no DGX, per RFD 1027 and RFD 1036. Replace each estimated count with

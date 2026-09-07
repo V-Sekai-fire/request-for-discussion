@@ -26,9 +26,9 @@ defmodule RFD2179 do
                     Gemma-4-12B auto
       IPA-track     Voxtral-IPA, Gemma-4-12B GBNF-IPA
       phone-track   allosaurus (universal + eng + rus)
-    
+
     Voxtral is the accuracy leader; Parakeet stays as the CC-BY-4.0 alternate.
-    
+
     Follow-ups: `emit_10track_panel.py` drops the whisper backends; downstream RFDs and CITATION.cff drop Whisper entries. Gemma-auto shipped empty transcripts on all 15 clips (WER 1.000); separate follow-up to fix or drop.
     """
 
@@ -63,7 +63,7 @@ defmodule RFD2179 do
     | 100_1_2_3_351_1          | 0.200    | 0.200   | 0.000   | 0.600    | 1.000      |
     | 100_1_2_3_380_1          | 1.000    | 0.000   | 0.000   | 1.333    | 1.000      |
     | **MEAN**                 | **0.501**| **0.339**| **0.000**| **0.571**| **1.000**  |
-    
+
     Method: hypothesis is the concatenated cue text from each track's
     `.vtt` (WEBVTT header + timing lines stripped, remaining text
     whitespace-joined). Reference is the SpeakingFaces canonical text
@@ -75,18 +75,18 @@ defmodule RFD2179 do
     exact).** Same track also returns sub-second per clip on MPS.
     Whichever axis dominates the decision (speed or accuracy), Voxtral
     wins.
-    
+
     **Whisper-large-v3 is not the worst on accuracy (0.339 mean).** It
     beats Parakeet (0.501) and wav2vec2 (0.571) but takes several
     seconds per clip on MPS. The reason to drop it is latency, not
     accuracy. The operator's initial "bad accuracy" observation was
     partially wrong; Whisper's problem is speed.
-    
+
     **Parakeet is the workspace's stated CC-BY-4.0 canonical (RFD 2164)
     but sits at 0.501 mean WER**, worse than Whisper. Kept because the
     canonical-judge choice was made on license grounds, not accuracy
     alone; Voxtral is the accuracy-first alternate.
-    
+
     **Gemma-auto shipped empty transcripts across all 15 clips**
     (WER 1.000 because the vtt files carry only the WEBVTT header, no
     cues). Separate bug: either the llama-mtmd-cli invocation failed or

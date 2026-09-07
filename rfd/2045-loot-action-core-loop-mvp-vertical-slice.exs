@@ -39,7 +39,7 @@ defmodule RFD2045 do
     the round trip that carries the result back. Without a bounded target
     the risk is that each layer is individually correct but the
     integration is never tested until it is too late to fix.
-    
+
     There is no single bounded deliverable that tells the team whether
     the stack works together. The team needs one vertical slice, small
     enough to build in a week, complete enough to exercise every
@@ -51,16 +51,16 @@ defmodule RFD2045 do
     details "Design", ~S"""
     Ship one vertical slice of an instanced, four-player loot-action core
     loop.
-    
+
     **Scene layout**
-    
+
     - One Hub deck with a shop backed by the loot and progression cores.
       The shop degrades to a free starting kit if the economy slips.
     - One Field room: four players, one melee combo against one enemy,
       one loot drop, one persistence round trip.
-    
+
     **Loop**
-    
+
     1. Players gather in the Hub and form a party.
     2. The party teleports into the Field instance hosted by
        `zone-server`.
@@ -74,11 +74,11 @@ defmodule RFD2045 do
        slips).
     6. The party teleports back to the Hub. The shop reflects the new
        inventory.
-    
+
     **Cores**
-    
+
     Each concern is a hexagonal pure reducer:
-    
+
     | Core        | Responsibility                                           | Key ports                                                                     |
     | ----------- | -------------------------------------------------------- | ----------------------------------------------------------------------------- |
     | Combat      | Combo timing, hit validation, health, enemy spawn window | `input_source`, `tick_source`, `behavior_source` → `state_sink`, `event_sink` |
@@ -86,23 +86,23 @@ defmodule RFD2045 do
     | Presence    | Remote-pose interpolation                                | `pose_source` → `avatar_sink`                                                 |
     | Progression | Profile, inventory, affinity gate                        | `profile_source` → `commit_sink`                                              |
     | Budgeter    | Per-frame quality knobs under load                       | `measurement_source` → `knob_sink`                                            |
-    
+
     **Authority and networking**
-    
+
     The `zone-server` is the single authority per instance. For the
     deadline the model is server-authoritative with client interpolation
     and no prediction. The rollback adapter lands after the gate behind
     the same ports.
-    
+
     **Content and performance gate**
-    
+
     Content is first-party curated only; the `zone-baker` enforces hard
     budgets at bake time. The sign-off gate is a SteamVR build at 90 Hz:
     four avatars and one Field room under 500,000 visible triangles and
     200 draw calls per eye.
-    
+
     **What ships after the gate**
-    
+
     Ranged and caster archetypes, Steam Frame and Steam Deck builds,
     in-headset authoring, rollback, and user-generated content.
     """
@@ -143,12 +143,12 @@ defmodule RFD2045 do
     SQLite-backed inventory persistence. The run grants exactly one bot
     and commits exactly one profile row; the smoke asserts both, exactly
     one grant and exactly one committed row, and exits zero.
-    
+
     The integration is proven. The decided scope that is not built is
     production hardening and platform reach, which adds no integration
     coverage. As built on 2026-06-29, verified by reading the
     `godot-loop-slice` source:
-    
+
     - Two of the five cores exist as named pure resolvers wired into the
       server: combat (`core/combat.gd`) and loot (`core/loot.gd`).
       Presence runs through a Hilbert interest core (`core/hilbert.gd`)
@@ -163,7 +163,7 @@ defmodule RFD2045 do
     - The `OpenXR` desktop export preset duplicates the Windows Desktop
       preset and carries no XR options; the Quest Android preset is the
       configured XR target.
-    
+
     These decided-but-unbuilt items, the three cores as separate
     reducers, the CockroachDB adapter, the performance gate, and a real
     OpenXR build, carry forward as deferred-until-needed in

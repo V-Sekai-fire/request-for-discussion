@@ -21,9 +21,9 @@ defmodule RFD2137 do
     paper/ink/critical/done/steel tokens, light and dark themes resolved
     at the token level. To publish a report, copy the file, replace every
     bracketed slot, and keep the worked example's shape.
-    
+
     The layout encodes the agreements rather than describing them:
-    
+
     - the serial header and stamps mirror the RFD frontmatter;
     - every measurement table carries its baseline row, and the chosen
       row takes the green rail;

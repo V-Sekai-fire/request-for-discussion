@@ -41,7 +41,7 @@ defmodule RFD2062 do
     page links here instead of restating it, and decided facts
     (deployment, org split, per-capability status) stay in their own
     decisions.
-    
+
     The narrower vertical-slice repository map
     (`rfd/2057-vertical-slice-repository-map`) indexes only the
     loot-action slice; this inventory is the full
@@ -56,22 +56,22 @@ defmodule RFD2062 do
     [fabric-godot-core](https://github.com/v-sekai-multiplayer-fabric/fabric-godot-core)
     that implements it; the Tier column follows the feature classification
     (`rfd/2018-feature-classification-poc-baseline-stretch`).
-    
+
     Names here are the current names, per `rfd/2064-kebab-case-repos-snake-case-local-checkouts`.
     GitHub keeps a redirect after a rename, so an older name in an earlier
     record still resolves; `rfd/0105`'s `DETAILS.md` maps the old names to
     these.
-    
+
     ### Counts
-    
+
     | Set                                   | Count |
     | ------------------------------------- | ----- |
     | Repos in `v-sekai-multiplayer-fabric` | 75    |
     | Active                                | 51    |
     | Archived                              | 24    |
-    
+
     ### Capabilities and where they live
-    
+
     | Capability                                                                            | Tier             | Engine branch                                                                        | Supporting repos                                                                                                                                                                   | Status                                                                                |
     | ------------------------------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
     | Native video playback                                                                 | Baseline         | `feat/native-media` (MediaFoundation, GStreamer)                                     | [native-media-test](https://github.com/v-sekai-multiplayer-fabric/native-media-test); `vulkan-video-godot` is archived by `rfd/0105`                                               | Working; builds on Windows and Linux.                                                 |
@@ -81,11 +81,11 @@ defmodule RFD2062 do
     | Speech                                                                                | Baseline         | `feat/module-speech`                                                                 |,                                                                                                                                                                                  | Working.                                                                              |
     | Pen stroke creation (codename cassie)                                                 | Proof of concept | `feat/module-cassie`                                                                 | [vsekai-materialx](https://github.com/v-sekai-multiplayer-fabric/vsekai-materialx), [materialx-shaders-lean](https://github.com/v-sekai-multiplayer-fabric/materialx-shaders-lean) | Pen stroke creation is solid; patch surface creation is buggy (loses about 90%).      |
     | Multiplayer presence (tracker orbs)                                                   | Proof of concept | `feat/module-xr-grid`                                                                | [xr-grid](https://github.com/v-sekai-multiplayer-fabric/xr-grid)                                                                                                                   | Proposed; head and hand pose orbs sent over low-level WebTransport.                   |
-    
+
     ### Repositories: `v-sekai-multiplayer-fabric`
-    
+
     #### Engine and client
-    
+
     | Repo                                                                                                             | Purpose                                                                                             |
     | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
     | [fabric-godot-core](https://github.com/v-sekai-multiplayer-fabric/fabric-godot-core)                             | V-Sekai fork of the Godot engine, one `feat/*` branch per topic, on the frozen base of `rfd/0020`.  |
@@ -96,13 +96,13 @@ defmodule RFD2062 do
     | [godot-sandbox-gdscript-compiler](https://github.com/v-sekai-multiplayer-fabric/godot-sandbox-gdscript-compiler) | GDScript-to-sandbox compiler for the engine's `module_sandbox`.                                     |
     | [godot-sandbox-programs](https://github.com/v-sekai-multiplayer-fabric/godot-sandbox-programs)                   | RISC-V programs run inside `module_sandbox` (fork).                                                 |
     | [native-media-test](https://github.com/v-sekai-multiplayer-fabric/native-media-test)                             | Godot project exercising the engine's native media backend (private).                               |
-    
+
     #### Transport layers
-    
+
     `rfd/0111` puts the input that triggers an interactor on side 1. `rfd/0123`
     adds a second implementation of the WebTransport contract, so the role word
     no longer identifies one repository and the language qualifies each name.
-    
+
     | Repo                                                                                               | Purpose                                                                                        |
     | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
     | [transport-gateway-c](https://github.com/v-sekai-multiplayer-fabric/transport-gateway-c)           | Control streams over picoquic. Carries player traffic. Renamed from `transport-gateway`.       |
@@ -111,30 +111,30 @@ defmodule RFD2062 do
     | [transport-ingest-python](https://github.com/v-sekai-multiplayer-fabric/transport-ingest-python)   | The same datagrams on `pywebtransport`, for interoperability. Carries no player traffic.       |
     | [transport-fanout](https://github.com/v-sekai-multiplayer-fabric/transport-fanout)                 | Egress: interest-filtered fan-out, driven by the zone tick rather than an arriving packet.     |
     | [transport-asset](https://github.com/v-sekai-multiplayer-fabric/transport-asset)                   | Content-addressed chunks, served to whoever is allowed to ask.                                 |
-    
+
     The Python pair produces agreement or disagreement with the C pair rather
     than traffic. `rfd/0123` has the three disagreements it found before it
     carried a byte.
-    
+
     #### Zone host and its guests
-    
+
     `rfd/0094` makes the zone host the host of the minimum UGC game loop.
     Guests arrive as CDN-delivered riscv64 ELFs. `rfd/0095` splits them
     into two guest classes and gives each the runtime that suits it.
-    
+
     | Repo                                                                                       | Purpose                                                                             |
     | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
     | [zone-guest-middleham](https://github.com/v-sekai-multiplayer-fabric/zone-guest-middleham) | Game-logic guest: MUD state machine and sandbox orchestrator. Loads first.          |
     | [zone-guest-gyre](https://github.com/v-sekai-multiplayer-fabric/zone-guest-gyre)           | Presentation guest: the web and SlugHorn MUD client, per `rfd/0085` and `rfd/0091`. |
     | [zone-guest-godot](https://github.com/v-sekai-multiplayer-fabric/zone-guest-godot)         | Godot rv64 under `rvlinux`. The stress test of the same capability table.           |
     | [mujoco-riscv64](https://github.com/v-sekai-multiplayer-fabric/mujoco-riscv64)             | riscv64 Linux build of MuJoCo with libriscv host bindings.                          |
-    
+
     `zone-server-h2o`, the host itself, is archived on GitHub while
     `rfd/0094` and `rfd/0095` carry it in scope. `rfd/0105` records that
     inconsistency as open.
-    
+
     #### Backend, data, and observability
-    
+
     | Repo                                                                                                 | Purpose                                                                            |
     | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
     | [zone-backend](https://github.com/v-sekai-multiplayer-fabric/zone-backend)                           | URO: Phoenix and Elixir backend for identity, the zone directory, and the planner. |
@@ -142,13 +142,13 @@ defmodule RFD2062 do
     | [ecto-bench-tpcc](https://github.com/v-sekai-multiplayer-fabric/ecto-bench-tpcc)                     | TPC-C-style benchmark harness for any Ecto adapter.                                |
     | [lean-duckdb](https://github.com/v-sekai-multiplayer-fabric/lean-duckdb)                             | Lean 4 and DuckDB FFI for Parquet and CSV dataset I/O.                             |
     | [fabric-game-observability](https://github.com/v-sekai-multiplayer-fabric/fabric-game-observability) | VictoriaMetrics, VictoriaLogs, Tempo, and the OTEL Collector on Fly.io.            |
-    
+
     #### Hexagon cores
-    
+
     `rfd/0028` sets the core, ports, and adapters shape. `rfd/0057` makes
     these the canonical proven reference, so the playable slice transcribes
     them rather than importing them. A reference repo needs no recent push.
-    
+
     | Repo                                                                                         | Purpose                                                                                 |
     | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
     | [loot](https://github.com/v-sekai-multiplayer-fabric/loot)                                   | Loot hexagon: Lean core plus a `lean-slang` SPIR-V kernel (`rfd/0041`).                 |
@@ -167,9 +167,9 @@ defmodule RFD2062 do
     | [lean-interest-mgmt](https://github.com/v-sekai-multiplayer-fabric/lean-interest-mgmt)       | Authority interest and solve order: who sees whom, and sequencing.                      |
     | [lean-humanoid-rom](https://github.com/v-sekai-multiplayer-fabric/lean-humanoid-rom)         | Humanoid range of motion and IK constraints: Kusudama, muscle, prismatic.               |
     | [swing-twist-kusudama](https://github.com/v-sekai-multiplayer-fabric/swing-twist-kusudama)   | Lean and Plausible sim of `SwingTwistIK3D` with Kusudama limits.                        |
-    
+
     #### Rendering, shaders, and USD
-    
+
     | Repo                                                                                           | Purpose                                                                                                      |
     | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
     | [godot-toon-shaders](https://github.com/v-sekai-multiplayer-fabric/godot-toon-shaders)         | Godot toon shader ports and a shared parameter map (MToon 0.x / MToon10, planned SCSS and lilToon).          |
@@ -178,9 +178,9 @@ defmodule RFD2062 do
     | [MaterialX](https://github.com/v-sekai-multiplayer-fabric/MaterialX)                           | The MaterialX material-exchange standard (fork).                                                             |
     | [idtx-flow](https://github.com/v-sekai-multiplayer-fabric/idtx-flow)                           | Godot plugin importing USD via openUSD (fork).                                                               |
     | [sponza-godot-audio](https://github.com/v-sekai-multiplayer-fabric/sponza-godot-audio)         | Sponza demo and audio benchmark for Godot 4.                                                                 |
-    
+
     #### Content flow and authoring
-    
+
     | Repo                                                                                                       | Purpose                                                                 |
     | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
     | [fabric-flow-adapters](https://github.com/v-sekai-multiplayer-fabric/fabric-flow-adapters)                 | glTF-interactivity flow adapters, per `rfd/0005`.                       |
@@ -191,19 +191,19 @@ defmodule RFD2062 do
     | [vrm-game-project](https://github.com/v-sekai-multiplayer-fabric/vrm-game-project)                         | VRM game project (private).                                             |
     | [xr-grid](https://github.com/v-sekai-multiplayer-fabric/xr-grid)                                           | VR interaction tool (fork).                                             |
     | [gait-classification](https://github.com/v-sekai-multiplayer-fabric/gait-classification)                   | WEAR HAR with gait and biomechanics: a single-limb inertial pipeline.   |
-    
+
     #### Docs
-    
+
     | Repo                                                                                                   | Purpose                                                                                              |
     | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
     | [multiplayer-fabric-manuals](https://github.com/v-sekai-multiplayer-fabric/multiplayer-fabric-manuals) | This Quarto site.                                                                                    |
     | [multiplayer-fabric-archive](https://github.com/v-sekai-multiplayer-fabric/multiplayer-fabric-archive) | Retired records: rejected and superseded MADRs, and superseded RFDs. Plain Markdown, per `rfd/0106`. |
-    
+
     #### Archived
-    
+
     Every repo below is tombstoned, not deleted. The history stays
     reachable. The Basis column names the decision that retired it.
-    
+
     | Repo                                                                                                 | Basis                                                           |
     | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
     | [zone-server](https://github.com/v-sekai-multiplayer-fabric/zone-server)                             | Godot zone server, replaced per `rfd/0083`.                     |
@@ -230,26 +230,26 @@ defmodule RFD2062 do
     | [sandbox-gdextension-godot](https://github.com/v-sekai-multiplayer-fabric/sandbox-gdextension-godot) | Earlier GDExtension sandbox approach.                           |
     | [tropes-action](https://github.com/v-sekai-multiplayer-fabric/tropes-action)                         | The tropes check now runs in-repo as `scripts/check_tropes.sh`. |
     | [friends-art-game-loop](https://github.com/v-sekai-multiplayer-fabric/friends-art-game-loop)         | Local-first art-game loop experiment.                           |
-    
+
     ### Moved to `V-Sekai-archive`
-    
+
     These three left this org and are archived under a third org. Links in
     earlier records still resolve through the redirect.
-    
+
     | Repo                                                                                    | Purpose                                                      |
     | --------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
     | [lean-predictive-bvh](https://github.com/V-Sekai-archive/lean-predictive-bvh)           | Earlier Predictive BVH workspace. See `lean-spatial-oracle`. |
     | [viser](https://github.com/V-Sekai-archive/viser)                                       | Web-based 3D visualization in Python (fork).                 |
     | [usd-converter-for-vrchat](https://github.com/V-Sekai-archive/usd-converter-for-vrchat) | VRChat-to-VRM 1.0 converter UPM (fork).                      |
-    
+
     ### Still on `V-Sekai-fire` (not yet migrated)
-    
+
     These repos remain the source of truth under the older org; see the
     [two-org split decision](https://github.com/v-sekai-multiplayer-fabric/multiplayer-fabric-archive/blob/main/_archive/decisions/20260606-org-split-v-sekai-multiplayer-fabric.md),
     now in `multiplayer-fabric-archive`.
     Links in the decisions and changelog that point at them are correct
     and still resolve.
-    
+
     | Repo                                                                                                       | Purpose                                                             |
     | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
     | [multiplayer-fabric](https://github.com/V-Sekai-fire/multiplayer-fabric)                                   | Umbrella monorepo registering the V-Sekai-fire repos as submodules. |

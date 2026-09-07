@@ -22,7 +22,7 @@ defmodule RFD1088 do
     manual `openssl req`) covers a host without `mkcert`. A self-signed
     certificate still shows a browser warning; accepting it is safe for
     local development.
-    
+
     See `DETAILS.md` for every option's exact commands, the headset
     network-access steps, and troubleshooting.
     """
@@ -52,13 +52,13 @@ defmodule RFD1088 do
        (that last address is an example LAN IP), producing
        `localhost+3.pem` and `localhost+3-key.pem`.
     4. Move the certificates into the certs directory:
-    
+
        ```bash
        mkdir certs
        mv localhost+3.pem certs/localhost.pem
        mv localhost+3-key.pem certs/localhost-key.pem
        ```
-    
+
     5. Restart the dev server: `npm run dev`.
     6. Access over HTTPS: `https://localhost:3000`, or
        `https://10.0.0.32:3000` for a Galaxy XR device.
@@ -68,7 +68,7 @@ defmodule RFD1088 do
     ```bash
     npm run setup-https
     ```
-    
+
     Generates certificates directly into `certs/`.
     """
 
@@ -77,7 +77,7 @@ defmodule RFD1088 do
     mkdir certs
     openssl req -x509 -newkey rsa:4096 -keyout certs/localhost-key.pem -out certs/localhost.pem -days 365 -nodes -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost"
     ```
-    
+
     Restart the dev server; Vite picks up the certificates
     automatically.
     """

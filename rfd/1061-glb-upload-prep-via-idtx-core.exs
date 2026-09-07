@@ -18,7 +18,7 @@ defmodule RFD1061 do
     not on a second bespoke GLB pipeline in JavaScript.
     `thirdparty/fabric-flow-adapters/flow/` already carries what that
     job needs, and this repository's browser compression does not.
-    
+
     None of that is reachable from a browser today. See `DETAILS.md` for
     what `idtx_core` carries, the three steps to reach it, the interim
     stopgap in `glbCompress.js`, and a bug that stopgap's tests surfaced.
@@ -32,7 +32,7 @@ defmodule RFD1061 do
     awaits it, and the import threw since whenever that call site was
     written. RFD 1023 first recorded this gap, and it stayed open
     through RFD 1060's move.
-    
+
     The mesh a browser uploads today is prepared by `compressGlbBuffer`
     in the same file, over `gltf-transform`: client-side Draco, Meshopt,
     and WebP. RFD 1053 makes OpenUSD the internal format, the way
@@ -59,7 +59,7 @@ defmodule RFD1061 do
     details "What idtx_core carries that browser compression does not", ~S"""
     `thirdparty/fabric-flow-adapters/flow/` already carries three things
     this repository's browser compression lacks.
-    
+
     - **Content-defined chunking**, casync-compatible, SHA-512/256 chunk
       IDs (`idtx_chunker.h`). Two uploads of the same mesh, or two
       revisions that share most of their geometry, share most of their
@@ -77,7 +77,7 @@ defmodule RFD1061 do
     details "Why none of this is reachable yet", ~S"""
     `flow/adapters/` holds three hosts: `godot/` (GDExtension), `unity/`
     (P/Invoke), and `cli/`. It holds no fourth. Getting there needs:
-    
+
     1. An Elixir NIF (or Rustler-style binding) linking `idtx_core`
        through the ports it already exposes
        (`flow/ports/include/idtx_core/`), built against the OpenUSD
@@ -89,7 +89,7 @@ defmodule RFD1061 do
        today.
     3. The browser call site swapped from `compressGlbBuffer` /
        `prepareGlbForApiUpload` to that route.
-    
+
     This RFD records the target and stops there. Building the NIF, the
     port, the adapter, and the route is its own multi-session scope. It
     is RFD 1057-style open work, not a task this RFD's Decision closes.
@@ -100,15 +100,15 @@ defmodule RFD1061 do
     stays a transmission format and never the working format. It exists
     only to unblock the failing test and the throwing import, until the
     NIF adapter lets this path move to USD-native handling instead.
-    
+
     Two functions now exist, so the test the gap left red passes and
     `TaskManager.jsx`'s import resolves.
-    
+
     `computeApiUploadSimplifyRatio(sourceVerts, sourceFaces, maxVertices, maxFaces, headroom = 0.85)`
     gives the fraction of the _current_ mesh to keep, driven by whichever
     cap (verts or faces) needs the deeper cut. It returns `1` when both
     are already under cap.
-    
+
     `prepareGlbForApiUpload(arrayBuffer, { maxVertices, maxFaces })`
     passes a buffer through unchanged when it fits. Otherwise it `weld`s,
     then loops `simplify` plus `dedup` plus `prune`, up to 5 passes.
@@ -118,7 +118,7 @@ defmodule RFD1061 do
     `documentNeedsSafeMode`) stays over the cap, since decimation skips a
     rig to protect it. `TaskManager.jsx`'s call site relies on that throw
     to drive its "too dense to auto-rig" warning.
-    
+
     Both are `gltf-transform` over the same `getIO()` pipeline
     `compressGlbBuffer` already uses in this file. Nothing here is a
     step toward the `idtx_core` path. Replace this whole block, and do
@@ -131,7 +131,7 @@ defmodule RFD1061 do
     `Mesh`. `listTargets()` does not exist there, and every real call to
     this function threw `TypeError: mesh.listTargets is not a function`.
     `compressGlbBuffer` calls it unconditionally.
-    
+
     This broke the main compression path too, on every document with at
     least one mesh, for as long as the check existed. No test exercised
     either function against a real document until this RFD's test run

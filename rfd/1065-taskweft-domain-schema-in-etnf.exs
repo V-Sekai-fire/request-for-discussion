@@ -18,7 +18,7 @@ defmodule RFD1065 do
     form (ETNF), from Darwen, Date, and Fagin (ICDT 2012). See
     `DETAILS.md` for the definition and its worked example. Three rules
     follow.
-    
+
     1. `@variables` holds a trait map, keyed by trait name, one value per
        character, matching the `have`/`handle`/`loaded` pattern in RFD
        1044's `domain.ex`. The key is a superkey, so the map sits in BCNF.
@@ -30,7 +30,7 @@ defmodule RFD1065 do
        `HRR.Cleanup` library RFD 1021 already supplies, not through
        `WeftspunStudio.FactVector` outside it. A near-duplicate caption
        binds to the existing id, instead of creating a new one.
-    
+
     Rule 2 and rule 3 remove the redundancy together. A functional
     dependency anchored on the capability id, a superkey, blocks the
     redundant tuple that ETNF targets, with no fixed enum to maintain.
@@ -57,7 +57,7 @@ defmodule RFD1065 do
     normal form (ETNF). A relation schema sits in ETNF when every tuple
     in every instance is essential. An essential tuple is a tuple no one
     can rebuild by projecting and rejoining the rest of the relation.
-    
+
     Their syntactic test (Theorem 1.13) needs only two checks. The
     schema sits in Boyce-Codd normal form (BCNF), and some component of
     every declared join dependency is a superkey. ETNF sits strictly
@@ -72,13 +72,13 @@ defmodule RFD1065 do
     A tuple (s, p, j) means supplier s supplies part p to project j. Two
     constraints hold: the join dependency ⋈{SP, PJ, JS}, and the
     functional dependency SP → J (a supplier and a part fix one project).
-    
+
     5NF asks for R to split into three relations, one per pair of
     attributes, because of the join dependency alone. The paper shows
     R already carries no redundant tuple. The FD SP → J forces the
     join's third match before any tuple is added twice. R sits in 4NF
     and ETNF, not in 5NF, and needs no split.
-    
+
     The lesson for this RFD: a functional dependency anchored on a
     superkey already blocks redundant tuples. Decomposing further, down
     to full 5NF, does no extra work against redundancy. It only adds more
@@ -89,7 +89,7 @@ defmodule RFD1065 do
     `domain.ex`, shared across all 15,000 problems, holds the trait map
     and one new action, `a_resolve_trait`. It has no fixed capability
     list. The list grows as Claude's vision inspection meets new values.
-    
+
     ```elixir
     @variables %{
       trait: %{
@@ -97,14 +97,14 @@ defmodule RFD1065 do
         init: %{hair_color: nil, eye_color: nil, pose: nil, clothing: nil}
       }
     }
-    
+
     @capabilities %{
       hair_color: %{},
       eye_color: %{},
       pose: %{},
       clothing: %{}
     }
-    
+
     @actions %{
       a_resolve_trait: %{
         params: [:role, :caption_text],
@@ -117,7 +117,7 @@ defmodule RFD1065 do
       }
     }
     ```
-    
+
     `HRR.Cleanup.resolve_or_create/2` is the RFD 1021 library, called
     from inside taskweft, not from `WeftspunStudio.FactVector`. It binds
     the role and the caption text, and it checks the bound vector against

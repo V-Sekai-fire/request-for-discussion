@@ -20,7 +20,7 @@ defmodule RFD2206 do
     a small diorama, framed like a video call**. The frame is fixed;
     the character animates within it; there is no world navigation.
     Concretely:
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 
@@ -52,13 +52,13 @@ defmodule RFD2206 do
     [RFD 2213](../2213-vrm-via-godot-sandbox-elf/), `V-Sekai/godot-vrm`
     compiled to a RISC-V ELF loaded by `modules/sandbox` (libriscv)
     inside a Godot `platform=web` export.
-    
+
     The convention this RFD carries (video-call framing, LookAt on
     camera, breathing/blink idle, reaction blendshapes, no world
     navigation) stays the same. The runtime that renders the portrait
     moves from three-vrm-in-a-browser-canvas to Godot-in-a-browser-
     canvas. VRM asset (`SK_VRM1_Constraint_Twist_Sample`) unchanged.
-    
+
     The retracted-shape section below still holds, it retracted the
     world-navigation input handlers regardless of runtime. Everything
     below that references three-vrm specifically applies to how the
@@ -68,14 +68,14 @@ defmodule RFD2206 do
 
     details "The retracted shape", ~S"""
     Before this convention landed, `docs/vrm.js` carried:
-    
+
     - WASD / arrow-key handlers driving `avatar.pos.x, z`.
     - Pointer-lock mouse look driving `orbit.yaw, pitch`.
     - Mouse-wheel zoom driving `orbit.dist`.
     - Gamepad L-stick / R-stick reads for the same three targets.
     - A camera pose derived per frame from `orbit.*` around a target
       parented to the avatar's chest.
-    
+
     That shape reads naturally for a *scene* (a character walking a
     world), and it read wrong for a *dialogue* (a character talking
     to the player through a phone-shaped frame). Nothing about the
@@ -86,7 +86,7 @@ defmodule RFD2206 do
 
     details "The reference implementation", ~S"""
     `docs/vrm.js` after the retarget:
-    
+
     - Camera constructed once at boot; parent is `null` (world-space
       pinned) rather than the avatar's head bone. Head-bone-parenting
       was tried and rejected: it slid on breathing sway and read as
@@ -155,7 +155,7 @@ defmodule RFD2206 do
     a small diorama, framed like a video call**. The frame is fixed;
     the character animates within it; there is no world navigation.
     Concretely:
-    
+
     1. **Camera.** Eye-level (Head bone Y, ~1.52 m off the floor for
        an adult VRM, about the height of an adult wrist reached
        overhead), offset ~0.55 m along Z (about eight stacked AA

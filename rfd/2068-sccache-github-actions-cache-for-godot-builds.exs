@@ -37,7 +37,7 @@ defmodule RFD2068 do
     cached OCI layers between runs. That action was replaced by plain
     `podman build` to align with the fabric's rootless-podman +
     systemd-quadlet standard. The layer cache was lost in that migration.
-    
+
     The previous developer-facing sccache setup forwarded Tigris S3
     credentials (`SCCACHE_BUCKET`, `SCCACHE_ENDPOINT`, `SCCACHE_REGION`,
     `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) as podman build args and
@@ -61,15 +61,15 @@ defmodule RFD2068 do
     `ACTIONS_CACHE_URL` and `ACTIONS_RUNTIME_TOKEN` as podman build
     secrets on the `scons` RUN step; export them in the shell before the
     compiler is invoked.
-    
+
     **`Containerfile` (build stage)**
-    
+
     ```dockerfile
     ARG SCCACHE_GHA_ENABLED=""
     # … existing ENV block …
     ARG SCCACHE_GHA_ENABLED
     ENV SCCACHE_GHA_ENABLED=${SCCACHE_GHA_ENABLED}
-    
+
     RUN --mount=type=secret,id=ACTIONS_CACHE_URL \
         --mount=type=secret,id=ACTIONS_RUNTIME_TOKEN \
         --mount=type=cache,target=/root/.cache/sccache,sharing=locked \
@@ -84,9 +84,9 @@ defmodule RFD2068 do
         sccache --show-stats && \
         strip "bin/${BINARY_NAME}"
     ```
-    
+
     **`.github/workflows/build.yml` (`build-docker` job)**
-    
+
     ```yaml
     - name: Build and push image (podman)
       run: |
@@ -102,12 +102,12 @@ defmodule RFD2068 do
           .
         podman push "${{ matrix.image }}:latest"
     ```
-    
+
     `ACTIONS_CACHE_URL` and `ACTIONS_RUNTIME_TOKEN` are set automatically
     on every GHA runner; no repo secrets are required. They are passed
     via `--secret` rather than `--build-arg` so they are never baked into
     an image layer or visible in `podman history`.
-    
+
     For local `just build-docker` runs the build arg and secrets are
     absent; sccache falls back to the on-disk cache at `~/.cache/sccache`.
     """

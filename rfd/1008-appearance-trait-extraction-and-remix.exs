@@ -17,7 +17,7 @@ defmodule RFD1008 do
     Map See-Through layer names to appearance slots. The map uses the
     existing appearance vocabulary. Hair, eyes, and face map to Head.
     Torso and clothing map to Chest. Legs and shoes map to Legs.
-    
+
     The layer_decomposition node stores the mapped slots. The Studio
     page shows the remix candidates. A future remix flow equips the
     layer artifacts into the avatar slots.

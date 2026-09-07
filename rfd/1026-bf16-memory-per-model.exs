@@ -16,17 +16,17 @@ defmodule RFD1026 do
     decision ~S"""
     Apply the rule from RFD 1025 to each catalog model. Treat the
     estimated rows as an upper bound for planning.
-    
+
     RFD 1027 permits two formats. bf16 holds one parameter in 2 bytes, and
     Q4_K_M holds one in about 0.55 bytes. `DETAILS.md` gives both, per
     model.
-    
+
     The Source column says where each number comes from. `published` means
     the model card states the count. `measured` means this document read
     the checkpoint sizes. `estimated` means this document derives the
     count from the architecture. `unknown` means no count is available
     yet.
-    
+
     Prefer `measured` over every other source, and prefer bf16 over fp16
     where a checkpoint offers both. The two formats cost the same memory,
     and bf16 carries the wider exponent range.
@@ -63,13 +63,13 @@ defmodule RFD1026 do
     | voxhammer_text_mesh_editing     |          0 |        0 |        0 | published |
     | voxhammer_image_mesh_editing    |          0 |        0 |        0 | published |
     | weftspun_image_to_world         |          0 |        0 |        0 | composite |
-    
+
     VoxHammer carries no weights of its own. It edits with the TRELLIS.2
     backbone, thus its cost is the TRELLIS.2 cost.
     `weftspun_image_to_world` runs TripoSplat and then TRELLIS.2. Its cost
     is the sum of those two. RFD 1033 covers the geometric algorithms,
     which hold no weights at all.
-    
+
     The blocklisted Hunyuan models add 9.2 GB. The shape model holds
     3.3 B parameters, which is 6.6 GB. The paint model holds 1.3 B
     parameters, which is 2.6 GB.

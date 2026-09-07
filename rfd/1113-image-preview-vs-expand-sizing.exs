@@ -22,7 +22,7 @@ defmodule RFD1113 do
     Extractor's `.texture-details-preview img` both use it. Both
     variables live in `expandedImagePreview.css` only; no other file
     redefines either one.
-    
+
     The in-panel preview does not grow on hover. It expands only on a
     click, into the modal. A change to one context's size, without an
     explicit user request naming both, must not touch the other

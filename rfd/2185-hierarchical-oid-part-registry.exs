@@ -23,7 +23,7 @@ defmodule RFD2185 do
     Every part gets a stable OID under `1.3.6.1.4.1.66606.<arc>.parts.<hierarchy>`.
     Hierarchical addressing: `body/head/hair/front-fringe`, so a v4
     addition is a new child, not a schema break.
-    
+
     Four leaf alias sets pointing at the same OID hierarchy: See-Through
     V3 (RFD 2183 stopgap), ANNY 104 joints (RFD 1122 topology),
     PASCAL-Part (public benchmark interop), VRM 1.0 humanoid bones

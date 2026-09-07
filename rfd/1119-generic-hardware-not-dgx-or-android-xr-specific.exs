@@ -18,7 +18,7 @@ defmodule RFD1119 do
     DGX Spark is this project's own reference machine, not a
     requirement; RFD 1027's memory budget, not a DGX-specific spec,
     decides whether a GPU fits the loaded models.
-    
+
     The client runs in any WebXR-capable browser, on any headset that
     supports it. Quest 3 and Apple Vision Pro reach the dev URL the same
     way Galaxy XR does, through `enableVR()` or `enableAR()`, per RFD 1010. Android XR's own native face-tracking bridge (RFD 1082, RFD 1096) stays Android-specific, since it calls an Android-only OpenXR
@@ -26,7 +26,7 @@ defmodule RFD1119 do
     for XR elsewhere. A headset without it still gets VR, AR, floor
     anchoring, and the WebXR-native `expression-tracking` feature where
     the browser grants it.
-    
+
     See `DETAILS.md` for the affected RFDs.
     """
 
@@ -57,7 +57,7 @@ defmodule RFD1119 do
     details "Group A: built around that one machine or headset", ~S"""
     Rewriting these replaces the specific name with the general
     requirement, keeping the specific name as one example.
-    
+
     | RFD  | What it assumes                                                               | Status                                                    |
     | ---- | ----------------------------------------------------------------------------- | --------------------------------------------------------- |
     | 0086 | Dev machine topology names the DGX Spark and a Surface PC as the two machines | Generalized this session                                  |
@@ -70,7 +70,7 @@ defmodule RFD1119 do
     These do not generalize away. The feature itself is an Android-only
     OS or OpenXR extension. The fix is to state that boundary clearly,
     not to pretend the feature runs elsewhere.
-    
+
     | RFD  | The real boundary                                                                                                          | Status                 |
     | ---- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
     | 0082 | The companion APK is an Android app; native face relay needs Android                                                       | Clarified this session |
@@ -83,11 +83,11 @@ defmodule RFD1119 do
     A path example, a log sample, or a related-RFD pointer names DGX or
     Galaxy XR once, with no structural dependency. Lower priority; a
     pass can fix wording without changing any decision.
-    
+
     0009, 0013, 0018, 0019, 0027, 0030, 0034, 0036, 0040, 0052, 0060,
     0083, 0084, 0085, 0088, 0089, 0091, 0092, 0093, 0094, 0098, 0100,
     0101, 0102, 0107, 0110, 0111.
-    
+
     RFD 1027 was already GPU-agnostic; the DGX Spark line in its own
     Problem section is a corrected historical artifact, kept as
     context, not a live dependency. Gained one line this session naming

@@ -22,11 +22,11 @@ defmodule RFD2152 do
     A chart with overlapping receptivities is what RFD 2149's Lean
     analyser flags as a concurrent pair; the emitter reads that flag on
     the source compact GRAFCET and refuses if the pair appears.
-    
+
     **Parked.** No taskweft caller needs OR-divergence in an OpenPLC
     target today. The lower/raise pair already covers OR on the HTN side
     (RFD 2148 test); this RFD closes only the PLCopen leg.
-    
+
     `DETAILS.md` carries the PLCopen XML shape, the exclusivity gate, the
     interaction with RFD 2149, and multi-step branch semantics.
     """
@@ -49,7 +49,7 @@ defmodule RFD2152 do
     IEC 61131-3 SFC's OR-divergence is a *simultaneous divergence* whose
     outgoing transitions have mutually exclusive receptivities. In
     PLCopen TC6 XML the shape is:
-    
+
         <step localId="10" name="find">...</step>
         <transition localId="11">
           <connectionPointIn refLocalId="10"/>
@@ -73,9 +73,9 @@ defmodule RFD2152 do
           <connectionPointOut refLocalId="40"/>
         </transition>
         <step localId="40" name="mark_done">...</step>
-    
+
     Two things distinguish OR-divergence from AND-divergence in the XML:
-    
+
     1. `AndDivergence` in the compact form emits *one* transition with
        multiple `connectionPointOut` elements (fires all branches at once).
        OR-divergence emits *N* transitions, each with its own guard and
@@ -84,7 +84,7 @@ defmodule RFD2152 do
        multiple `connectionPointIn`s (fires when all branches complete).
        `OrConvergence` emits N transitions each with a single
        `connectionPointIn`, all pointing at the same merged step.
-    
+
     FBD inline bodies apply as everywhere else per RFD 2150 (ST and LD
     blocklisted).
     """
@@ -98,7 +98,7 @@ defmodule RFD2152 do
     reachable marking). The emitter reads that flag on the source
     compact GRAFCET before emitting; if any pair of branches from the
     same OR block appears, `emit/1` refuses with a pointer at the pair.
-    
+
     **This turns the analyser from advisory into a load-time gate**, which
     is what RFD 2149 promised. RFD 2152 lands the interlock the promise
     implied.
@@ -138,7 +138,7 @@ defmodule RFD2152 do
     | 2 | multi-step branches (linear sub-chains between markers) |
     | 3 | nested OR blocks (`|>` inside `|>`) |
     | 4 | mixed OR + AND divergence in the same chart |
-    
+
     The staging matches RFD 2148's own; each stage ships with its own
     round-trip test in `test/taskweft/openplc/plcopen_test.exs` and its
     own refusal control (a chart that would need the *next* stage fails

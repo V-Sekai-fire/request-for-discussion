@@ -18,7 +18,7 @@ defmodule RFD2186 do
     decision ~S"""
     Two-stage feasibility probe. **Do not** commit to a full training run
     until stage 2 shows a signal.
-    
+
     `DETAILS.md` carries the milestones, verification, scope revisions and what is not in this RFD.
     """
 
@@ -41,20 +41,20 @@ defmodule RFD2186 do
 
     details "Problem", ~S"""
     Measured this session:
-    
+
     | Model | Task | Wall (1024²) |
     |---|---|---|
     | OmniGen2 (image edit native, bf16 + sequential offload) | source + instruction → edit | ~12 min |
     | Lumina2 bf16 | text prompt → image | 31.6 s |
     | Lumina2 nf4 (RFD 2185 base) | text prompt → image | 33.9 s |
     | Lumina2 nf4 + Flow-LCM LoRA (RFD 2185 output) | text prompt → image, 8 steps | 11.3 s |
-    
+
     **OmniGen2 is 65× slower than Lumina2** for the workspace's actual need
     (image editing per MaskScore's methodology). Both are Lumina2-family
     architectures (verified in this session, OmniGen2 imports
     `block_lumina2` primitives), so a distillation from teacher to student
     inside the same family is at least architecturally plausible.
-    
+
     The workspace has none of the obvious speedup paths open:
     - FLUX.1-Kontext (fast edit model), CLAUDE.md blocklists it (licence)
     - Qwen-Image-Edit, CLAUDE.md blocklists it (corrupts under quantisation)
@@ -62,7 +62,7 @@ defmodule RFD2186 do
     - stable-diffusion.cpp port of OmniGen2 (RFD 2184), days, and even
       ported the DiT still runs iterative diffusion; no reason to expect
       <60 s per 1024² edit
-    
+
     **Load-bearing question this RFD asks the probe to answer:** can a
     Lumina2+LoRA distilled against OmniGen2 outputs learn image-editing
     capability *at all*? Lumina2 has no image-input path in its
@@ -73,13 +73,13 @@ defmodule RFD2186 do
     details "Decision", ~S"""
     Two-stage feasibility probe. **Do not** commit to a full training run
     until stage 2 shows a signal.
-    
+
     ### Stage 1: OmniGen2 teacher-edit generation
-    
+
     Pre-generate a small cache of `(source, instruction, teacher_edit)`
     triples using OmniGen2 as teacher on real sources from
     `EditScore-Reward-Data`'s shard 00.
-    
+
     - **n = 10 triples** (probe only, see "What is NOT in this RFD")
     - Sources: stratified across the 10 non-parked task_types the pilot
       already uses (`background`, `color_alter`, `material_alter`,
@@ -90,9 +90,9 @@ defmodule RFD2186 do
       task_type, seed)
     - Wall clock: ~10 × 12 min = **~2 hours** at OmniGen2's measured
       bf16-offload speed
-    
+
     ### Stage 2: Lumina2+LoRA training on the teacher cache
-    
+
     - **Teacher:** cached triples from Stage 1 (no OmniGen2 loaded during
       training, VRAM budget wouldn't fit both)
     - **Student:** Lumina2 nf4 (bnb `load_in_4bit`) + LoRA rank 64
@@ -108,19 +108,19 @@ defmodule RFD2186 do
     - **Epochs:** 10 (n=10 triples × 10 = 100 gradient steps, enough to
       see loss trend, not enough to converge)
     - Wall clock: ~30 min
-    
+
     ### Stage 3: Score gate (per rule 4, baseline in the same table)
-    
+
     Per memory `pq-only-single-image-blocklisted`: pairwise EditScore only,
     never PQ-only. For each of the 10 triples, generate the edit with each
     of three configs and score:
-    
+
     | Config | Steps | Expected wall | Expected EditScore.overall |
     |---|---|---|---|
     | OmniGen2 (teacher) | 50 | 12 min | (measure, this IS the reference) |
     | Lumina2 nf4 + this LoRA (student) | 8 | ~15 s | (measure, the gate) |
     | Lumina2 nf4 NO LoRA baseline | 8 | ~11 s | (measure, negative control per rule 2) |
-    
+
     **Pass criterion:** student's mean `overall` reaches ≥ 50% of teacher's,
     AND the student meaningfully outperforms the no-LoRA control. If yes,
     capability transfer is possible in principle and warrants a full

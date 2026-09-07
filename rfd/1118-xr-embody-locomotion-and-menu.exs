@@ -24,12 +24,12 @@ defmodule RFD1118 do
     viewer one meter behind, and switches Move to Viewpoint. Yaw math
     stays parent-local, `theta = atan2(fx, fz)`, where yaw zero faces
     +Z in this scene tree.
-    
+
     The in-headset menu keeps a 25% opacity background, right-side tabs
     in one uniform column, Close at the bottom, and View, Move, and
     Measure paired together. The menu panel's bottom edge sits on the
     controller grip; it does not float roughly 0.5 m ahead of it.
-    
+
     `bash scripts/verify_xr_avatar_view_locomotion.sh` runs before a
     merge touching this file. See `DETAILS.md` for the changes this RFD
     forbids without an explicit user request.
@@ -54,9 +54,9 @@ defmodule RFD1118 do
     details_preamble ~S"""
     Sourced from `xr-avatar-view-locomotion-protected.mdc`
     (user-locked 2026-07-26).
-    
+
     Without an explicit user request, a change must not:
-    
+
     - Teleport the avatar back to its pre-embody spot on disembody,
       instead of the exit spot the user actually stood at.
     - Shift the rig's Y position on embody.

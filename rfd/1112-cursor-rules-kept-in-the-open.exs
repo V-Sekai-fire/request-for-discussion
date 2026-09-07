@@ -18,7 +18,7 @@ defmodule RFD1112 do
     guard rule converts, one at a time: write the RFD it names, then
     delete the `.mdc`, its content preserved, not duplicated. Once
     converted, `rules/` no longer holds it.
-    
+
     A process rule stays. It names no product decision, so no RFD holds
     it, and this repository publishes its operating workflow anyway, by
     explicit choice, trading the usual DRY point-to-source rule for
@@ -36,7 +36,7 @@ defmodule RFD1112 do
     does not copy it. Each of these files was itself already a copy,
     kept in sync by hand with the file of the same name in the app
     repository. Twenty files remain, after the guard rules converted.
-    
+
     One file, `weftspun-moat-protected.mdc`, restates RFD 1106 in a more
     raw form, and names revenue mechanisms RFD 1106 leaves out on
     purpose. A second file, `dgx-sync-reminder.mdc`, names a private
@@ -57,7 +57,7 @@ defmodule RFD1112 do
     own workflow and matches no RFD, since it names no product decision.
     A **restates** rule repeats a decision an RFD already states, in
     more raw or more dated words.
-    
+
     All 16 guard rules are now converted. See "Converted and deleted"
     below for where each one went.
     """
@@ -65,7 +65,7 @@ defmodule RFD1112 do
     details "Converted and deleted", ~S"""
     Each row already went through: the RFD named now holds the design,
     and `rules/` no longer holds the file.
-    
+
     | File                                                                                 | Converted into                                                                                                                                                                                                                                                                                                                                 |
     | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
     | `app-chrome-layout-protected.mdc`, `collapsed-rail-icons.mdc`, `sidebar-z-index.mdc` | RFD 1114 (new)                                                                                                                                                                                                                                                                                                                                 |

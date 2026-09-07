@@ -33,11 +33,11 @@ defmodule RFD2177 do
       L1  Operations    how a single team executes; fast cadence
       L2  Coordination  how work flows across teams to deliver value
       L3  Strategy      portfolio decisions about where to invest
-    
+
     Numbering follows Klaus Leopold's original: L1 is ground, L3 is altitude, matching the flight-altitude metaphor. The register is greenfield for this axis, so no earlier convention needs inverting.
-    
+
     `scripts/render_flight_level_pages.py` reads the tag from every serial register and writes three Quarto listings under `pages/flight-level-{1,2,3}-*.qmd`. Navbar carries a Flight Levels dropdown. Untagged RFDs stay off the three pages.
-    
+
     See DETAILS.md for the tag schema, the render script's shape, and the Klaus Leopold citation.
     """
 
@@ -50,14 +50,14 @@ defmodule RFD2177 do
     details "Tag schema", ~S"""
     Every RFD entry in `SERIALS.usda` or `SERIALS-vsekai-fabric.usda` may
     carry a `flight_level` field:
-    
+
     ```usda
     def "S2177" {
         custom string slug = "flight-levels-taxonomy"
         custom string flight_level = "L3"    # optional: L1 | L2 | L3
     }
     ```
-    
+
     Values are strings `"L1"`, `"L2"`, `"L3"`. Absent field means no
     level classification; the RFD stays off the three per-level pages.
     """
@@ -65,11 +65,11 @@ defmodule RFD2177 do
     details "Render script", ~S"""
     `scripts/render_flight_level_pages.py` reads the tag from every
     serial register and writes three files:
-    
+
       pages/flight-level-1-operations.qmd
       pages/flight-level-2-coordination.qmd
       pages/flight-level-3-strategy.qmd
-    
+
     Each is a Quarto listing whose `contents:` names the `rfd/NNNN-slug/
     index.md` paths of the RFDs tagged at that level. The listing sorts
     by RFD number descending, matches the format of `pages/rfd.qmd`, and
@@ -79,7 +79,7 @@ defmodule RFD2177 do
     details "Klaus Leopold citation", ~S"""
     The Flight Levels model is Klaus Leopold's, first published as an
     organizational-improvement framework. Cite as:
-    
+
     ```yaml
     cff-version: 1.2.0
     type: book

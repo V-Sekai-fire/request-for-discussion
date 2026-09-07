@@ -16,14 +16,14 @@ defmodule RFD2161 do
     decision ~S"""
     **Two-team cleanroom, role per model** (retracted from "one Qwen3-Omni
     does everything"):
-    
+
     1. LLM + visual reward -> Qwen3-VL-4B MLX 4-bit + EditScore LoRA
     2. TTS voice-clone -> ResembleAI/chatterbox
     3. STT -> whisper-small (MLX); VAD -> silero
     4. Viseme -> cleanroom small classifier
     5. Renderer -> libgodot in BEAM (RFD 2154); Body -> ANNY + SOMA
     6. Locations -> `6-datasource/{kenney,thebasemesh,quaternius}-stage`
-    
+
     Full retraction trail, stack table, Mac-mini smoke in `DETAILS.md`.
     """
 
@@ -51,7 +51,7 @@ defmodule RFD2161 do
     The session that filed this RFD climbed down five rungs of a compute
     ladder. Each pivot's reason is recorded so a future reader does not
     reopen the same bets.
-    
+
     1. **"Rent an RTX 3090 on Vast"**; two cheapest-tier hosts failed to
        spin up (bad GPU error, image never pulled). Spent $0.003 total
        before pivoting. The Vast market-snapshot dataset survives at
@@ -91,7 +91,7 @@ defmodule RFD2161 do
     | Body | ANNY + SOMA rig | ours | fits |
     | Renderer | Godot 4.7 via `lib_godot_connector` | mit | fits |
     | Locations | `6-datasource/{kenney,thebasemesh,quaternius}-stage` | cc-* clean | assets on disk |
-    
+
     **One real inference proved on Mac mini M2 Pro 32 GB (2026-09-01):**
     `scripts/smoke_editscore_mlx.py` in `3-interactor/editscore-lora-qwen3vl-4b/`
     loaded the MLX 4-bit Qwen3-VL-4B in 0.9 s and generated a one-token
@@ -102,7 +102,7 @@ defmodule RFD2161 do
     details "Compute pivot: Mac mini -> Windows 11 + RTX 3090", ~S"""
     The operator is moving to Windows 11 with an RTX 3090 (24 GB). That
     changes what becomes viable, in dependency order:
-    
+
     1. **QAFT-LoRA training on Qwen3-VL-4B against `EditScore/EditScore-Reward-Data`
       (97,300 rows, 161.8 GB, apache-2.0)** returns to the table. The
       `3-interactor/editscore-lora-qwen3vl-4b/scripts/smoke.py` scaffold
@@ -133,9 +133,9 @@ defmodule RFD2161 do
     variants for the entire Gemma 4 lineup, including the target's exact
     size. Community forks named "-qat" are excluded because their true-
     QAT provenance is not verifiable without vetting each individually.
-    
+
     **Vendor-QAFT candidates from `google/` (all Gemma Terms of Use):**
-    
+
     | candidate                                              | format                 | note                                                            |
     | ------------------------------------------------------ | ---------------------- | --------------------------------------------------------------- |
     | `google/gemma-4-31B-it-qat-w4a16-ct`                   | Compressed-Tensors W4A16 | target's exact model; not GGUF, no blocklist question           |
@@ -160,17 +160,17 @@ defmodule RFD2161 do
     Zero true-QAFT 4-bit checkpoints on Hub as of 2026-09-01 for any of:
     Qwen3-Omni-30B, Wan-VACE 14B, Pixal3D, VoxHammer, MoGe-3. PTQ variants
     exist for the first two only.
-    
+
     **True QAFT means the model was retrained with a fake-quant simulator
     in the loop** (quantization-aware fine-tuning), so NF4 becomes its
     published precision. PTQ methods (AutoRound, AWQ, GPTQ, bitsandbytes,
     int8-convrot, GGUF) do not qualify: they take a released fp16 checkpoint
     and quantize it after the fact, no re-training.
-    
+
     Hub was searched for each of the five MaskScore-stack model families
     (RFD 1173) using both the family name and QAFT-specific naming
     conventions (`QAFT`, `QAT`, `-qat`, `quantization-aware`).
-    
+
     | model family              | true-QAFT 4-bit upstream | PTQ-4-bit exists?                                                 |
     | ------------------------- | ------------------------ | ----------------------------------------------------------------- |
     | Qwen3-Omni-30B (Instruct) | **none**                 | yes; `Intel/...int4-AutoRound` (AutoRound), several AWQ variants |
@@ -179,13 +179,13 @@ defmodule RFD2161 do
     | Pixal3D                   | **none**                 | no quant variants at all                                          |
     | VoxHammer                 | **none**                 | no quant variants at all                                          |
     | MoGe-3                    | **none**                 | no quant variants at all                                          |
-    
+
     **Nothing was mirrored** because operator scope is true QAFT only,
     and zero true-QAFT 4-bit checkpoints for any of the five exist
     upstream today. Reproducing the survey: `python3` + `huggingface_hub`
     `list_models(search=<needle>)` filtered client-side for
     `{QAFT, qaft, -qat, quantization-aware}` in the repo id.
-    
+
     `heretic` (ARA) and `abliterated` are **different** guard-lifting
     techniques; the workspace blocklist row on abliterated weights does
     not extend to heretic. Not relevant to the mirror decision here
@@ -198,7 +198,7 @@ defmodule RFD2161 do
     2. The operator's VN twist: "visual novel style travel between
       different locations and pop up talking head interactions via
       prompts."
-    
+
     The implementer side must not open any other file in that space.
     """
 
@@ -239,21 +239,21 @@ defmodule RFD2161 do
       ANNY rig, publishes SubViewport texture bytes back.
     4. **C++**; none new. The bus NIF from `taskweft-nmm-personas`
       handles iox2.
-    
+
     Stdio JSON is blocklisted as an Elixir<->Python wire.
     """
 
     details "Frame protocol on the WebSocket", ~S"""
     Text frames upstream (browser -> server): `{"prompt":"...","persona":"s0042"}`.
-    
+
     Binary frames downstream (server -> browser), one per Godot frame:
-    
+
         magic  u32 = 0x56 4E 41 56  ("VNAV")
         kind   u8  = 1 image, 2 audio, 3 text, 4 done
         ts     u64 microseconds since session start
         len    u32 payload bytes
         payload len bytes
-    
+
     Image frames carry a WebP-encoded 1024x1024 render of the SubViewport.
     Audio frames carry Opus-encoded 20 ms Qwen3-TTS-12Hz output (RFD 1170).
     Text frames carry the current dialog line (redundant with audio, for
@@ -262,7 +262,7 @@ defmodule RFD2161 do
 
     details "SpeakingFaces -> vn-avatar-personas construction", ~S"""
     Per RFD 1173 §"The undivided unit: 1 SpeakingFaces trial":
-    
+
         for subject in issai/Speaking_Faces subjects:
           pick a representative frame
           fit ANNY canonical rig via AnnyInverter + LBFGS polish
@@ -270,9 +270,9 @@ defmodule RFD2161 do
           derive voice-clone conditioning tokens from a 5s audio clip
           pair with a persona .grafcet.jsonld (hand-authored per subject
             for the MVP; later, generated from the transcript vocabulary)
-    
+
     Row shape:
-    
+
     | column | type | description |
     | --- | --- | --- |
     | key | string | subject id (SpeakingFaces "s0001".."s0142") |
@@ -285,7 +285,7 @@ defmodule RFD2161 do
 
     details "Trace row shape (mirrors MaskScore §8-stub schema)", ~S"""
     Each VN turn produces one row per modality (text, audio, video):
-    
+
     | column | type | description |
     | --- | --- | --- |
     | key | string | session_id + turn_index |
@@ -302,7 +302,7 @@ defmodule RFD2161 do
     details "Bootstrap on the rented Vast machine (3090, 24 GiB)", ~S"""
         # 1. Pick a 3090 image with CUDA 12.4 + Python 3.11 + git-lfs preinstalled.
         #    Expect ~$0.20-$0.35/hour on Vast; $40 buys 110-200 hours.
-    
+
         # 2. Clone this workspace's minimal set (not the whole hexagon).
         for r in \
           2-contract/manuals-weftspun \
@@ -318,22 +318,22 @@ defmodule RFD2161 do
           3-interactor/voxhammer-upstream \
           3-interactor/wan-vace-upstream \
           1-transport/weftspun-studio ; do ...; done
-    
+
         # 3. Fetch SpeakingFaces (huggingface_hub, CC-BY-4.0), download
         #    Qwen3-VL-4B-Instruct at fp16 (8.9 GiB) + EditScore LoRA
         #    (270 MB), download Wan-VACE NF4 (8.7 GiB). Total < 24 GiB
         #    with swap; no QAFT round required (per RFD 1173).
-    
+
         # 4. mix vn_avatar.build_personas --subjects 8   (MVP corpus: 8 subjects)
         #    ~30 min on the 3090.
-    
+
         # 5. mix vn_avatar.smoke                        (one turn end to end)
         #    Asserts: WebSocket receives >=1 image frame + >=1 audio frame,
         #    trace row lands with a non-nil reward-model score.
-    
+
         # 6. COMMIT AND PUSH before tear down. Everything not in a git
         #    repo goes with the machine (CLAUDE.md).
-    
+
         # 7. `vast destroy instance <id>` and double-check the console.
     """
 

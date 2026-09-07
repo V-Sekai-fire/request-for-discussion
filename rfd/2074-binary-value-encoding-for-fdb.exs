@@ -29,15 +29,15 @@ defmodule RFD2074 do
     1. Zero-copy deserialization: a packed struct can be cast directly
        from FDB's `FDBKeyValue.value` pointer. No parsing step. The
        callback handler does `(stock_val_t *)kv->value` and reads fields.
-    
+
     2. Minimal size: no type tags, no field names, no separators. A
        warehouse row is 109 bytes packed vs ~350 bytes in JSON.
-    
+
     3. Deterministic layout: `#pragma pack(push, 1)` ensures no padding.
        The same struct compiles identically on the loader, the server, and
        the verification harness. Cross-platform safe as long as all parties
        use the same header file.
-    
+
     4. Endianness is fixed: network byte order for all integers. x86_64 and ARM
        both support unaligned access, so the byte-swap cost is negligible.
     """

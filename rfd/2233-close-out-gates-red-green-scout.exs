@@ -19,7 +19,7 @@ defmodule RFD2233 do
     Work closes with three gates in the logbook, each with runnable
     apparatus. Backfilling any of them is permitted: the record is the
     requirement, not the timing.
-    
+
     1. **Red control gate.** The exact command shown failing on the
        broken state. Verification rule 2 in the working agreements.
     2. **Green gate.** The same check shown passing on the fixed state.
@@ -29,7 +29,7 @@ defmodule RFD2233 do
     3. **Scout gate.** The place left better than we arrived: an
        inventory of the session's side effects shown non-empty before
        cleanup and empty after, plus what was improved beyond the task.
-    
+
     `DETAILS.md` carries the reference case with its measurements.
     """
 
@@ -53,7 +53,7 @@ defmodule RFD2233 do
 
     details "Red control gate", ~S"""
     One command, the broken state, the observed failure:
-    
+
         # taskweft v0.5.3 release binary, on its own bundled example
         taskweft plan priv/plans/domains/blocks_world_dsl.ex
         taskweft: failed_to_load_domain
@@ -61,11 +61,11 @@ defmodule RFD2233 do
 
     details "Green gate", ~S"""
     The same command on the fixed state:
-    
+
         # taskweft v0.5.4, same file
         taskweft plan priv/plans/domains/blocks_world_dsl.ex
         [["a_unstack", "a"], ["a_putdown", "a"], ...]
-    
+
     A green gate must tell the two states apart. The counterexample from
     the reference case: an MCP `initialize` probe reported the same
     serverInfo for v0.5.3 and v0.5.4, so it stayed green while a stale
@@ -77,17 +77,17 @@ defmodule RFD2233 do
     details "Scout gate", ~S"""
     Inventory before, non-empty; the same inventory after, empty; and
     what improved beyond the task.
-    
+
         # red side
         pgrep -fl "fly proxy"        →  18477 fly proxy 18300:8300
         ls /tmp/ff_cookies.sqlite    →  1.5 MB of session cookies in /tmp
         ls ~/Library/.../.burrito/   →  two stale payload directories
-    
+
         # green side
         pgrep -fl "fly proxy"        →  (nothing)
         ls /tmp/ff_cookies.sqlite    →  (nothing)
         ls ~/Library/.../.burrito/   →  the current payload only
-    
+
     Beyond the task: the planner defect was fixed upstream and released
     rather than worked around locally.
     """

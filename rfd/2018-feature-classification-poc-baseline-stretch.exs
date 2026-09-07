@@ -62,7 +62,7 @@ defmodule RFD2018 do
     details "Confirmation", ~S"""
     The capabilities table has a Tier column, and every row carries one of
     the three tiers. New capabilities are added with a tier.
-    
+
     - consulted: lyuma
     """
 

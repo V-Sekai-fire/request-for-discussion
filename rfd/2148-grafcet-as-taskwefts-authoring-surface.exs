@@ -27,7 +27,7 @@ defmodule RFD2148 do
     parameter dispatch and method decomposition without leaving the
     standard. `DETAILS.md` carries the mapping table, the loss ledger,
     the transport, the persona rate contract, and the verification.
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 
@@ -51,7 +51,7 @@ defmodule RFD2148 do
     Every construct is a 60848 element under a short local name, expanded
     by JSON-LD `@context` to the AGRAFE IRIs so the same file round-trips
     into their model without a second document.
-    
+
     Steps are entries in an ordered `S` array; position implies a `Link`
     to the next entry unless a divergence intervenes. Sigils at position
     zero mark the step kind: `""` or omitted = `Step`, `^` = `InitialStep`,
@@ -63,7 +63,7 @@ defmodule RFD2148 do
     the transition's `Receptivity` (boolean expression over `X.<step>`
     step activities and `V.<var>` internal variables), `do` is a stored
     `Action` (assignment or emit), `t` is the transition's time delay.
-    
+
     The reference file, `.github/plans/weftspun-build.grafcet.jsonld`, is
     13 lines of `S` against the 38 lines of hand-authored HTN it lowers to.
     """
@@ -71,7 +71,7 @@ defmodule RFD2148 do
     details "The mapping table, in full", ~S"""
     Every taskweft feature lands on one 60848 construct. Nothing on the
     right extends the standard.
-    
+
     | taskweft feature | IEC 60848 construct |
     |---|---|
     | boolean state flag | step activity `X_i` or internal boolean |
@@ -89,7 +89,7 @@ defmodule RFD2148 do
     | HTN decomposition hierarchy | `MacroStep` per method |
     | ETNF tuple state, ref into `capabilities` | interned integer id in an internal variable |
     | plan trace with bindings | firing trace with timestamps |
-    
+
     The **grounding-scale gate** in `Taskweft.Grafcet` refuses any lowering
     that would produce more than N ground steps for a `%macro`-with-`for`;
     the author moves it to the dispatch-variable pattern instead. This is
@@ -115,14 +115,14 @@ defmodule RFD2148 do
     same wire through a new NIF at
     `3-interactor/taskweft-nmm-personas/c_src/weft_bus_nif.cpp`, modelled
     on `spot_broker/c_src/store_bus_nif.cpp` + `bus/proof/command_publisher.cpp`.
-    
+
     The bus caps at 128 KiB per message. The projected 128-agent nmm2
     obs is 1,233,911 bytes as JSON, 433,346 as CBOR, and **4,821 bytes
     as CBOR+zstd**; 250× smaller than JSON, well under the ceiling. Both
     sides speak the same envelope: 1-byte tag (`Z` = zstd-compressed CBOR,
     `C` = plain CBOR) followed by the body. Python uses `cbor2` + `zstandard`;
     Elixir uses `:cbor` + `:ezstd`.
-    
+
     An obs that outgrows even zstd should move to a Snapshot pub/sub on
     its own service, coordinated by the command bus. The bus README's
     own recommendation for bulk payloads. Not needed yet.
@@ -137,15 +137,15 @@ defmodule RFD2148 do
     fragments and steps the env. Only the last intended action per agent
     between env steps is submitted. Both rates are fixed integer Hz. No
     elastic scheduling.
-    
+
     `persona_hz >= 10` is a hard contract; the Scheduler raises
     `ArgumentError` below it. Effective rates are recorded per episode
     and per trace row (`wall_us` monotonic timestamp).
-    
+
     Measured on a live 128-agent nmm2 episode, target 30/10 Hz:
-    
+
         persona 26.14 Hz (target 30), env 8.2 Hz (target 10), 1.951s
-    
+
     BEAM `send_interval` jitters ~10-20% under real work; target above
     the floor with headroom, not at it. Three `mix test` cases guard this:
     one asserts effective persona rate ≥10 Hz on a real episode, one
@@ -156,7 +156,7 @@ defmodule RFD2148 do
     details "MaskScore row shape", ~S"""
     One row per (persona, episode, dimension). Field names track the
     EditScore schema in RFD 1173's MASKSCORE.md verbatim:
-    
+
     | field | meaning |
     |---|---|
     | `key` | `nmm2_{persona}_seed{S}_ep{N}_{hash}`; stable, dedup-safe |
@@ -167,7 +167,7 @@ defmodule RFD2148 do
     | `scores` | `[survival_fraction, avg_health_norm]` |
     | `task_type` | `survive` |
     | `dimension` | `instruction_following` / `consistency` / `overall` |
-    
+
     Scores are populated by game-native reductions of the trace itself,
     not by Mitsuba render-and-compare. The RFD 1173 metric doesn't apply
     to a text-shaped game; the schema stays faithful (same fields, same
@@ -181,13 +181,13 @@ defmodule RFD2148 do
     resolve to Elixir dispatch functions in
     `lib/taskweft_nmm_personas/persona.ex` that consume the current
     observation, mutate persona memory, and return an action fragment.
-    
+
     | persona | step chain |
     |---|---|
     | forager | sense → seek_water → gather_food → wander → end_turn |
     | hunter | sense → heal_or_flee → seek_target → attack_or_move → end_turn |
     | trader | sense → sell_surplus → buy_cheap → wander → end_turn |
-    
+
     Persona differentiation lives entirely in the step list. Adding a
     persona is one new `*.grafcet.jsonld` file plus (if it introduces new
     step names) new entries in the dispatch table.
@@ -197,12 +197,12 @@ defmodule RFD2148 do
     Scope of the DSL is whatever taskweft's HTN can express. Every
     construct taskweft uses today rounds-trips through the lowering
     compiler; anything else stays out of the DSL.
-    
+
     taskweft's HTN uses parameterised actions (`params: [:block]`),
     methods with N alternatives selected by `check` clauses, method
     decomposition, and task-network goals. Those land on the following
     60848 constructs, staged by build order:
-    
+
     1. `|>` / `|<` (`OrDivergence` / `OrConvergence`) for a method with N
        receptivity-selected alternatives. **Implemented.** Round-trip
        test in `taskweft/test/taskweft/grafcet_test.exs` exercises a
@@ -214,7 +214,7 @@ defmodule RFD2148 do
     4. `!>` (`ForcingOrder`) for HTN backtracking on downstream failure
        of a chosen alternative. Staged last; harder to make round-trip
        idempotent because the rewound branch can be authored two ways.
-    
+
     Each staged construct ships with its own round-trip test and its own
     worked fixture. The grounding-scale gate applies to `%macro` with
     `for`.
@@ -257,7 +257,7 @@ defmodule RFD2148 do
     parameter dispatch and method decomposition without leaving the
     standard. `DETAILS.md` carries the mapping table, the loss ledger,
     the transport, the persona rate contract, and the verification.
-    
+
     The reference implementation and proof is
     `3-interactor/taskweft-nmm-personas`: three GRAFCET personas play a
     128-agent Neural MMO 2 episode over `2-contract/bus` with CBOR+zstd

@@ -41,7 +41,7 @@ defmodule RFD2069 do
     end (Hub to Field to Hub, through transport, server authority, loot
     contention, and SQLite-backed persistence), and the playable-loop
     smoke passes. The integration goal is met.
-    
+
     The rest of the decided scope is production hardening and platform
     reach. None of it adds integration coverage the running loop does not
     already have. Per YAGNI times structure to the need
@@ -64,7 +64,7 @@ defmodule RFD2069 do
     Carry the unbuilt scope forward as deferred-until-needed, each item
     paired with the trigger that materializes its need. Build an item
     when its trigger fires, not before.
-    
+
     | Deferred item                                                                                                                              | Why it waits                                                                                     | Trigger that revives it                                                                  |
     | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
     | Presence as a separate named reducer, today folded into the Hilbert interest core and multiplayer sink (`rfd/2042-hexagon-presence-core`)  | Remote-pose interpolation runs in the slice; a separate reducer adds no integration coverage now | Remote-pose interpolation needs its own testable reducer, or avatar-fidelity work begins |
@@ -73,7 +73,7 @@ defmodule RFD2069 do
     | CockroachDB adapter, with SQLite the only path today (`rfd/2006-cockroachdb-with-mtls-role-separation`)                                    | Single-node SQLite carries the slice's persistence round trip                                    | Persistence needs multi-node storage or mTLS role separation beyond single-node SQLite   |
     | Measured performance gate, 90 Hz, 500,000 triangles, 200 draw calls per eye (`rfd/2035-first-party-curated-content-zone-baker-budgets`)   | No headset target consumes the gate; placeholder content makes the number premature              | A real headset build is the sign-off step                                                |
     | Real OpenXR build, where the desktop preset duplicates Windows Desktop with no XR options (`rfd/2051-headless-openxr-testing-with-monado`) | The slice is verified headless; a real XR export is platform reach, not integration              | A headset playthrough is the acceptance step                                             |
-    
+
     The items the slice record already files after the gate, ranged and
     caster archetypes, Steam Frame and Steam Deck builds, in-headset
     authoring, rollback (`rfd/2046-server-authoritative-simulation-deferred-rollback`),

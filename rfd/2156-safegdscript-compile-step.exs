@@ -16,7 +16,7 @@ defmodule RFD2156 do
     decision ~S"""
     **Parked.** Two candidate routes, both preserving RFD 2150's FBD
     authoring and RFD 2154's in-process linking:
-    
+
     1. **Runtime compile inside the Sandbox.** Load `gdscript.elf` (ships
        with godot-sandbox releases), feed it the `.gd` source, receive a
        compiled program a second Sandbox loads. No CLI to install.
@@ -24,7 +24,7 @@ defmodule RFD2156 do
        sandbox sources (`riscv64-elf-gcc` already installed for RFD
        2149), invoke from a `mix openplc.gd-compile` task like `mix
        openplc.compile` invokes `openplc-cli`.
-    
+
     Route 1 is smaller; route 2 is standard tool-shape and unlocks
     compile-time verification. Lands when the first RECTGTN-authored plan
     runs in Godot Sandbox.

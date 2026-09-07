@@ -24,9 +24,9 @@ defmodule RFD2163 do
     Loop `llama-mtmd-cli` from RFD 1173.2164's build against both
     frames of every edit (15 total). Prompt is fixed; provenance JSON
     records model SHA, prompt SHA, image SHAs, temperature 0, seed 0.
-    
+
     Emit 10 rank candidates per edit as in RFD 1173.2164:
-    
+
       rank1  canonical VLM description
       rank2..6  paraphrase gradient (Gemma-generated distortion prompts)
       rank7..8  describes wrong part (weak/strong)

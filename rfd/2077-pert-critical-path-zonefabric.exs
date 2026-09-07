@@ -25,17 +25,17 @@ defmodule RFD2077 do
 
     details "Method", ~S"""
     Expected duration (TE) for each task uses the PERT formula:
-    
+
     ```
     TE = (O + 4M + P) / 6
     ```
-    
+
     Variance (σ²) measures uncertainty:
-    
+
     ```
     σ² = ((P, O) / 6)²
     ```
-    
+
     The critical path is the chain of dependent tasks with the longest total
     TE. Any delay on the critical path delays the entire project. Tasks off
     the critical path have slack, they can slip without affecting the end
@@ -44,7 +44,7 @@ defmodule RFD2077 do
 
     details "Task list", ~S"""
     All durations in engineering days. One engineer, full-time.
-    
+
     | ID  | Task                                            | Depends on | O   | M   | P   | TE  | σ²   |
     | --- | ----------------------------------------------- | ---------- | --- | --- | --- | --- | ---- |
     | A   | Binary value encoding (RFD 2010)                |,          | 1   | 2   | 4   | 2.2 | 0.25 |
@@ -87,11 +87,11 @@ defmodule RFD2077 do
 
     details "Critical path", ~S"""
     The critical path is the longest chain through the dependency graph:
-    
+
     ```
     A → B → C → F → I → M
     ```
-    
+
     | Step | Task                              | TE (days) | Cumulative |
     | ---- | --------------------------------- | --------- | ---------- |
     | 1    | A: Binary value encoding          | 2.2       | 2.2        |
@@ -100,9 +100,9 @@ defmodule RFD2077 do
     | 4    | F: ZoneTick                       | 4.5       | 15.3       |
     | 5    | I: CastSpell                      | 5.5       | 20.8       |
     | 6    | M: Feature ablation               | 5.2       | 26.0       |
-    
+
     **Critical path total: 26.0 engineering days (~5.2 weeks)**
-    
+
     This is the minimum time to a verified, ablation-tested zonefabric
     benchmark with CastSpell. The critical path passes through CastSpell
     because it depends on three upstream tasks (slotmap, tick, ghost) and
@@ -113,7 +113,7 @@ defmodule RFD2077 do
     details "Slack analysis", ~S"""
     Tasks NOT on the critical path have slack. Slack = (latest finish) −
     (earliest start + duration).
-    
+
     | Task                   | TE  | Earliest start  | Latest finish   | Slack |
     | ---------------------- | --- | --------------- | --------------- | ----- |
     | D: Slotmap             | 3.2 | 5.5 (after A+B) | 10.8 (before F) | 2.1   |
@@ -125,21 +125,21 @@ defmodule RFD2077 do
     | L: Macaroon + XDP      | 7.7 | 10.8 (after C)  | 26.0 (end)      | 7.5   |
     | N: Benchmark harness   | 2.0 | 18.5 (after G)  | 26.0 (end)      | 5.5   |
     | O: Scaling measurement | 3.2 | 20.5 (after N)  | 26.0 (end)      | 2.3   |
-    
+
     ### Slack interpretation
-    
+
     - E (Zstd) has 11.1 days of slack. Compression can be added any
       time before zone-state blob persistence. This confirms RFD 2019's
       ablation result: zstd is deferrable. Do NOT build it first.
-    
+
     - L (Macaroon + XDP) has 7.5 days of slack. Security can be built
       in parallel with game logic. This confirms RFD 2019: security
       features are independent of game-logic invariants.
-    
+
     - J (EntityMigration) has 6.5 days of slack. Migration is needed
       for correctness at scale but can be stubbed initially (entities
       stay in their birth zone). Build it after the core loop works.
-    
+
     - D (Slotmap) has only 2.1 days of slack and is near-critical.
       This confirms RFD 2019: slotmap is foundational and must be built
       early. Any delay on slotmap pushes the critical path.
@@ -158,7 +158,7 @@ defmodule RFD2077 do
 
     details "Parallelization with two engineers", ~S"""
     If a second engineer is available, the slack tasks can be parallelized:
-    
+
     | Engineer 1 (critical path) | Engineer 2 (slack tasks)                        |
     | -------------------------- | ----------------------------------------------- |
     | A: Binary encoding (2.2d)  | (pair on A)                                     |
@@ -167,11 +167,11 @@ defmodule RFD2077 do
     | F: ZoneTick (4.5d)         | H: GhostRelevance (3.3d) → J: Migration (4.2d)  |
     | I: CastSpell (5.5d)        | G: Zone-state blob (3.2d) → K: ZoneSplit (3.2d) |
     | M: Ablation (5.2d)         | N: Benchmark harness (2.0d) → O: Scaling (3.2d) |
-    
+
     With two engineers, the critical path remains A→B→C→F→I→M at 26 days
     (Engineer 1), but all slack tasks are completed in parallel. Total
     project duration: ~26 days instead of ~38 days (serial sum).
-    
+
     The critical path cannot be shortened by adding engineers, it's
     sequential by dependency. Only reducing task scope (e.g., stubbing
     CastSpell's fanout as a fixed-radius range scan without effect
@@ -191,7 +191,7 @@ defmodule RFD2077 do
 
     details "Build order (recommended)", ~S"""
     Based on the PERT analysis and RFD 2019 ablation matrix:
-    
+
     ```
     Week 1: A (binary encoding) → B (FDB keyspace) → D (slotmap)
     Week 2: C (actor-lite pool) → F (ZoneTick) → E (zstd, parallel)
@@ -199,7 +199,7 @@ defmodule RFD2077 do
     Week 4: I (CastSpell) → J (migration) → K (zone split)
     Week 5: L (XDP security, parallel) → M (ablation) → O (scaling)
     ```
-    
+
     This order respects all dependencies, keeps the critical path moving,
     and defers high-slack tasks (zstd, XDP, zone split) to later weeks.
     """
@@ -209,15 +209,15 @@ defmodule RFD2077 do
       chart is derived from the ablation matrix. The ablation confirms
       which tasks are load-bearing (on or near the critical path) and
       which are deferrable (high slack).
-    
+
     - **RFD 2008** (verification): CBMC and Lean 4 verification happen
       during tasks C (SPSC ring) and D (slotmap), not as a separate
       phase. Verification is built into the task estimates.
-    
+
     - **RFD 2014** (CI): The CI pipeline is assumed to exist from the
       start (building on every commit). It is infrastructure that
       supports all tasks, not a separate task.
-    
+
     - **RFD 2013** (benchmark harness): Task N is the wrk script
       implementation, which depends on the zone-state blob (G) being
       writable to FDB.

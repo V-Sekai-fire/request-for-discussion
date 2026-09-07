@@ -50,7 +50,7 @@ defmodule RFD2197 do
     The measurement that supersedes the join plan and media strategy below is
     in `logbook/logbook-maskscore-rung-1-join-keys.md`. Read that entry before
     touching a rewrite. What changed against the original draft:
-    
+
     1. **Base ⋈ candidates join key** is `base.key = candidates.row_key`, not
        `example_id`. Different column names on the two sides, same semantic
        values, 100 % membership every task.
@@ -89,7 +89,7 @@ defmodule RFD2197 do
        would drop candidates+scores from the first pass. Wrong outcome on
        clean data. The check must become: per-task expected join columns
        exist by name, and their value-sets match.
-    
+
     The rest of this file is the original draft, kept for the record.
     Sections superseded by the measurement carry a pointer at the top rather
     than reflowing in place, so citations of the RFD's earlier wording still
@@ -98,26 +98,26 @@ defmodule RFD2197 do
 
     details "Current shape (observed 2026-09-03)", ~S"""
     The HF repo `chibifire/maskscore-rung-1-bootstrap` currently holds:
-    
+
     ```
     maskscore_rung_1_<task>.parquet             ×5   # base tables (non-speech)
     maskscore_rung_1_<task>_candidates.parquet  ×5   # candidate generations per row
     maskscore_rung_1_<task>_scores.parquet      ×5   # scores per candidate
-    
+
     speech/speech/maskscore_speech.parquet             # base (speech)
     speech/speech/maskscore_speech_candidates.parquet  # cand (speech)
     speech/speech/maskscore_speech_scores.parquet      # scores (speech)
-    
+
     renders/  ×512                                     # PNG render frames
     speech/   ×351   ( 150 WAV, 180 VTT, 21 other )    # aligned audio + captions
     poses/    ×4                                       # PNG pose overlays
     scores/   ×2                                       # ancillary score dumps
     ```
-    
+
     Total 887 files, 18 parquets. 15 parquets at repo root, 3 under
     `speech/speech/`. No `data/` directory. HF viewer sees no auto-indexer
     layout it can group and returns `viewer=false, preview=false`.
-    
+
     The original draft placed all 18 parquets at repo root. Corrected above.
     """
 
@@ -130,10 +130,10 @@ defmodule RFD2197 do
     data/pose/train-*.parquet
     data/speech/train-*.parquet         # separate emit branch, see below
     ```
-    
+
     Six configs (one per task-type) under a single dataset repo. Each config
     paginates independently in the viewer. Row shape per non-speech config:
-    
+
     | field          | type                                     | notes                                                          |
     | -------------- | ---------------------------------------- | -------------------------------------------------------------- |
     | `key`          | string                                   | from base; joins to `row_key` on candidates                    |
@@ -144,9 +144,9 @@ defmodule RFD2197 do
     | `input_asset_kind` | string                               | from base                                                      |
     | `poses`        | (task-specific)                          | from base                                                      |
     | `candidates`   | `list<struct<candidate, rank, candidate_asset, scores: list<struct<view_index, depth_l1, normal_l1, normal_dot>>>>` | from candidates, with scores folded in per `(row_key, candidate)` |
-    
+
     Row shape for the speech config differs on three axes:
-    
+
     | field          | type                                     | notes                                                          |
     | -------------- | ---------------------------------------- | -------------------------------------------------------------- |
     | `key`          | string                                   | joins to `row_key`                                             |
@@ -157,7 +157,7 @@ defmodule RFD2197 do
     | `input_asset_kind` | string                               |                                                                |
     | `canonical_text` | string                                 | speech-only                                                    |
     | `candidates`   | `list<struct<candidate_axis, rank, candidate_asset, candidate_asset_kind, candidate_kind, candidate_target_text, scores: list<struct<candidate_rank, metric_name, metric_value>>>>` | scores fold in per `(row_key, candidate_axis)`; note the score inner schema is long-form (metric_name/metric_value), not wide |
-    
+
     Nested lists preserve the one-to-many without dropping to satellite files
     (RFD 2196 rule 1). The `struct-of-lists` vs `list-of-struct` question is
     settled by RFD 2196 rule 6: pick the shape the parquet actually holds and
@@ -166,17 +166,17 @@ defmodule RFD2197 do
 
     details "The join plan", ~S"""
     For each non-speech task-type, three tables become one:
-    
+
     ```python
     base   = pq.read_table(f'maskscore_rung_1_{task}.parquet').to_pandas()
     cands  = pq.read_table(f'maskscore_rung_1_{task}_candidates.parquet').to_pandas()
     scores = pq.read_table(f'maskscore_rung_1_{task}_scores.parquet').to_pandas()
-    
+
     # scores → nested list per (row_key, candidate)
     scores_by_pair = scores.groupby(['row_key', 'candidate']).apply(
         lambda g: g.drop(columns=['row_key', 'candidate']).to_dict('records')
     ).rename('scores')
-    
+
     # candidates → nested list per row_key, with scores folded in per pair
     def build_candidates(g):
         out = []
@@ -185,13 +185,13 @@ defmodule RFD2197 do
             rec['scores'] = scores_by_pair.get((r['row_key'], r['candidate']), [])
             out.append(rec)
         return out
-    
+
     cands_by_rk = cands.groupby('row_key').apply(build_candidates).rename('candidates')
-    
+
     # base has one row per key; join on base.key = cands.row_key
     wide = base.set_index('key').join(cands_by_rk, how='left')
     ```
-    
+
     Speech uses the same shape with four substitutions: file glob is
     `speech/speech/maskscore_speech*`; `candidate` becomes `candidate_axis`
     in every occurrence; the composite gains a third column so the fold
@@ -203,15 +203,15 @@ defmodule RFD2197 do
     implementation lives in `weftspun/anny-render-corpus`
     (`maskscore_rung_1_hf_publish.py`), keyed by a `CONFIGS` dict that
     carries the per-config composites.
-    
+
     Join-key verification gate before running the rewrite, per task:
-    
+
     - assert `'key' in base.columns` and `'row_key' in cands.columns and
       'row_key' in scores.columns`;
     - assert `set(base['key']) == set(cands['row_key'])` and
       `set(cands[['row_key', <cand_col>]].itertuples(index=False))
        >= set(scores[['row_key', <cand_col>]].itertuples(index=False))`.
-    
+
     The empty-column-intersection fallback the original draft named ("publish
     the base table alone per config") is not the failure mode on this data.
     The keys align cleanly under the corrected names.
@@ -220,7 +220,7 @@ defmodule RFD2197 do
     details "Media strategy", ~S"""
     887 non-parquet files sit outside the parquet columns today. The
     disposition per file kind is unchanged from the original draft:
-    
+
     | kind             | count      | strategy                                                                                                                     |
     | ---------------- | ---------: | ---------------------------------------------------------------------------------------------------------------------------- |
     | `renders/*.png`  | 512 + 128  | inline as `struct<bytes, path>` per RFD 2196 rule 4 if under ~1 MB each; else keep at path, add column `image_path: string`  |
@@ -228,12 +228,12 @@ defmodule RFD2197 do
     | `speech/*.vtt`   | 180        | inline as `text: string` column (WebVTT is small text)                                                                       |
     | `poses/*.png`    | 4          | inline                                                                                                                       |
     | `scores/*.*`     | 2          | fold into the scores column of the row if applicable, else document as ancillary                                             |
-    
+
     The join step reads media by path and embeds bytes into the row it belongs
     to (identified by filename stem matching the row key). Files whose row
     key cannot be inferred stay at their satellite path and get named in the
     dataset card as unreferenced-but-preserved.
-    
+
     Inline media budget at bootstrap scale: 20 wide rows across the whole
     dataset. Under 50 KB parquet payload before media inlining; well under
     HF's per-shard limits regardless of media disposition. The original
@@ -249,13 +249,13 @@ defmodule RFD2197 do
 
     details "The re-upload", ~S"""
     Standard RFD 2196 rule 5 recipe:
-    
+
     ```sh
     HF_HUB_DISABLE_XET=1 HF_HUB_ENABLE_HF_TRANSFER=1 \
       hf upload-large-folder chibifire/maskscore-rung-1-bootstrap \
         upload_stage --repo-type=dataset --include="data/*/train-*.parquet"
     ```
-    
+
     The old root-level parquets and the `speech/speech/` parquets can be
     deleted in the same commit that lands the new layout, since the viewer
     will not index the old shape and consumers of the old shape (if any exist)

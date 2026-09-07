@@ -19,7 +19,7 @@ defmodule RFD2174 do
 
     problem ~S"""
     An audit found 32 pairs of (open RFD, abandoned RFD it cites). Not all are drift: a retraction chain legitimately cites what it walks back, and RFDs 2168 (wholebody detector retraction) and 2169 (studio-core abandonment) do exactly this. The class of concern is open RFDs that lean on an abandoned RFD's decision as if it still holds, without knowing the citation went stale.
-    
+
     Concentrations: RFD 1122 (wholebody detector, abandoned by 2168) cited by 11 open RFDs; RFD 1166 (See-Through scoring plan) cited by 7; RFDs 1049-1052 (abandoned model images) cited by 1133 and 1171; RFD 1019 (strangler-fig studio core, abandoned by 2169) cited by 4.
     """
 
@@ -44,7 +44,7 @@ defmodule RFD2174 do
     and 1173 (discussion) settled the pipeline differently. Every citation
     below treats 1122's rendered-ANNY corpus route as authoritative when
     the workspace actually uses ANNY-as-pose-primitive per RFD 1143.
-    
+
       RFD 1121 (discussion) → RFD 1143 + RFD 1173
       RFD 1123 (discussion) → RFD 1143
       RFD 1126 (discussion) → RFD 1143
@@ -62,7 +62,7 @@ defmodule RFD2174 do
     details "Citations of RFD 1166 (abandoned)", ~S"""
     RFD 1166 was the See-Through scoring plan; RFD 1168 (segment 3D
     latent with rf-detr) replaced it.
-    
+
       RFD 1006 (discussion) → RFD 1168
       RFD 1044 (discussion) → RFD 1168
       RFD 1167 (ideation)   → RFD 1168
@@ -76,7 +76,7 @@ defmodule RFD2174 do
     details "Citations of RFDs 1049-1052 (abandoned model images)", ~S"""
     Weftspun-image-to-world, LingBot map, WorldMirror2, TripoSplat --
     all abandoned in the 2026-09-01 catalog prune.
-    
+
       RFD 1038 (discussion) → drop (RFD 1038 mesh model is the same shape)
       RFD 1133 (discussion) → self (chain, keep)
       RFD 1171 (ideation)   → drop
@@ -84,7 +84,7 @@ defmodule RFD2174 do
 
     details "Citations of RFD 1019 (abandoned by RFD 2169)", ~S"""
     The Elixir strangler-fig studio core.
-    
+
       RFD 1022 (discussion) → RFD 2169
       RFD 1023 (discussion) → RFD 2169
       RFD 1055 (discussion) → RFD 2169
@@ -94,7 +94,7 @@ defmodule RFD2174 do
     details "Citations of RFD 1155 (abandoned)", ~S"""
     RFD 1155 abandoned Gemma 4 as an accelerator target; ironic given
     the reasoning-core swap in RFD 2169. Cite path chain intentional.
-    
+
       RFD 1157 (ideation)   → self (chain, keep)
       RFD 1169 (ideation)   → self (chain, keep)
       RFD 1170 (ideation)   → self (chain, keep)
@@ -116,7 +116,7 @@ defmodule RFD2174 do
       chain, keep   , retraction chain; the citation IS the walk-back
       successor RFD , migrate the citation on next edit
       drop          , reference is stale, no successor, remove on next edit
-    
+
     Roughly 60% of the 32 pairs are legitimate retraction chains. The
     remaining ~13 pairs (marked with a successor or drop) are real drift.
     """

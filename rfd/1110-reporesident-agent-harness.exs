@@ -25,7 +25,7 @@ defmodule RFD1110 do
     conversational personas. `STATE.md` stays a live handoff, not a
     decision record; it holds no lasting content and does not become
     part of this RFD.
-    
+
     See `DETAILS.md` for the file map, the context-layer table, the
     workflow-selection rules, and the technical decisions from
     `DECISIONS.md` not already covered by another RFD.
@@ -77,7 +77,7 @@ defmodule RFD1110 do
 
     details "Working roles", ~S"""
     Rules for a phase, not conversational personas.
-    
+
     - **Architect:** scopes and designs without writing implementation code.
     - **Builder:** implements an approved design without changing its structure silently.
     - **Fixer:** makes the smallest complete correction and avoids unrelated refactoring.
@@ -95,7 +95,7 @@ defmodule RFD1110 do
     | `refactor.md`  | Structure improvement with zero behavior change; a bug found mid-refactor gets parked, not bundled                 |
     | `review.md`    | Reviewing a diff, PR, or branch; best run fresh, from a session that did not write the code                        |
     | `maintain.md`  | Every tenth session, or when a size budget is blown, or the user asks; checks the harness against the repository   |
-    
+
     `feature.md`'s exit test: if a change has a single known site, no
     interface change, and obvious verification, it downgrades to
     `patch.md`. `patch.md` escalates to `feature.md` the moment an
@@ -107,7 +107,7 @@ defmodule RFD1110 do
     details "Technical decisions not covered by another RFD", ~S"""
     From `.agent/DECISIONS.md`, append-only, project-specific choices
     this repository's own numbered RFDs do not yet record:
-    
+
     - **2026-07-26, XR disembody:** the avatar exits at the exit spot
       facing the headset, the viewer stands one meter behind, and
       Move-to-Viewpoint, X, and the stick-click all work without opening
@@ -120,7 +120,7 @@ defmodule RFD1110 do
     - **2026-06-26, API↔client contracts:** must land together, since
       `models.yaml` and `aiModelsCatalog.js`/`taskManager.js` describe
       the same models from two sides.
-    
+
     Decisions already carried by other RFDs, not repeated here: UI on
     the Surface, API on the DGX (RFD 1086); scp-based sync with no agent
     git push (RFD 1086, RFD 1099); RepoResident's own adoption,

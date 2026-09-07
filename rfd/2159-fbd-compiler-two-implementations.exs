@@ -17,7 +17,7 @@ defmodule RFD2159 do
 
     decision ~S"""
     Green-lit; C++ and Rust both to ship.
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 
@@ -39,18 +39,18 @@ defmodule RFD2159 do
 
     details "Decision", ~S"""
     Green-lit; C++ and Rust both to ship.
-    
+
     Ship two `.elf` implementations, both cross-compiling today, both
     loading into godot-sandbox unchanged.
-    
+
     1. **C++**; reuses godot-sandbox's SafeGDScript build recipe.
     2. **Rust**; `cargo build --target riscv64gc-unknown-linux-gnu`.
-    
+
     Different type systems, different memory models, different codegen ;
     bugs don't correlate. Both must agree on RFD 2157's fixture set
     byte-for-byte; disagreement is a soundness bug flagged against
     whichever impl differs from the Lean spec's reference output.
-    
+
     `DETAILS.md` carries the differential harness, fixture format, and
     the spec-to-impl obligation table.
     """

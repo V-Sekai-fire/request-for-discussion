@@ -17,7 +17,7 @@ defmodule RFD2209 do
 
     decision ~S"""
     Add a row to CLAUDE.md's "Blocklists" table:
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 
@@ -42,9 +42,9 @@ defmodule RFD2209 do
 
     details "The BLOCKLIST.md section to add", ~S"""
     Below the `CC-BY-SA` section, add:
-    
+
         ### CC-BY-NC (all versions)
-    
+
         A non-commercial restriction on a row propagates into any
         corpus, dataset, or artifact that ships the row. The
         workspace's deployments (VRChat, service demos, HF datasets,
@@ -53,11 +53,11 @@ defmodule RFD2209 do
         are all on the table for shipped work, and a licence that
         reserves them defeats the downstream question before it is
         asked.
-    
+
         Same shape as CC-BY-SA's row. Different clause (non-commercial
         vs. share-alike); the downstream cost of ignoring it is the
         same.
-    
+
         **Concrete case (2026-09-05):** dataforged
         (`github.com/rsek/dataforged`) carries a mixed licence.
         `dist/starforged/*.json` is CC-BY-4.0 and ships as
@@ -66,7 +66,7 @@ defmodule RFD2209 do
         filtered out by `scripts/build_starforged_hf.py` before the
         parquet write. `scripts/check_starforged_hf.py` asserts every
         surviving row is CC-BY-4.0 as a rule-3 named-not-silent gate.
-    
+
         **What is not banned.** Reading CC-BY-NC content for
         inspection, citing it in an RFD, or naming it as a source is
         fine. Shipping its content in a derived corpus is the case
@@ -76,14 +76,14 @@ defmodule RFD2209 do
     details "Filter implementation shape", ~S"""
     Every builder that ingests a mixed-licence source carries the
     same three-step shape:
-    
+
     1. Read the source row.
     2. Consult the row's licence field (dataforged tags each entry;
        other sources may need per-source lookup logic).
     3. If `licence in {"CC-BY-NC-4.0", "CC-BY-NC-3.0",
        "CC-BY-NC-SA-*", "CC-BY-NC-ND-*"}`, drop the row and
        increment a counter.
-    
+
     At the end of the build, print the drop count and a per-licence
     histogram of dropped rows. A silent skip reads as a pass; rule 3
     says name the count. The reference implementation is in
@@ -112,12 +112,12 @@ defmodule RFD2209 do
 
     details "Decision", ~S"""
     Add a row to CLAUDE.md's "Blocklists" table:
-    
+
         | **CC-BY-NC (all versions)** | non-commercial restriction propagates into anything derived from the row, same downstream-risk shape as CC-BY-SA, see below |
-    
+
     with a corresponding section in `BLOCKLIST.md` argued below. The
     row is enforced two places:
-    
+
     1. **Build-script filter.** Any script that ingests a mixed-licence
        source reads each row's licence field and drops CC-BY-NC rows
        before the parquet or SQLite write. Reports the drop count as a
@@ -126,7 +126,7 @@ defmodule RFD2209 do
        asserts `every row's licence == CC-BY-4.0` (or another
        commercial-clean licence the workspace already accepts). A
        CC-BY-NC row surviving the filter fails CI.
-    
+
     The rule does NOT ban *reading* CC-BY-NC content locally for
     inspection. It bans CC-BY-NC rows from shipping in a derived
     corpus, a training dataset, a demo fixture, or any artifact this
@@ -137,11 +137,11 @@ defmodule RFD2209 do
     Concrete case that produced this RFD: **dataforged**, the
     community JSON rendering of the Starforged and Ironsworn SRDs at
     `github.com/rsek/dataforged`, carries a mixed licence:
-    
+
     - `dist/starforged/*.json`, CC-BY-4.0. Ships.
     - `ironsworn/` subtree, CC-BY-NC-4.0. Filtered out.
     - Raster illustrations, CC-BY-NC-4.0. Filtered out.
-    
+
     Without the filter, `chibifire/starforged` on HuggingFace would
     have shipped CC-BY-NC rows mixed with CC-BY-4.0 rows under a
     single licence declaration. That is a licence-provenance failure
@@ -150,7 +150,7 @@ defmodule RFD2209 do
     row on CLAUDE.md's blocklist ensures the *next* mixed-licence
     source (dataforged is not going to be the last) inherits the same
     handling by default rather than by anyone remembering.
-    
+
     The failure mode is the same as CC-BY-SA's, a share-alike or
     non-commercial restriction that propagates into anything derived
     from the row. Different clause, same downstream shape. The CC-BY-SA

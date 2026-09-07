@@ -16,7 +16,7 @@ defmodule RFD1013 do
     decision ~S"""
     Deploy a public viewport demo on Vercel. The build sets
     VITE_PUBLIC_DEMO=1 and loads loot assets through a CDN.
-    
+
     The verify:public-env script blocks client secrets in CI and on
     Vercel. Full AI generation stays on local dev and the self-hosted
     backend. The demo does not require VITE_API_ENDPOINT.

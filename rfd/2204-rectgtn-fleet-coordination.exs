@@ -23,7 +23,7 @@ defmodule RFD2204 do
     edges, the verbs peers execute as actions, and known decompositions as
     methods. Every peer answers "what should I do next?" with the same
     (continues in `DETAILS.md`)
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 
@@ -51,40 +51,40 @@ defmodule RFD2204 do
     document is one full RECTGTN domain (`actions`, `methods`,
     `capabilities`, `variables`, `todo_list`, same shape as
     `priv/plans/problems/work_queue.jsonld` in the Taskweft repo).
-    
+
     ### Entities
-    
+
     One per live peer CN, `hero.<mps-suffix>.agents.weftspun`,
     `anchor.<mps-suffix>.agents.weftspun`, and so on. The CN is the full
     form under `agents/<cn>.agents.weftspun` per RFD 2195. Session-local
     aliases (HERO / ANCHOR / SIDEKICK / HERD) are not entities in the
     domain, the CN is the address.
-    
+
     ### Capability edges
-    
+
     Populated by `sync_fleet_domain.py`, which reads `agents/*` Bao rows
     and writes edges of these shapes under `capabilities.graph.edges`:
-    
+
         {"subject":"hero.<cn>","rel":"runs-on","object":"windows-desktop"}
         {"subject":"hero.<cn>","rel":"owns","object":"gpu-3090"}
         {"subject":"hero.<cn>","rel":"may-use--gpu","object":"gpu-3090"}
         {"subject":"hero.<cn>","rel":"may-use--hf-repo","object":"chibifire/*"}
         {"subject":"hero.<cn>","rel":"may-use--uplink","object":"windows-desktop"}
-    
+
     Contention is expressed by `may-use--gpu`, a peer without an edge
     cannot bind an action that guards on it. Un-park is a caveat on the
     edge, not a message.
-    
+
     ### Actions
-    
+
     Fleet verbs peers actually execute, each with an ISO-8601 `duration`
     and a `rebac/check` guard:
-    
+
         open-pr, run-ci, extract-safetensors, train-qat,
         render-shard, publish-hf-dataset, merge-pr
-    
+
     Example (in Elixir DSL form; the JSON-LD form is the compiled output):
-    
+
         train_qat: %{
           params: [:actor, :model_id, :precision],
           check: [
@@ -97,11 +97,11 @@ defmodule RFD2204 do
           ],
           duration: "PT4H"
         }
-    
+
     ### Methods
-    
+
     Known decompositions. First landing methods:
-    
+
         ship-a-Q4-quant:
           alternatives:
            , name: extract_then_train
@@ -117,7 +117,7 @@ defmodule RFD2204 do
                , [train-qat, {actor}, {model_id}, "int4"]
                , [validate, {actor}, {model_id}]
                , [publish-hf-dataset, {actor}, {model_id}]
-    
+
         land-a-clean-pr:
           alternatives:
            , name: open_then_merge
@@ -125,33 +125,33 @@ defmodule RFD2204 do
                , [open-pr, {actor}, {repo}, {branch}]
                , [run-ci, {actor}, {repo}, {branch}]
                , [merge-pr, {actor}, {repo}, {branch}]
-    
+
     Alternatives are ordered: the planner tries the first, falls to the
     second when a `TwMethodSkip` write on the fleet's skip rows says the
     first is blocked. That is the same `nearest_retryable_ancestor`
     backjump `tw_soltree.hpp` already implements.
-    
+
     ### Variables
-    
+
     State pointers the actions read and write:
-    
+
         /agents/<cn>/claims/<resource> -> <resource_id> | null
         /goal/<id>/status              -> pending | extracted | qat_running |
                                            validated | published | failed
         /skip/<task_key>#<method_idx>  -> true | absent
-    
+
     `<task_key>` is the C++ planner's `tw_call_key`, action-or-method name
     plus stringified args, so a skip row keys on the specific instance,
     not the verb.
-    
+
     ### Todo list
-    
+
     Today's operator-set goals as `TwGoal` bindings. Example:
-    
+
         "todo_list": [
           {"goal": [{"pointer": "/goal/motionbricks/status", "eq": "published"}]}
         ]
-    
+
     Standing `TwMultiGoal` entries cover steady-state work (open PRs must
     reach `merged` before quarter close, and so on).
     """
@@ -159,7 +159,7 @@ defmodule RFD2204 do
     details "Coordinator adapter", ~S"""
     New module `3-interactor/taskweft/lib/taskweft/coordinator.ex`, ~150
     lines. Public API:
-    
+
     - `snapshot/0`, read `agents/*` Bao rows and the RFD board's current
       goal statuses, materialise `fleet.jsonld` in memory.
     - `pick/1`, `Taskweft.plan(snapshot, actor: cn)`, return the first
@@ -171,7 +171,7 @@ defmodule RFD2204 do
     - `fail/2`, write a truthy row at `/skip/<task_key>#<method_idx>` so
       the next `Taskweft.replan` treats it as `TwMethodSkip` and
       backjumps.
-    
+
     Reuses `Taskweft.JSONLD.Loader.validate/2` and `Taskweft.MCP.Server`
     without modification. The caveat primitive is imported verbatim from
     `7-service/service-sqlar-cas/lib/sqlar_cas/caveat.ex`, no fork.
@@ -188,7 +188,7 @@ defmodule RFD2204 do
     details "Pilot before rollout", ~S"""
     One end-to-end trace on the seeded fleet before flipping the
     ceremony:
-    
+
     1. Encode "ship MotionBricks Q4" as a `TwGoal` with HERO's
        `may-use--gpu` edge present.
     2. `Coordinator.pick(hero_cn)`, assert `extract-safetensors`, not
@@ -198,7 +198,7 @@ defmodule RFD2204 do
        `/skip/train-qat#0` write; assert the backjump picks the
        `use_aero_ex_configs` alternative rather than looping on the
        original method.
-    
+
     If any step fails, the fleet domain is wrong and the RFD moves back to
     `discussion`. If all pass, the RFD moves to `published` and the
     ceremony's step 3 flips in one commit.
@@ -273,7 +273,7 @@ defmodule RFD2204 do
     `SUPERVISOR_OF`, `PARTNER_OF`, `CAN_ENTER`, `CAN_INSTANCE`). No new
     planner, no new SQL layer, no port of RECTGTN into Bao; the engine is
     the ground-truth solver and the fleet is a domain that feeds it.
-    
+
     The seven-step coordinate-agents ceremony (RFD 2201) stays. One line
     of step 3 ("notify peers") becomes `Coordinator.snapshot |>
     Coordinator.pick(self) |> Coordinator.publish(self)`. Determinism

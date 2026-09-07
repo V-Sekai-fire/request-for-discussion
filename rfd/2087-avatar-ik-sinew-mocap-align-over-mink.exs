@@ -39,21 +39,21 @@ defmodule RFD2087 do
     Read `mink`'s core (`src/mink/solve_ik.py`) directly rather than
     assume from its README. It is not a simple Jacobian pseudo-inverse
     solver. Each solve builds a full quadratic program:
-    
+
     - Objective `(H, c)` assembled from weighted per-task residuals plus
       Levenberg-Marquardt damping (`_compute_qp_objective`).
     - Inequality constraints `(G, h)` from joint/velocity/collision-
       avoidance limits (`_compute_qp_inequalities`).
     - Equality constraints `(A, b)` from closed-chain kinematics
       (`_compute_qp_equalities`).
-    
+
     That QP is solved via `qpsolvers`, a separate general-purpose QP
     dispatch library backing onto solvers such as OSQP, quadprog, or
     proxqp, not something `mink` implements itself. `mink` also ships
     its own C-optimized Lie group (SE3/SO3) module and roughly a dozen
     pluggable task/limit types (frame, COM, posture, look-at,
     collision-avoidance, velocity/configuration limits).
-    
+
     A faithful port would need a vendored C QP solver (OSQP is the
     natural pick), plus `mink`'s QP-assembly loop, Lie group math, and at
     least the `FrameTask` case, a genuinely large, multi-session effort.
@@ -78,7 +78,7 @@ defmodule RFD2087 do
     Kabsch solve (`kabsch`) when the fast path produces an invalid
     rotation. No QP, no `qpsolvers`, no MuJoCo dependency for this part
     at all.
-    
+
     `Align.lean` ports directly (`src/gen/sinew_align.{c,h}`), verified
     against the exact same known-rotation-recovery test
     `core/spec/AlignTest.lean` itself uses (quaternion
@@ -89,7 +89,7 @@ defmodule RFD2087 do
     1's QP framing or the original mink-wholesale framing, because it is
     the algorithm this org already trusts and has proven, not a heavier
     one substituted in from outside.
-    
+
     `mink` feature parity (limits, closed-chain constraints, the Lie
     group module, multi-task weighting) stays deferred, and is unrelated
     to `Align.lean`'s now-completed scope, it would only become relevant

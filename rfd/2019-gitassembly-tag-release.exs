@@ -67,7 +67,7 @@ defmodule RFD2019 do
     one reference that resolves to an exact tree without overwriting
     prior assemblies. This adopts the behavior the `merge` tooling already
     implements rather than inventing a new scheme.
-    
+
     - `elixir update_godot_v_sekai.exs` (run from `main`) fetches the
       remotes, runs the vendored `git-assembler` over the `gitassembly`
       recipe, then tags the assembled `multiplayer-fabric` branch and

@@ -24,7 +24,7 @@ defmodule RFD1084 do
     rig-repair heuristic of its own for `fromAigc` loads — a backward or
     floating rig means re-running after pulling the latest API, not a
     client-side patch.
-    
+
     See `DETAILS.md` for the task-type table, the blend-shape source
     table, and the key files.
     """
@@ -58,14 +58,14 @@ defmodule RFD1084 do
     Save panel, or a post-pipeline hook) builds a `.vrm` blob and
     triggers a browser download. Nothing uploads unless the user mints
     or saves it elsewhere.
-    
+
     ```
     Photo -> API (TRELLIS) -> GLB
           -> API (template rig) -> rigged GLB
           -> load in viewport
           -> exportAvatarPipelineVrm() -> user downloads avatar.vrm
     ```
-    
+
     Template expression names can embed in VRM metadata directly. Mesh
     morphs need a wrap step instead (see the API's own
     `MESH_WRAP_ROADMAP.md`).
@@ -85,7 +85,7 @@ defmodule RFD1084 do
     The API's export validates against RFD 1083's contract. After a new
     avatar-from-image job, grep the remote log for `[API-Contract]
     PASS`.
-    
+
     A backward rig, or one floating at the hips, means re-running after
     pulling the latest API, not a client-side fix. The Blender script
     aligns on Z-up (Blender's own vertical axis after a glTF import),
@@ -103,7 +103,7 @@ defmodule RFD1084 do
     | A rigged AIGC mesh  | Skeleton only, until a wrap step runs                         |
     | Arc2Avatar (future) | FLAME, on head splats                                         |
     | TripoSplat          | Preview only, not a rigged VRM                                |
-    
+
     XR face tracking needs a wrap or a head-stitch step, tracked in the
     API's own docs.
     """

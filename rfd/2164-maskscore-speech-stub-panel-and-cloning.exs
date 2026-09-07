@@ -20,9 +20,9 @@ defmodule RFD2164 do
     gemma-auto, allosaurus-rus drops); RFD 1102 (task catalog) is the
     live source. The 12-track sub-rung below is the as-shipped roster,
     kept for the retraction record.
-    
+
     Sub-rungs (each a citable OID under this serial):
-    
+
       .1    12-track ASR panel: parakeet, whisper, voxtral, wav2vec2,
             gemma-auto + gemma-gbnf, voxtral-ipa, ipa-whisper-s/b,
             allosaurus universal/eng/rus. See `emit_10track_panel.py`,
@@ -36,7 +36,7 @@ defmodule RFD2164 do
             `score_voice_clones.py`); rescore after .2.2 lands.
       .4    Emit Speech-stub parquets in ETNF three-file form.
       .5    Commit, push, HF upload, PR.
-    
+
     Panel judges order by canonical-closeness; cloning ranks by
     similarity to reference audio; both feed one MaskScore gradient.
     """

@@ -17,7 +17,7 @@ defmodule RFD1048 do
     Share the domain with RFD 1047. `voxhammer_mesh_editing` in
     `0047-voxhammer-text-mesh-editing/domain.ex` carries both. The
     `mode` variable picks the branch.
-    
+
     See `DETAILS.md` for the mode branch, the model's shared-weight cost,
     the `predict()` interface, and why the same preserve-outside guard
     applies here too.
@@ -26,7 +26,7 @@ defmodule RFD1048 do
     problem ~S"""
     This is the image variant of RFD 1047. It edits a mesh region from a
     reference image, and not from a sentence.
-    
+
     The two variants share every stage except the conditioning. Two
     domains would drift, and a drifted guard is a moved vertex.
     """
@@ -42,10 +42,10 @@ defmodule RFD1048 do
     ```elixir
     mode: %{type: :ref, init: %{conditioning: "image"}}
     ```
-    
+
     `apply_edit` holds one alternative per conditioning. Each one checks
     `/mode/conditioning`, thus the planner takes exactly one.
-    
+
     This folder holds `problem.ex` only. RFD 1000 keeps one source per
     design, and the domain is that source.
     """
@@ -65,7 +65,7 @@ defmodule RFD1048 do
     | reference | Path | none    |
     | region    | Path | none    |
     | seed      | int  | -1      |
-    
+
     `reference` is an image of what the region should become. It is not a
     texture, and the model does not paste it.
     """

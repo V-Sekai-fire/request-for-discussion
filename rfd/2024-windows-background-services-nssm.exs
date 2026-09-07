@@ -29,13 +29,13 @@ defmodule RFD2024 do
     Several pieces of the workstation stack need to run as long-lived
     background processes that survive shells, log-offs, and reboots, and
     restart themselves when they crash:
-    
+
     - the [sccache](https://github.com/mozilla/sccache) compile-cache
       server(s) backing native builds,
     - Godot dedicated/headless game servers,
     - a CockroachDB (`crdb`) node for the local RDBMS,
     - zone servers and similar per-world daemons.
-    
+
     The naive approaches all failed in practice. Starting these by hand in
     a terminal ties them to that shell. The compile cache made the problem
     concrete: sccache auto-starts a single machine-wide server on first
@@ -46,7 +46,7 @@ defmodule RFD2024 do
     every build to apply it, which is slow and races ("Address in use").
     None of this is "a service" in the Windows sense: nothing owns the
     process lifecycle.
-    
+
     The team has no local administrator access by default, and Windows
     `sudo` here runs in Force New Window mode, so any elevation is an
     interactive UAC prompt.
@@ -89,9 +89,9 @@ defmodule RFD2024 do
     service per instance. nssm satisfies the SCM, so each target runs as a
     real auto-start/auto-restart service while staying an ordinary
     executable.
-    
+
     The pattern has four parts:
-    
+
     1. Run the target in the foreground, since a supervisor can only watch
        a process that does not fork-and-exit. For sccache that means
        `SCCACHE_START_SERVER=1` + `SCCACHE_NO_DAEMON=1` and invoking the
@@ -119,29 +119,29 @@ defmodule RFD2024 do
        LocalSystem service in session 0 is reachable from the user
        session. sccache additionally uses a distinct S3 key prefix per
        instance.
-    
+
     ### Worked example: the sccache services
-    
+
     Two services back two projects from the one shared object-store
     bucket, kept apart by port and key prefix:
-    
+
     | Service             | Port | Key prefix  | Base dirs (checkout roots)     |
     | ------------------- | ---- | ----------- | ------------------------------ |
     | `sccache-godot`     | 4227 | `godot`     | the Godot checkout + merge dir |
     | `sccache-idtx-flow` | 4226 | `idtx-flow` | the idtx-flow checkouts        |
-    
+
     4226 is sccache's default port, so the idtx-flow builds use that
     service with no changes; the Godot build sets `SCCACHE_SERVER_PORT=4227`.
     The build wrapper (`gscons`) therefore no longer manages the server at
     all, it sets one port variable and runs. This supersedes the earlier
     per-build environment juggling and server restarts described in
     `rfd/2017-compiling-godot-engine` and `rfd/2016-checking-sccache`.
-    
+
     ### Applying the pattern elsewhere
-    
+
     The same launcher + installer shape runs other dev infrastructure as
     services:
-    
+
     - Godot dedicated servers get one service per instance, each on its
       own port; the launcher passes `--headless` and the scene/port
       arguments.

@@ -15,14 +15,14 @@ defmodule RFD1001 do
 
     decision ~S"""
     Use React Router with three routes.
-    
+
     - `/` is the main app.
     - `/studio` is the Studio pipeline page.
     - `/xr` is the IWSDK lab.
-    
+
     The main app mounts SceneManager, TaskManager, and the avatar
     panels. The Studio page and the XR lab load lazily.
-    
+
     The shell inits the native face bridge and the remote log client.
     Init errors do not block the viewport.
     """

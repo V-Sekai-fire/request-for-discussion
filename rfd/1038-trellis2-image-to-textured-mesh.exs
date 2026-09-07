@@ -17,7 +17,7 @@ defmodule RFD1038 do
     Package TRELLIS.2 once, and publish the image as the base for
     RFD 1039, RFD 1047, RFD 1048, and RFD 1049. Those four add a
     `predict.py`, and they add no weights.
-    
+
     See `DETAILS.md` for the model's memory and license, the `predict()`
     interface, and why both flow stages stay in one container.
     """
@@ -50,14 +50,14 @@ defmodule RFD1038 do
     `predict()` takes the image, the texture resolution, and the face
     budget. It returns the base USD layer, and a GLB beside it. RFD 1053
     gives that rule.
-    
+
     | Input              | Type | Default |
     | ------------------ | ---- | ------- |
     | image              | Path | none    |
     | texture_resolution | int  | 1024    |
     | decimation_target  | int  | 210000  |
     | seed               | int  | -1      |
-    
+
     `decimation_target` must not exceed 210000. That is
     `API_MAX_MESH_VERTICES` in src/library/aiModelsCatalog.js, and it
     matches the API upload cap. A larger mesh fails the next stage.

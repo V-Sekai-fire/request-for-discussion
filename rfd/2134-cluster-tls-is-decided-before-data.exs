@@ -22,14 +22,14 @@ defmodule RFD2134 do
     rejects a bare `openssl req -x509` CA as `invalid CA certificate`.
     The profile, the local Docker proof with its negative control, and the
     full procedure are in DETAILS.md.
-    
+
     The known wall is recorded in datasource-store's fdb-entrypoint and
     held exactly: there is no in-place path from a plaintext cluster to a
     TLS one, because `:tls` is part of a coordinator's address and the
     coordinated state on disk names addresses that no longer exist. The
     gated `WEFT_FDB_RESET=1` wipe is the remedy, so TLS is decided before
     there is data worth keeping; this cluster held one test event.
-    
+
     A client is a TLS peer like any other: it presents its own leaf
     (`CN=fdb-spot-broker.chibifire.com`) through the `FDB_TLS_*` env vars
     libfdb_c reads, and verifies the cluster with the same rule the
@@ -55,10 +55,10 @@ defmodule RFD2134 do
     details "The failure this profile exists for", ~S"""
     With certificates from a bare `openssl req -x509` CA and extension-less
     `openssl x509 -req` leaves, every fdbserver logged, on each handshake:
-    
+
         Type="TLSPolicyFailure" Reason="preverification failed"
         VerifyError="invalid CA certificate"
-    
+
     and `status` reported the cluster's coordinators unreachable, the same
     line a network fault produces. Read the trace event, not the status
     line.
@@ -72,22 +72,22 @@ defmodule RFD2134 do
     citations. The lines are kept in place so a reader working from an
     older linked reference can see what the values used to say and what
     they moved to.
-    
+
     CA (`fdb-ca.chibifire.com`, 4096-bit RSA, 10 years):
-    
+
         basicConstraints = critical, CA:true
         keyUsage         = critical, keyCertSign, cRLSign
         subjectKeyIdentifier = hash
-    
+
     Leaf (2048-bit RSA, 2 years), one per machine and one per client
     service:
-    
+
         basicConstraints = CA:false
         keyUsage         = critical, digitalSignature, keyEncipherment
         extendedKeyUsage = serverAuth, clientAuth
         subjectKeyIdentifier   = hash
         authorityKeyIdentifier = keyid, issuer
-    
+
     Subjects: `fdb-<fly machine id>.chibifire.com` for cluster machines,
     `fdb-<service>.chibifire.com` for clients
     (`fdb-spot-broker.chibifire.com`). The machine ID survives
@@ -99,12 +99,12 @@ defmodule RFD2134 do
     details "The proof, run before the push", ~S"""
     One `foundationdb/foundationdb:7.3.63` container, one fdbserver on
     `127.0.0.1:4500:tls`, the cluster's verify rule on both ends:
-    
+
     | certificates | result |
     | --- | --- |
     | v3 profile above | handshake clean, `configure new single memory` creates the database, 0 TLSPolicyFailure |
     | extension-less (what production had) | `The database is unavailable`: the production symptom, reproduced |
-    
+
     The negative control is the point: the same server, rule, and commands
     separate the two cert sets, so the diagnosis is the extensions and not
     the rule, the addresses, or Fly.
@@ -148,12 +148,12 @@ defmodule RFD2134 do
     and Tigris's edge requires it; curl succeeds from the same machine
     because curl sends it. The knob `resolve_prefer_ipv4_addr` changes which
     address dies, not whether.
-    
+
     The controlled counterpart ran in local Docker against
     [versitygw](https://github.com/versity/versitygw) (Apache-2.0), a
     server that presents its one certificate without SNI. Same fdbbackup,
     same CA profile, same verify-rule shape:
-    
+
     1. the TLS handshake completes, so the client's TLS is fine and SNI is
        the whole difference;
     2. `--knob_http_request_aws_v4_header=true` is required, versitygw
@@ -161,7 +161,7 @@ defmodule RFD2134 do
     3. the bucket must pre-exist, FoundationDB's create-bucket body is
        refused as MalformedXML; created through the S3 API, the backup
        submits and runs: `The backup on tag 'default' is in progress`.
-    
+
     The production hop that landed is stunnel, not the versitygw sidecar
     first named here: the job needed only SNI added to a TCP stream, and a
     second S3 implementation in the path was more moving parts than eleven

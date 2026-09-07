@@ -35,7 +35,7 @@ defmodule RFD2172 do
     - Past-tense edit narration ("removed the legacy path"). Git holds history.
     - Future or imperative planning ("will add", "TODO"). RFDs and issues hold plans.
     - Aging temporal qualifiers ("now", "currently", "previously"). A qualifier that goes stale on the next edit signals the sentence should have described a truth.
-    
+
     Unfinished areas read as present gaps ("the parser handles no Unicode escapes yet"), not as tasks. A stale sentence signals a real divergence from the code, which makes review catch it.
     """
 

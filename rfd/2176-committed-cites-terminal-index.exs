@@ -19,9 +19,9 @@ defmodule RFD2176 do
 
     problem ~S"""
     Settled decisions leaning on withdrawn ones read as authoritative, so this class of drift is higher severity than RFD 2174 (open-to-abandoned index)'s open-to-abandoned class.
-    
+
     Of the 39 pairs:
-    
+
     - 14 retraction chains. The RFD is the retraction (2168-2175, 2159). Correct as-is.
     - 14 historical framing pairs in published loop-RFDs (1030, 1143-1147 cite RFD 1122; 1020-1060 cite the pre-MaskScore (edit-reward corpus) RFD 1019). Weakly stale; the framing was correct when written.
     - 11 real drift pairs. A settled decision references a terminal RFD without acknowledging the retraction chain. Per-pair successor annotations in [DETAILS.md](DETAILS.md).
@@ -47,7 +47,7 @@ defmodule RFD2176 do
 
     details "Retraction chains (14, keep as-is)", ~S"""
     The citer IS the retraction; citation is by design.
-    
+
       2168 → 1122     RFD 2168 abandons 1122
       2169 → 1019     RFD 2169 abandons 1019
       2169 → 1067     RFD 2169 references abandoned CockroachDB
@@ -67,7 +67,7 @@ defmodule RFD2176 do
     details "Historical framing (14, keep as-is, weakly stale)", ~S"""
     Published loop-RFDs and moat-narrative RFDs cite the framing the
     workspace used at the time. Rewriting risks losing the story.
-    
+
       1005 → 1012     Avatar pipeline history
       1020 → 1019     CockroachDB persistence over the abandoned Elixir core
       1021 → 1019     Shared HRR library history
@@ -88,7 +88,7 @@ defmodule RFD2176 do
     details "Real drift (11, per-pair successor annotated)", ~S"""
     Citations that should migrate on next edit. Each names a specific
     successor.
-    
+
       1080 → 1062     Fly deploy cost cites Fly.io toplevel (abandoned).
                       Successor: none; drop on next edit.
       1086 → 1101     Dev machine topology cites SSH host names (aband).
@@ -111,11 +111,11 @@ defmodule RFD2176 do
     details "Verification", ~S"""
     Lean 4 (v4.33.1) audit:
       ` cd scratchpad/rfd_check && lake build rfdReport && ./.lake/build/bin/rfdReport`
-    
+
     Four metatheorems typecheck:
       `unknown_not_open`, `abandoned_not_open`, `moved_not_open`,
       `classification_complete`.
-    
+
     Counterexamples are extensional (a real inhabitant of the pair list,
     not a missing proof); the classification above cites the full 39.
     """

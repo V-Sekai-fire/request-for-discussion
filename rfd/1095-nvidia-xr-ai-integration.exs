@@ -27,7 +27,7 @@ defmodule RFD1095 do
     `:8443` to the GPU host's own `:8088`. RFD 1086's Surface and DGX
     Spark are this team's own reference pair, tested with Galaxy XR;
     RFD 1119 gives the general requirement.
-    
+
     See `DETAILS.md` for the full port table, the start and monitor
     scripts, the MCP tool flow, and the troubleshooting table.
     """
@@ -65,7 +65,7 @@ defmodule RFD1095 do
             v
     [this project]  loads the completed GLB/VRM in the viewport (a separate client path)
     ```
-    
+
     This path is complementary to Task Manager's own UI: the same
     inference backend, a different, XR-native voice interface.
     """
@@ -78,7 +78,7 @@ defmodule RFD1095 do
     | `/home/sifr/3DAIGC-API`                                      | The inference API, port 7842                                    |
     | `/home/sifr/3DAIGC-API/mcp`                                  | `3daigc-mcp-http` (port 8260), MCP tools over the completed API |
     | `/home/sifr/Weftspun3DStudio/scripts/xr-spark-hub-proxy.mjs` | The optional Surface proxy, Galaxy XR to the Spark hub          |
-    
+
     Overlay config, a reference to copy:
     `3DAIGC-API/mcp/yaml/xr_ai_3daigc_overlay.yaml`.
     """
@@ -96,41 +96,41 @@ defmodule RFD1095 do
     details "Starting the stack, DGX", ~S"""
     One command starts both the DGX hub and the Surface proxy, for
     Galaxy XR:
-    
+
     ```bash
     bash /home/sifr/3DAIGC-API/mcp/scripts/start_xr_voice_full.sh
     bash /home/sifr/3DAIGC-API/mcp/scripts/verify_xr_voice_stack.sh
     ```
-    
+
     DGX hub only, no Surface proxy (the headset gets a connection
     refused on `10.0.0.32:8443`):
-    
+
     ```bash
     bash /home/sifr/3DAIGC-API/mcp/scripts/run_xr_ai_3daigc_stack.sh
     ```
-    
+
     Galaxy XR URL: `https://10.0.0.32:8443` (the Surface proxy,
     forwarding to the DGX's own `:8088`), never the bare LAN IP, never
     plain HTTP.
-    
+
     Prerequisites only, API plus MCP, no voice stack:
-    
+
     ```bash
     bash /home/sifr/3DAIGC-API/mcp/scripts/start_prerequisites.sh
     ```
-    
+
     MCP HTTP only:
-    
+
     ```bash
     bash /home/sifr/3DAIGC-API/mcp/scripts/run_http.sh
     ```
-    
+
     Monitor logs:
-    
+
     ```bash
     bash /home/sifr/3DAIGC-API/mcp/scripts/monitor_xr_ai_3daigc_stack.sh
     ```
-    
+
     Open the hub UI directly on the DGX LAN:
     `https://10.0.0.158:8088` (accept the self-signed certificate), then
     start the microphone and try "make a 3D model of this."
@@ -140,17 +140,17 @@ defmodule RFD1095 do
     Some routers block headset-to-DGX traffic (`10.0.0.224` to
     `10.0.0.158`) while still allowing headset-to-Surface traffic
     (`10.0.0.32`).
-    
+
     On the Surface, using `certs/localhost.pem` from `npm run
     setup-https` (RFD 1088):
-    
+
     ```powershell
     cd C:\Users\alfao\Documents\GitHub\Weftspun3DStudio
     $env:XR_SPARK_HUB_URL = 'https://10.0.0.158:8088'
     $env:XR_PROXY_PORT = '8443'
     node scripts/xr-spark-hub-proxy.mjs
     ```
-    
+
     On Galaxy XR's Chrome: `https://<Surface-LAN-IP>:8443` proxies
     straight to the Spark hub.
     """
@@ -161,11 +161,11 @@ defmodule RFD1095 do
     TRELLIS.2), `wait_for_job` (polls until complete, minutes on a
     Spark), and optionally `generate_rig` with `rig_mode=template` for
     an avatar.
-    
+
     Worker config:
     `xr-ai/agent-samples/3daigc-vlm-example/yaml/3daigc_vlm_example_worker.yaml`,
     with `daigc_mcp_url: http://localhost:8260`.
-    
+
     VLM backend: `model_backend: nim` uses a hosted NVIDIA NIM
     (`NGC_API_KEY`); `local` runs an on-Spark `vlm-server` instead.
     """

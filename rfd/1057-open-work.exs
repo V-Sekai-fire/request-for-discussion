@@ -17,7 +17,7 @@ defmodule RFD1057 do
     Keep one list of open work, in `DETAILS.md`. Each entry names the
     RFD that owns it, and what closing it needs. Delete an entry when it
     closes, so that file shrinks and never grows a history section.
-    
+
     `DETAILS.md` holds five sections: verified and running, written and
     never run, measured and not built, unknown and blocking a number, and
     decided but waiting.
@@ -27,7 +27,7 @@ defmodule RFD1057 do
     This branch changed the host, the packaging, the backend, and the
     planner. Some of that work is complete, some is measured but not
     built, and some is written but never run.
-    
+
     A reader who returns to this cannot tell those apart from the RFDs
     alone. Each RFD records its own decision, and none records what is
     still owed.
@@ -36,7 +36,7 @@ defmodule RFD1057 do
     related ~S"""
     RFD 1055 selects the host. RFD 1056 selects the development system.
     RFD 1036 packages the models. RFD 1026 holds the memory numbers.
-    
+
     RFD 1058 gives the Quadlet deployment. RFD 1059 gives the one-step
     build. RFD 1061 gives the `idtx_core` upload-prep decision. RFD 1062
     gives the Fly.io / 4090 split.
@@ -64,16 +64,16 @@ defmodule RFD1057 do
     **The dev container.** RFD 1056. The image does not build yet. The
     Debian attempt failed at `mix local.hex`, and the Fedora rewrite
     answers that by reading the error. Build it before trusting it.
-    
+
     **The Pixal3D worker stage.** RFD 1040. Only the contract stage ran.
     The worker stage pulls 24.045 GB and needs an NVIDIA device, thus it
     needs a rented card.
-    
+
     **The local worker.** RFD 1055 Phase 2. No worker service runs on
     this box yet, only a manual contract-stage test (RFD 1040). No
     instance is rented either, and RFD 1062's Gall's law says none
     should be, until this box is not enough.
-    
+
     **The Fly.io / 4090 split.** RFD 1062. No `fly.toml`, no worker-side
     job-receiving adapter, no Tailscale join between a Fly machine and
     this box, no CockroachDB migration off this box. RFD 1062 names the
@@ -88,11 +88,11 @@ defmodule RFD1057 do
     and a `predict.py`, and RFD 1036 no longer selects Cog. Convert one
     when its model is next worked on, and not in a sweep. The folder
     names are already converted, and the files inside are not.
-    
+
     **`_to_usd` in the worker.** RFD 1053. The layer records the GLB as an
     asset attribute, because `usd-core` alone reads no glTF. A glTF file
     format plugin would let it be a reference arc.
-    
+
     **The `idtx_core` NIF adapter.** RFD 1061. `flow/adapters/` in
     `thirdparty/fabric-flow-adapters/` holds three hosts, Godot, Unity,
     CLI, and no Elixir one. Needs a fourth adapter, a `weftspun_studio`
@@ -104,7 +104,7 @@ defmodule RFD1057 do
     details "Unknown, and blocking a number", ~S"""
     **The Q4_K_M quality cost.** RFD 1043. Quantization is a price choice
     now, and no measurement compares the two formats.
-    
+
     **The browser client's own test suite.** RFD 1059. Failures span
     `skintokensLoadOrientation.test.js`,
     `taskAdvancedOptionsDecimation.test.js` (multiple, past the three
@@ -118,7 +118,7 @@ defmodule RFD1057 do
     **The Replicate passthrough.** RFD 1055 Phase 1 step 3 removes it.
     RFD 1055 also records why it stays until this box's own worker
     answers.
-    
+
     **The abandoned world cluster's stale references.** RFD 1064 pivots
     the roadmap to character concepts. RFD 1049, RFD 1050, RFD 1051, and
     RFD 1052 record the abandonment, but RFD 1016, RFD 1017, RFD 1026,

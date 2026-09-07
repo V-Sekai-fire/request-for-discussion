@@ -35,7 +35,7 @@ defmodule RFD2064 do
     the `sinew-mocap` org carried `mount_drift` and `vr_bridge` alongside
     kebab-case peers. We want one repo-naming convention so clones, links,
     and code search stay predictable.
-    
+
     The complication is that several C++ repos are consumed as siblings
     _by directory path_. `solve/CMakeLists.txt` does
     `add_subdirectory(../mount_drift …)`, CI workflows in `solve`,
@@ -70,9 +70,9 @@ defmodule RFD2064 do
     keep build-native names", because it gives uniform remote naming
     while preserving the directory names that CMake, CI, and packaging
     reference as siblings.
-    
+
     The rules:
-    
+
     - GitHub repository names are kebab-case, for example `combat-core`,
       `loot-core`, `entity-packet`, `mount-drift`, and `vr-bridge`.
     - Local checkout directory names match what the build expects. Where a

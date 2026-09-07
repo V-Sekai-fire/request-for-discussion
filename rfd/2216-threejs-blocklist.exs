@@ -22,7 +22,7 @@ defmodule RFD2216 do
     runtime story: the workspace ships every 3D surface via Godot,
     and a three.js path forks the scene-graph, material pipeline,
     animation graph, and lighting model.
-    
+
     Live rows: `CLAUDE.md` blocklist table + `BLOCKLIST.md` full
     section (the section body carries the argument in current form).
     """

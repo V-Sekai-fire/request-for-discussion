@@ -24,7 +24,7 @@ defmodule RFD1079 do
     source of record), and a Fly secret the deploy workflow now
     `flyctl secrets set --stage`s from that GitHub secret on every run,
     not only the one time this session set it by hand.
-    
+
     `versitygw` is removed outright, not deferred: no more build stage
     in `Dockerfile.fly`, no more process in
     `deploy/docker-entrypoint-fly.sh`, `VGW_ACCESS_KEY`/`VGW_SECRET_KEY`

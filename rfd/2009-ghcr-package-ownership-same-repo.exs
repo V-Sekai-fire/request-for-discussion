@@ -31,7 +31,7 @@ defmodule RFD2009 do
     pushed to `ghcr.io/v-sekai-fire/godot-zone-double`. The zone deploy
     workflow (in `multiplayer-fabric-zone`) used `--local-only` with
     `docker/login-action` to pull that image, but received 403 Forbidden.
-    
+
     GitHub Container Registry ties package write access to the repository
     whose `GITHUB_TOKEN` created it. The zone repo's token could not push to
     a package owned by the baker repo, and could not pull a private package

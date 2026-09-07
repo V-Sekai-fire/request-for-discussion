@@ -15,11 +15,11 @@ defmodule RFD1014 do
 
     decision ~S"""
     Add batch processing with manifest files.
-    
+
     - The user loads a manifest.json that lists the input files.
     - The app runs each item through the editing pipeline.
     - BatchDownload saves the output VRMs.
-    
+
     The pipeline also renders VRM thumbnails, spritesheets, and LoRA
     training data from the same manifests.
     """

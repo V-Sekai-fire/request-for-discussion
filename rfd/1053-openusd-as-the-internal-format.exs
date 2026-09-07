@@ -19,14 +19,14 @@ defmodule RFD1053 do
     OpenUSD is the internal format. Every stage reads a stage and writes a
     layer. glTF, VRM, and KHR avatar stay the transmission formats, and
     the pipeline converts to them at the edge.
-    
+
     USD is to this pipeline what `.blend` is to Blender. It is the working
     file, and it never reaches a browser.
-    
+
     See `DETAILS.md` for why layers beat a flat mesh format, the
     internal/transmission boundary, the shared runtime, and what every
     model image must return.
-    
+
     Committed 2026-09-02: CLAUDE.md ratifies the choice as a hard
     constraint (OpenUSD `.usda` for text-editable, ZStandard parquet for
     bulk; zip and gzip banned; usdz exempt). RFD 2169 abandoned the
@@ -37,7 +37,7 @@ defmodule RFD1053 do
     problem ~S"""
     Each pipeline stage reads a GLB and writes a GLB. A rig stage rewrites
     the whole file to add bones. A texture stage rewrites it again.
-    
+
     Every rewrite loses what came before. glTF holds one flat result, thus
     a stage cannot add an opinion without erasing the previous author.
     When a mesh is wrong, no record says which stage made it wrong.
@@ -54,7 +54,7 @@ defmodule RFD1053 do
     details "Why layers, and not a better mesh format", ~S"""
     USD composes. A stage adds a sublayer with its own opinion, and the
     layer below stays intact and readable.
-    
+
     | Stage        | Writes                                |
     | ------------ | ------------------------------------- |
     | image to 3D  | the base mesh layer                   |
@@ -63,7 +63,7 @@ defmodule RFD1053 do
     | segmentation | a layer of part scopes                |
     | rig          | a layer of skeleton and skin bindings |
     | texture      | a layer of material bindings          |
-    
+
     A caller may then mute the retopology layer and see the original. That
     is not possible in a flat file.
     """
@@ -75,7 +75,7 @@ defmodule RFD1053 do
     | Avatar out | VRM, or KHR avatar           |
     | Asset out  | glTF binary                  |
     | Archive    | `.usdz`                      |
-    
+
     Convert at the boundary only. A stage that converts in the middle
     throws away the composition this RFD exists to keep.
     """
@@ -87,7 +87,7 @@ defmodule RFD1053 do
     earlier draft named "the Elixir core from RFD 1019" as the consumer;
     RFD 2169 abandoned that plan, and the Hex package survives without
     the studio-core wrapper.)
-    
+
     One USD version across the pipeline matters. A layer written by a
     newer build may not open in an older one.
     """
@@ -95,7 +95,7 @@ defmodule RFD1053 do
     details "What each model image must do", ~S"""
     `predict()` returns the USD layer, and it returns the transmission
     file as well. The caller keeps the layer, and it ships the other.
-    
+
     RFD 1036 records this in the model image convention.
     """
 

@@ -15,15 +15,15 @@ defmodule RFD2154 do
 
     decision ~S"""
     Reuse three MIT pieces:
-    
+
     1. **OpenPLC v4** compiles FBD XML to a RISC-V shared object.
     2. **Godot Sandbox** (`libriscv/godot-sandbox`) ticks it per frame.
     3. **`lib_godot_connector`** is the Elixir NIF over LibGodot.
-    
+
     Flow: `RECTGTN → to_grafcet → PLCopen.emit → openplc-cli compile
     --target riscv64 → Godot scene loads plan.riscv via Godot Sandbox →
     BEAM embeds that Godot via lib_godot_connector`.
-    
+
     `DETAILS.md` carries the Godot scene shape, the Sandbox addon config,
     the frame-tick contract, and verification.
     """
@@ -49,42 +49,42 @@ defmodule RFD2154 do
     GPL-3.0 as a tool, GCC-style runtime exception on its output). Takes
     PLCopen FBD XML in, produces a shared object out. For Godot Sandbox
     consumption the target is RISC-V:
-    
+
         openplc-cli compile --target riscv64 --format shared plan.plcopen.xml
-    
+
     The output is `plan.riscv` (technically a `libplan.so` compiled for
     RV64GC). OpenPLC v4's `Makefile.strucpp` already builds `.so` on the
     host; a RISC-V cross-compile substitutes `riscv64-unknown-linux-gnu-g++`
     for `g++` and passes `-march=rv64gc`. Cross-toolchain installation is
     outside taskweft (a developer concern), like `riscv-gnu-toolchain`.
-    
+
     **Load step**; Godot Sandbox (`libriscv/godot-sandbox`, MIT). It is
     a Godot addon that adds a `Sandbox` node type. Each `Sandbox` node
     holds a `libriscv` VM instance, loads a `.riscv` shared object at
     `_ready`, and calls a Godot-side entry function every frame (Godot's
     `_process(delta)` calls the sandbox's exported `on_tick`). The
     Sandbox scene tree looks like:
-    
+
         Node2D (root)
           Sandbox
             program = res://plans/plan.riscv
             entry_symbol = "on_tick"
-    
+
     `on_tick` inside the compiled program is one call to OpenPLC's
     `strucpp_run_task(0)`, which ticks the FBD network exactly one scan.
     State (SR flip-flop values, `done_*` variables) persists inside the
     Sandbox instance between frames, matching how a PLC scans forever.
-    
+
     **Embed step**; `lib_godot_connector` (MIT, Hex `lib_godot_connector
     4.5.1`, `Ughuuu/libgodot`). It is an Elixir NIF over LibGodot that
     spawns/embeds a Godot process. From the BEAM:
-    
+
         {:ok, godot} = LibGodot.create("../../priv/libgodot.dylib", [
           "--headless", "--main-scene", "res://sandbox_host.tscn"
         ])
         :ok = LibGodot.start(godot)
         :ok = LibGodot.wait(godot, timeout: 5000)
-    
+
     The scene the connector loads (`sandbox_host.tscn`) contains one
     `Sandbox` node whose `program` property is the compiled `.riscv`
     file. Elixir sends inputs and reads outputs through Godot's
@@ -104,9 +104,9 @@ defmodule RFD2154 do
           test/
             sandbox_host_test.exs         smoke test: compile fixture, load,
                                           tick, observe done_oracle -> true
-    
+
     Boot order:
-    
+
     1. `mix taskweft.grafcet.lower` produces HTN JSON (already exists).
     2. `mix openplc.emit` (new) produces PLCopen FBD XML.
     3. `mix openplc.compile --target riscv64` (new) invokes the operator's
@@ -118,13 +118,13 @@ defmodule RFD2154 do
     details "Frame-tick contract", ~S"""
     Godot's `_process(delta)` fires at whatever the frame budget allows
     (60 Hz default headless). Each frame:
-    
+
     1. Godot Sandbox calls `on_tick(delta)` inside the RISC-V program.
     2. Inside the program, `strucpp_run_task(0)` runs one scan of the FBD.
     3. SR flip-flops update their `.Q`; `done_*` variables reflect the new
       state.
     4. BEAM optionally reads state via `LibGodot.call(...)`.
-    
+
     **One scan per frame** matches an IEC 61131-3 scan cycle exactly.
     If the operator needs slower ticks (a plan whose steps take seconds),
     the Sandbox node can be wrapped in a Godot `Timer` firing at 1 Hz
@@ -152,7 +152,7 @@ defmodule RFD2154 do
     | Godot engine | MIT | linked as `libgodot` |
     | `lib_godot_connector` | MIT | Elixir NIF |
     | RISC-V cross-toolchain | GPL-3.0 (with runtime exception) | invoked as a build tool |
-    
+
     Every piece the taskweft codebase links against or ships is MIT.
     Every GPL piece is invoked as a tool (aggregation), and the compiled
     output the runtime loads carries no GPL obligation.

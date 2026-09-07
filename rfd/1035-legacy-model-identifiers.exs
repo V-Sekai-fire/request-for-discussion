@@ -17,7 +17,7 @@ defmodule RFD1035 do
     Keep the identifiers, and list them last in every picker.
     `LEGACY_MODEL_IDS` in src/library/aiModelsCatalog.js drives that
     order. Do not delete them, because saved tasks reference them.
-    
+
     See `DETAILS.md` for the seven identifiers and the two rules that
     still apply to two of them.
     """
@@ -50,7 +50,7 @@ defmodule RFD1035 do
     details "Two rules stay", ~S"""
     TRELLIS v1 fails xformers on GB200-class GPUs. Avoid it on that
     hardware tier, except for the multiview path.
-    
+
     UniRig is the only backend for the template VRM mode. SkinTokens
     rejects that mode.
     """

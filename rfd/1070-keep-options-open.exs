@@ -15,15 +15,15 @@ defmodule RFD1070 do
 
     decision ~S"""
     Do not open an RFD for a build this project has not committed to.
-    
+
     Kent Beck's price-theory reading of YAGNI names the cost: an
     unexercised option costs twice if the guess is wrong, so a thing not
     yet committed to is worth more left unbuilt. Waiting holds an asset.
     It does not delay work.
-    
+
     The rule stops a new RFD from opening before commitment. It does not
     reach back into one already running.
-    
+
     See `DETAILS.md` for the three RFDs this rule removed, what made each
     speculative, and what the rule left in place.
     """
@@ -58,7 +58,7 @@ defmodule RFD1070 do
     This session deleted RFD 1024, RFD 1032, and RFD 1068 under this
     rule. RFD 1031 keeps its existing fallback, with no successor RFD
     promised.
-    
+
     Committed work already under way, such as RFD 1064 and RFD 1065, is
     not this rule's target.
     """
@@ -66,7 +66,7 @@ defmodule RFD1070 do
     details "The register of deleted numbers", ~S"""
     A later session deleted RFD 1069, RFD 1071, and RFD 1072 under this
     rule. RFD 1064 records the bar each one failed.
-    
+
     A deleted number is not reused, and the RFDs above still cite it.
     Deleting a directory does not delete a citation. `SERIALS.usda` keeps a
     row for each of the six, and RFD 1124's gate reads that file when it

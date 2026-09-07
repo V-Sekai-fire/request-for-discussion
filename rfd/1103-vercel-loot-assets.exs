@@ -22,7 +22,7 @@ defmodule RFD1103 do
     `src/library/lootAssetsConfig.js` rewrites every asset path to the
     CDN automatically. Removing `VITE_ASSET_PATH` reverts to the
     bundled, full-clone mode RFD 1093 gives.
-    
+
     See `DETAILS.md` for the dashboard setup steps, the CDN URL layout,
     the post-deploy verification steps, and the secret-variable audit
     this mode still needs.
@@ -45,12 +45,12 @@ defmodule RFD1103 do
 
     details "One-line setup, recommended", ~S"""
     This repository's own `vercel.json` already sets:
-    
+
     ```env
     VITE_ASSET_PATH=https://m3-org.github.io/loot-assets/
     VITE_PUBLIC_DEMO=1
     ```
-    
+
     RFD 1098 gives the full public-build security checklist this
     setting sits inside. Deploy from the Vercel dashboard or its CLI;
     no extra environment variable is required unless one is overridden.
@@ -59,15 +59,15 @@ defmodule RFD1103 do
     details "Dashboard setup, by hand", ~S"""
     1. Open the project on `vercel.com`, then Settings, then Environment Variables.
     2. Add:
-    
+
        | Name               | Value                                   | Environments                                    |
        | ------------------ | --------------------------------------- | ----------------------------------------------- |
        | `VITE_ASSET_PATH`  | `https://m3-org.github.io/loot-assets/` | Production, Preview, Development                |
        | `VITE_PUBLIC_DEMO` | `1`                                     | Production, Preview; hides the API Status panel |
-    
+
        Never set `VITE_API_ENDPOINT` on the public Vercel demo; a
        self-hosted build is where a user configures their own API.
-    
+
     3. Redeploy; an environment-variable change only applies to a new build.
     """
 
@@ -78,7 +78,7 @@ defmodule RFD1103 do
       -> npm run get-assets   (sees VITE_ASSET_PATH set, fetches icons only, no full clone)
       -> vite build
     ```
-    
+
     At runtime, manifests, models, and animations load from
     `https://m3-org.github.io/loot-assets/…`. At build time, only the
     trait-UI SVGs download into `public/loot-assets/icons/` (Vite
@@ -87,14 +87,14 @@ defmodule RFD1103 do
 
     details "URL layout, GitHub Pages", ~S"""
     GitHub Pages serves the legacy asset tree under `/loot/`:
-    
+
     | App path        | CDN URL                       |
     | --------------- | ----------------------------- |
     | Main manifest   | `…/manifest.json`             |
     | Models manifest | `…/loot/models/manifest.json` |
     | Model GLB       | `…/loot/models/…`             |
     | Animations      | `…/loot/animations/…`         |
-    
+
     `src/library/lootAssetsConfig.js` rewrites every path automatically
     once `VITE_ASSET_PATH` is set; no other code change is needed.
     """
@@ -108,18 +108,18 @@ defmodule RFD1103 do
 
     details "Local development with the same CDN", ~S"""
     In `.env`:
-    
+
     ```env
     VITE_ASSET_PATH=https://m3-org.github.io/loot-assets/
     ```
-    
+
     Then:
-    
+
     ```powershell
     npm run get-assets
     npm run dev
     ```
-    
+
     No full `../loot-assets` clone is needed for CDN mode, only the
     small icon set the build itself downloads.
     """

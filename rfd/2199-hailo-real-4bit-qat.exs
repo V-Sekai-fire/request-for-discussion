@@ -19,7 +19,7 @@ defmodule RFD2199 do
 
     decision ~S"""
     Build real 4-bit QAT infrastructure with Hailo as the deployment target. Int4 only. Int8 QAT is not the fallback. If Hailo hardware or the DFC toolchain does not support int4 weights, this RFD terminates with that finding and the operator picks the next target (different NPU vendor, GPU-only int4 QAT via Torchao, or wait for the field).
-    
+
     Model choice deferred to the first spike. **First spike:** verify Hailo int4 support. **Loop:** fake-quant forward, STE backward, single quantized ckpt (Torchao `Int4WeightOnlyQuantizer` or custom STE). **Model priority:** small mtmd first; workspace target after.
     """
 

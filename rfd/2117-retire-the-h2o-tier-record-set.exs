@@ -54,7 +54,7 @@ defmodule RFD2117 do
 
     details "FoundationDB, 7 records", ~S"""
     CockroachDB replaces it, so `rfd/0006` returns to force.
-    
+
     | RFD    | Subject                                     |
     | ------ | ------------------------------------------- |
     | `0002` | taskweft value narrowing in FDB encoding    |
@@ -68,7 +68,7 @@ defmodule RFD2117 do
 
     details "The libriscv guest runtime, 5 records", ~S"""
     The Gyre survives. Its runtime does not.
-    
+
     | RFD    | Subject                                     |
     | ------ | ------------------------------------------- |
     | `0037` | Generated behavior as sandboxed RISC-V      |
@@ -81,7 +81,7 @@ defmodule RFD2117 do
     details "Measurements taken on the retired tier, 5 records", ~S"""
     Each number was measured against libh2o and FoundationDB. The
     measurement stands as history. It guides nothing on the new tier.
-    
+
     | RFD    | Subject                            |
     | ------ | ---------------------------------- |
     | `0098` | The rollback snapshot budget       |
@@ -110,7 +110,7 @@ defmodule RFD2117 do
 
     details "The four that stay, and why", ~S"""
     YAGNI keeps a record when a live consumer needs it now.
-    
+
     - `rfd/0005` glTF interactivity value types. `datasource-flow`
       and `datasource-flow-project` are live repositories, and this
       record describes their taxonomy.
@@ -128,7 +128,7 @@ defmodule RFD2117 do
     53 citations in surviving files name a retired record. 16 name a full
     path and become links into the archive. The rest name a bare number and
     stay as citations, which follows `rfd/0106`.
-    
+
     `data/measurements/README.md` opens with "Measurements: rfd/0096
     through rfd/0103". Both records are retired. The parquet files stay in
     the manuals repository, and whether the measurement data follows its

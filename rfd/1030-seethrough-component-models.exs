@@ -16,10 +16,10 @@ defmodule RFD1030 do
     decision ~S"""
     Name each component here. Record its base model, its role, and its
     memory.
-    
+
     See `DETAILS.md` for the component table, the two runtimes, and why
     bf16 is the ceiling while GGUF is the floor.
-    
+
     **WITHDRAWN 2026-08-29 as a deployment plan, kept as a component map.**
     RFD 1166 dropped See-Through from the candidate ranking on licensing:
     the checkpoints named below state no licence, and the depth component

@@ -18,18 +18,18 @@ defmodule RFD1017 do
     Weftspun3DStudio. The package name is weftspun-3d-studio. The
     Electron identifier is com.weftspun.studio. The Android identifier is
     com.weftspun.xrfacebridge.
-    
+
     The application header shows one title line. The rebrand drops the
     second title line and its style rules.
-    
+
     A new mark replaces the upstream artwork. The new mark shows a woven
     warp and weft lattice. A rename alone does not satisfy the upstream
     terms, because the terms reserve the artwork itself.
-    
+
     The repository keeps the upstream repository links. These links give
     credit to the upstream authors. Nominative credit does not claim any
     affiliation.
-    
+
     See `DETAILS.md` for the compatibility fallbacks, the known risks,
     and file references.
     """
@@ -51,7 +51,7 @@ defmodule RFD1017 do
     details "Compatibility", ~S"""
     Three identifiers keep a fallback path. Each fallback reads the old
     name once.
-    
+
     - The Gradle build reads the old local.properties key.
     - The task store reads the old browser storage keys.
     - The lighting reader accepts the old glTF extras key.
@@ -61,7 +61,7 @@ defmodule RFD1017 do
     The rebrand renames one backend model identifier. The client sends
     weftspun_image_to_world to the 3DAIGC-API server. The server must
     accept the new name. Image to World tasks fail until then.
-    
+
     The face bridge APK changes its application identifier. A headset
     installs the APK as a new application. Users must delete the old APK.
     """

@@ -72,9 +72,9 @@ defmodule RFD2030 do
     source, because the waste comes from how work is submitted, not from
     how GitHub schedules it, and a discipline adapts per situation where
     a hard cap blocks urgent work behind stale work.
-    
+
     The discipline:
-    
+
     - Two or three full matrices run at a time; further work waits for a
       slot. A merge push waits until the in-flight run it would
       concurrency-cancel finishes, so partially-completed long jobs are

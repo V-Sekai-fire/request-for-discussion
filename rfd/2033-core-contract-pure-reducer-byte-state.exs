@@ -47,7 +47,7 @@ defmodule RFD2033 do
     `rfd/2032-core-codegen-lean-slang` to SPIR-V, dispatched on the GPU.
     Hidden mutable state defeats snapshots and exact fixtures, so the
     first option loses replay and rollback.
-    
+
     With `rfd/2034-deterministic-cores-integer-seeded-rng`, this makes
     replay byte-exact and snapshots a value copy.
     """

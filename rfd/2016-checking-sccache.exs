@@ -63,7 +63,7 @@ defmodule RFD2016 do
 
     details "Windows PowerShell wrapper", ~S"""
     Aliases cannot carry logic, hence a function plus a `Set-Alias` shim:
-    
+
     ```powershell
     function sccheck {
         sccache --show-stats |
@@ -71,7 +71,7 @@ defmodule RFD2016 do
     }
     Set-Alias scc sccheck
     ```
-    
+
     The bash equivalent is `sccache --show-stats` filtered with `grep`. To
     measure a single build, reset first:
     `sccache --zero-stats; <build>; sccache --show-stats`.

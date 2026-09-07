@@ -17,9 +17,9 @@ defmodule RFD1046 do
     Write the rig as a USD layer over the mesh layer. `UsdSkel` holds the
     skeleton, the joint order, and the binding. The mesh layer below stays
     untouched.
-    
+
     Emit VRM beside it, because the client needs VRM humanoid tracks.
-    
+
     See `DETAILS.md` for the model's memory, the `predict()` interface,
     why `UsdSkel` beats a GLB skin, and the joint order trap between VRM
     and USD.
@@ -28,7 +28,7 @@ defmodule RFD1046 do
     problem ~S"""
     SkinTokens is the default auto rig. It writes a skeleton and skin
     weights for a mesh that has neither.
-    
+
     A rig is the clearest case for RFD 1053. The rig is an opinion about
     an existing mesh, and a flat file forces the rig stage to rewrite the
     mesh to carry it.
@@ -56,7 +56,7 @@ defmodule RFD1046 do
     | mesh     | Path | none    |
     | rig_mode | str  | full    |
     | seed     | int  | -1      |
-    
+
     `rig_mode` takes `skeleton`, `skin`, or `full`. It does not take
     `template`. SkinTokens rejects template mode, and RFD 1035 records
     that UniRig is the only backend for it.
@@ -65,7 +65,7 @@ defmodule RFD1046 do
     details "Why UsdSkel, and not a GLB skin", ~S"""
     A GLB skin binds to one mesh. When the retopology stage later changes
     the mesh, the skin breaks and the rig stage runs again.
-    
+
     A `UsdSkel` binding sits in its own layer. A new mesh layer below it
     keeps the joint hierarchy, thus only the weights need a rebind.
     """
@@ -74,7 +74,7 @@ defmodule RFD1046 do
     VRM names its humanoid joints. USD does not, and it keeps an ordered
     array. The mapping between them must live in the layer as metadata,
     and not in the exporter.
-    
+
     An exporter that infers the mapping from joint names fails on any rig
     that names a joint differently.
     """

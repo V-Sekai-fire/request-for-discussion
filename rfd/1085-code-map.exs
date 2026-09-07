@@ -38,7 +38,7 @@ defmodule RFD1085 do
 
     details "React contexts", ~S"""
     Path: `src/context/`
-    
+
     | Context               | Role                                 |
     | --------------------- | ------------------------------------ |
     | `SceneContext.jsx`    | Scene state and the loaded avatar    |
@@ -53,7 +53,7 @@ defmodule RFD1085 do
 
     details "Scene and rendering", ~S"""
     Path: `src/library/`
-    
+
     | Module                  | Role                                    |
     | ----------------------- | --------------------------------------- |
     | `sceneManager.js`       | Three.js scene, camera, and render loop |
@@ -67,7 +67,7 @@ defmodule RFD1085 do
 
     details "WebXR", ~S"""
     Path: `src/library/sceneManagerXr*.js`
-    
+
     The XR code splits by concern, one concern per file: input,
     locomotion, teleport, grab, interaction, menus, axes, controller
     visuals, gamepad buttons, measure, mouse emulation, and the avatar
@@ -85,7 +85,7 @@ defmodule RFD1085 do
     | `lookatManager.js`       | Head and eye aim               |
     | `EmotionManager.js`      | Expression state               |
     | `assetManager.js`        | Asset fetch and cache          |
-    
+
     RFD 1005 records the avatar and VRM pipeline.
     """
 
@@ -107,7 +107,7 @@ defmodule RFD1085 do
     | `taskManager.js`     | Job submit and poll, against `3DAIGC-API` |
     | `taskPersistence.js` | Task storage in the browser               |
     | `aiModelsCatalog.js` | Task types and model names                |
-    
+
     RFD 1003 records the job lifecycle. RFD 1004 records the task
     catalog.
     """
@@ -120,7 +120,7 @@ defmodule RFD1085 do
     | `thirdwebX402Manager.js` | Thirdweb x402 calls   |
     | `vanaDataManager.js`     | Vana data calls       |
     | `mint-utils.js`          | Mint helpers          |
-    
+
     RFD 1012 records the wallet decision. That RFD's own state is
     abandoned.
     """
@@ -136,7 +136,7 @@ defmodule RFD1085 do
 
     details "Pages", ~S"""
     Path: `src/pages/`
-    
+
     Each page file holds one route. `src/App.jsx` maps the routes. RFD
     1001 records the app shell and the routing.
     """

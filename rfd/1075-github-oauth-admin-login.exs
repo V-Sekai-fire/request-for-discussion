@@ -19,7 +19,7 @@ defmodule RFD1075 do
     an unattended deploy action instead, a different, separate need,
     already distinguished from this one in the discussion that produced
     this RFD.
-    
+
     Register the OAuth App by hand, GitHub gives no API for it, at
     `github.com/organizations/weftspun/settings/applications/new`, name
     `weftspun-studio`, homepage `https://weftspun-studio.fly.dev`,
@@ -48,14 +48,14 @@ defmodule RFD1075 do
 
     details "Why an OAuth App, not a GitHub App", ~S"""
     GitHub gives two different mechanisms for this kind of thing.
-    
+
     An OAuth App logs a user in as themselves; the resulting token
     carries that user's own permissions. A GitHub App installs on
     specific repos with its own fine-grained permissions and short-lived
     installation tokens, independent of any one user's account, the
     right tool for an unattended deploy action, not for "prove this is
     really you."
-    
+
     This RFD's problem is squarely the first case: a person needs to
     prove who they are and that they belong to `weftspun`, before
     admining or organizing uploads. An OAuth App is the correct,
@@ -65,7 +65,7 @@ defmodule RFD1075 do
     details "Registration, done by hand", ~S"""
     GitHub gives no API to script this part; it needs a browser, signed
     in as an owner of the `weftspun` org.
-    
+
     1. Visit `https://github.com/organizations/weftspun/settings/applications/new`.
     2. **Application name:** `weftspun-studio`
     3. **Homepage URL:** `https://weftspun-studio.fly.dev`
@@ -81,13 +81,13 @@ defmodule RFD1075 do
 
     details "The login flow, not yet built", ~S"""
     Two routes, added to `lib/weftspun_studio/router.ex`:
-    
+
     **`GET /auth/github/login`** redirects to GitHub's own authorize
     URL, `https://github.com/login/oauth/authorize`, with `client_id`,
     the callback `redirect_uri`, and `scope=read:org`. That scope reads
     org membership only; it does not grant repo access, matching RFD
     1058's zero-trust habit of asking for no more than the task needs.
-    
+
     **`GET /auth/github/callback`** receives the `code` GitHub appends,
     exchanges it for an access token at
     `https://github.com/login/oauth/access_token`, then calls

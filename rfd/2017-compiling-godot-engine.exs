@@ -43,14 +43,14 @@ defmodule RFD2017 do
     | Compiler | MinGW-w64 (`use_mingw=yes`)   | `build-essential` (gcc/g++)    |
     | sccache  | `scoop install sccache`       | `brew install sccache`         |
     | Git      | `scoop install git`           | system `git`                   |
-    
+
     Verify `sccache --version` resolves in each shell. The verified setup
     uses sccache 0.15.0.
     """
 
     details "Storage backend", ~S"""
     sccache picks its backend from environment variables. Two options:
-    
+
     - To share the cache across hosts (recommended), use an S3-compatible
       bucket: set the `SCCACHE_BUCKET` / `SCCACHE_ENDPOINT` / `SCCACHE_REGION`
       coordinates and point `AWS_PROFILE` at a profile in
@@ -61,12 +61,12 @@ defmodule RFD2017 do
     - For a single host, use a local directory instead: set `SCCACHE_DIR`
       and `SCCACHE_CACHE_SIZE`, and sccache uses local disk with no S3
       config needed.
-    
+
     Secrets policy: only the bucket name, endpoint, region, and key prefix —
     none of which are secrets, appear in committed config. The access key
     and secret are never committed to any repo, dotfile, or build log. They
     live in one of two places depending on where the build runs:
-    
+
     - Locally: `~/.aws/credentials` under a named profile (`AWS_PROFILE`).
     - CI: GitHub Actions secret variables, injected at runtime via the
       `${{ secrets.* }}` context. Storing the keys there is fine, they are
@@ -79,7 +79,7 @@ defmodule RFD2017 do
     sccache S3 environment for the build step. Only the secret names appear
     in the committed YAML, the values are stored in the repo/org Actions
     secrets:
-    
+
     ```yaml
     env:
       SCCACHE_BUCKET: <your-sccache-bucket> # non-secret coordinates
@@ -89,10 +89,10 @@ defmodule RFD2017 do
       AWS_ACCESS_KEY_ID: ${{ secrets.SCCACHE_AWS_ACCESS_KEY_ID }} # from Actions secrets
       AWS_SECRET_ACCESS_KEY: ${{ secrets.SCCACHE_AWS_SECRET_ACCESS_KEY }}
     ```
-    
+
     sccache reads `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` directly, so
     CI needs no `~/.aws/credentials` file or `AWS_PROFILE`.
-    
+
     `SCCACHE_BASEDIRS` (the equivalent of ccache's `CCACHE_BASEDIR`) strips a
     leading absolute prefix before hashing so hits survive a moved/renamed
     checkout. Point it at `GODOT_SRC`. Paths must be absolute; separate
@@ -109,7 +109,7 @@ defmodule RFD2017 do
     function sets the sccache env only for the duration of the build and
     restores it afterwards, so the interactive session and the real AWS CLI
     are never shadowed:
-    
+
     ```powershell
     if (-not $env:GODOT_SRC) { $env:GODOT_SRC = "$env:USERPROFILE\godot" }
     function gscons {
@@ -152,24 +152,24 @@ defmodule RFD2017 do
             debug_symbols=yes tests=yes -j$(nproc) "$@"
     }
     ```
-    
+
     Open a fresh shell (or `source ~/.bashrc` / `. $PROFILE`) so `gscons` is
     defined.
     """
 
     details "Building", ~S"""
     From your engine checkout (`$GODOT_SRC`):
-    
+
     ```sh
     gscons                      # full editor build
     gscons verbose=yes          # extra args pass straight through to SCons
     ```
-    
+
     Output binary:
-    
+
     - Windows: `bin\godot.windows.editor.double.x86_64.exe`
     - WSL: `bin/godot.linuxbsd.editor.double.x86_64`
-    
+
     The two functions differ only where the platform requires it: Windows
     pins `platform=windows use_mingw=yes` and `-j16`; WSL infers
     `platform=linuxbsd`, uses `-j$(nproc)`, and adds
@@ -184,7 +184,7 @@ defmodule RFD2017 do
     sccache --stop-server       # apply changed SCCACHE_* / AWS_PROFILE env vars
     sccache --zero-stats        # reset counters
     ```
-    
+
     A clean first build is mostly misses; a second build of the same tree
     shows a high hit rate and finishes substantially faster. With the S3
     backend, a build on the other host hits the same objects once they are

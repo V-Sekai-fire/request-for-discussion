@@ -25,9 +25,9 @@ defmodule RFD2181 do
       text-track   Parakeet TDT 0.6B v3, Voxtral Mini 3B, wav2vec2
       IPA-track    Voxtral-IPA, Gemma-4-12B GBNF-IPA
       phone-track  allosaurus universal + eng
-    
+
     Per-clip language inventories can be added back keyed to the speaker's L1 if a future corpus documents it, rather than one hard-coded language for everyone.
-    
+
     Follow-ups: `emit_10track_panel.py` and `add_allosaurus_control.py` drop the `rus` inventory; downstream RFDs lose their `rus` mentions; `CITATION.cff` unaffected (allosaurus itself stays).
     """
 

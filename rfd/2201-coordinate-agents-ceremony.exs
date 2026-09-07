@@ -61,7 +61,7 @@ defmodule RFD2201 do
     in the store are also stale by relative comparison and the sweep
     reads worse than it is. The row shape is defined in the `agent-sync`
     skill.
-    
+
     **Done when:** `bao kv get agents/<coordinator-cn>` returns `phase:
     coordinating` with `heartbeat` within the last 60 seconds.
     """
@@ -74,26 +74,26 @@ defmodule RFD2201 do
     should have one, so the coordinator either mints or (if provisioning
     is not permitted, e.g. no operator authorisation) surfaces it as a
     finding.
-    
+
     **Artefact:** an in-message table of `(peer, hb_age, phase, task)` per
     live row. The coordinator's own row is included, marked (self).
-    
+
     **Done when:** the table is written and each row is categorised as
     live, stale, or unenrolled.
     """
 
     details "Step 3: notify each peer with role + open items", ~S"""
     For each live peer, one `SendMessage` naming:
-    
+
     - the peer's role per RFD 2200 (coordinator / gpu-experimenter /
       edge-qat-specialist / other role tuples if the store defines them)
     - open PRs the peer authored (state + `mergeStateStatus`)
     - open items the peer owes per prior coordination messages
     - questions the coordinator has for the peer
-    
+
     The message is short (a screen or less) and single-shot. It does not
     poll for a reply before moving on.
-    
+
     **Done when:** every live peer has one message sent this pass.
     """
 
@@ -103,16 +103,16 @@ defmodule RFD2201 do
     peer who has explicitly said "enqueue when convenient" gets
     `gh pr merge --auto`. A `CLEAN` PR authored by a peer without an
     explicit enqueue-signal is left for the peer.
-    
+
     A `BLOCKED` PR with only prek/prettier failures is a candidate for
     the **prettier-only exception**: pull, `prek run --all-files`, verify
     the diff touches only formatting, amend + force-push, notify the
     author in the coordination message that the push happened and why.
     Any other failure is left for the author.
-    
+
     A `DIRTY` PR (merge conflict) is **always** left for the author. See
     step 6 for the surface.
-    
+
     **Done when:** every clean PR is either enqueued or left with a
     recorded reason, and every stuck PR is triaged into the categories
     above.
@@ -120,7 +120,7 @@ defmodule RFD2201 do
 
     details "Step 5: apply prettier-only exceptions with a note", ~S"""
     For each BLOCKED-on-prek PR chosen in step 4:
-    
+
     1. `git fetch weftspun <branch> && git checkout <branch>`
     2. `prek run --all-files`
     3. `git diff --stat`, verify only formatting-typical files (CLAUDE.md,
@@ -130,12 +130,12 @@ defmodule RFD2201 do
     5. In the same coordination message to the author, name the amend
        with its commit SHA and the pattern of the reformat, so the author
        can force-push over it if the reshape is wrong
-    
+
     If step 3 shows anything beyond formatting, abort, the PR needs the
     author's touch, not the coordinator's rebase. This is the exact hazard
     that produced RFD 2195 DETAILS's "do not touch a peer's branch
     without owner ack" gotcha.
-    
+
     **Done when:** every prettier-only fix is either pushed with a
     same-message note or aborted with a message to the author.
     """
@@ -145,19 +145,19 @@ defmodule RFD2201 do
     guess. A structural failure (e.g. a peer's session broken, a Bao
     policy needing a scope change, a PR whose author isn't live) is
     surfaced to the operator, not decided by the coordinator.
-    
+
     The surface is one message with:
-    
+
     - what is stuck (PR number, agent, symptom)
     - why the coordinator will not act on it
     - what the operator's decision unlocks (author rebase, policy change,
       identity revocation)
-    
+
     If a peer has surfaced the same item to the operator already, the
     coordinator does not duplicate the surface, a note in the peer's
     coordination message that "I saw your surface, standing by" is
     enough.
-    
+
     **Done when:** every unresolved item is either in a peer's inbox as
     "you own this," in the operator's inbox as "you decide this," or
     recorded as `nothing to do` for this pass.
@@ -169,13 +169,13 @@ defmodule RFD2201 do
     row's `heartbeat` update is the ceremony's own "done" marker; other
     peers reading the store see that the coordinator has finished
     touching things.
-    
+
     **Done when:** the coordinator's row is `phase: idle`.
     """
 
     details "Anti-goals in the loop", ~S"""
     Four things the ceremony explicitly does NOT do:
-    
+
     1. **Do not rebase a peer's branch beyond the prettier-only
        exception.** Ever. If a rebase would resolve real content
        conflicts, that's author work. RFD 2195 DETAILS names the

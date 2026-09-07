@@ -21,16 +21,16 @@ defmodule RFD2143 do
     that adds the SNI FoundationDB does not send. R2 IA carries a 30-day
     minimum storage duration and free egress. The `default` tag keeps
     writing to Tigris; two destinations, one cluster.
-    
+
     R2 S3 credentials live in Bao at `secret/data/weftspun-fdb/r2-dr`,
     cached as Fly secrets on `weftspun-fdb` because Bao's storage is FDB
     and FDB cannot read Bao at boot. The Cloudflare API bearer token
     stays in 1Password; the S3 keys are regenerated from it at DR time
     rather than restored, so no long-lived material sits outside Bao.
-    
+
     **Gate:** `fdbbackup status -t dr` reports restorable and R2's newest
     `data/` object is younger than `WEFT_BACKUP_MAX_AGE`.
-    
+
     **Negative control:** a machine started without `R2_ACCESS_KEY_ID`
     runs `default` only, and the `dr` check reports critical rather than
     passing on nothing.
@@ -58,14 +58,14 @@ defmodule RFD2143 do
     The cluster's `Sum of key-value sizes` was 0 MB, so the whole 944 MB
     of FDB disk use is empty pages, the safest possible moment to
     introduce a second backup tag.
-    
+
     Bao's PKI mount was queried with the root token: `pki/keys` lists
     two RSA keys, neither with exported material, and the intermediate
     issuer's `key_id` is `a15acb18-...`. The CA key is not readable
     outside Bao. The DR chain therefore relies on FDB backup + Bao
     restore-in-place (Bao's storage is FDB), and the R2 destination is
     what protects that chain from single-provider loss.
-    
+
     `Bao's storage_type` returned `foundationdb`. `fdbcli status` under
     mTLS from an SSH console needed the four env vars the entrypoint
     sets around fdbserver (`FDB_TLS_{CERTIFICATE,KEY,CA}_FILE` and
@@ -78,7 +78,7 @@ defmodule RFD2143 do
     secrets `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT_URL`,
     `R2_BUCKET`, `R2_REGION` are the bootstrap cache the entrypoint reads
     before Bao can serve.
-    
+
     The layering forces this. Bao's storage backend is FDB. If the FDB
     entrypoint tried to read Bao at boot to get its R2 creds, Bao would
     not answer, Bao needs FDB up first. So the entrypoint reads Fly
@@ -86,7 +86,7 @@ defmodule RFD2143 do
     `flyctl secrets set` from Bao and roll the deploy. Bao stays the
     source, Fly is the cache, and the two are in sync when the deploy
     completes.
-    
+
     The Cloudflare API bearer token stays in 1Password
     (`Cloudflare R2 weftspun DR`), because that is the identity you use
     to mint new S3 keys at DR time. The S3 keys themselves are
@@ -97,16 +97,16 @@ defmodule RFD2143 do
     details "Entrypoint change", ~S"""
     The existing `AWS_*` variables that drive the Tigris destination stay
     as-is. A parallel set of variables drives the R2 destination:
-    
+
         R2_ACCESS_KEY_ID
         R2_SECRET_ACCESS_KEY
         R2_ENDPOINT_URL       # https://<account>.r2.cloudflarestorage.com
         R2_BUCKET             # weftspun-fdb-dr
         R2_REGION             # auto
-    
+
     The entrypoint, when all five are set, does what it does for Tigris,
     once more:
-    
+
     1. Writes `/etc/foundationdb/blob-credentials-r2.json` at mode 0600.
        `FDB_BLOB_CREDENTIALS` becomes `default_creds:r2_creds` so both
        destinations authenticate from one env var.
@@ -127,7 +127,7 @@ defmodule RFD2143 do
        Restarting a running tag is what makes a second start abort as
        "already exists" without naming which tag, so the guard fires on
        the state that the start call actually needs.
-    
+
     `backup-fresh.sh` grows a `--tag <name>` mode. Without a tag, it
     keeps today's behavior (reads `status json`, writes
     `/run/backup-fresh/health`). With `--tag dr` it parses
@@ -142,7 +142,7 @@ defmodule RFD2143 do
     the Bao root token, and the Cloudflare API bearer token. R2 holds
     the last complete FDB backup, including Bao's PKI mount (Bao stores
     in FDB).
-    
+
     1. In the Cloudflare dashboard, use the bearer token in 1P to mint
        a fresh R2 S3 access key/secret against the surviving
        `weftspun-fdb-dr` bucket. Copy both to a scratch note; do not put
@@ -183,7 +183,7 @@ defmodule RFD2143 do
     key into `op://Personal/FDB-CA/{cert,key}` as part of that phase.
     Until that RFD lands, this runbook is theatre: the DR bucket has the
     data but the cluster cannot come up to accept it.
-    
+
     The measurement on 2026-08-31: the CA key is not yet in 1Password.
     That is the first followup, and RFD 2141 is where it happens.
     """

@@ -37,9 +37,9 @@ defmodule RFD2079 do
     result. `syscalls.jsonld`'s own audit already named the target use
     case. The `socket` syscall's own note reads: "Relevant to CastSpell
     effects that talk to zone-server-h2o."
-    
+
     This session raised and closed two designs before this one.
-    
+
     1. `godot-sandbox`'s own `Sandbox` Node and `vmcall` API needs its
        own full native Godot host process, a separate engine instance
        from the one `godot-riscv-spike` already proved working.
@@ -102,7 +102,7 @@ defmodule RFD2079 do
     `zone-server-h2o`'s own build, transport, and FDB layers stay
     untouched. One process boundary needs reasoning about, not a merged
     build.
-    
+
     Bad: this is a genuinely new subsystem. Guest-side exported
     functions, a new host orchestrator binary, and `h2o` evloop wiring
     are all real, unstarted implementation work, not just documentation.

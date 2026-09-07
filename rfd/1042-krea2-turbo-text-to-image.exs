@@ -16,10 +16,10 @@ defmodule RFD1042 do
     decision ~S"""
     Package it as one model image, and stage the loads. The text encoders
     load, they run, and they unload. The backbone then loads.
-    
+
     Quantize to Q4_K_M. RFD 1027 selects that format for both
     text-to-image models, and it drops this one from 33.8 GB to 9.30 GB.
-    
+
     See `DETAILS.md` for the model's per-part memory, the `predict()`
     interface, and the disk-size trap in the weight folder.
     """
@@ -28,7 +28,7 @@ defmodule RFD1042 do
     Krea 2 Turbo is the largest model in the catalog that the project
     runs. It needs 33.8 GB in bf16, which is 29 percent of the whole
     catalog.
-    
+
     It is also four models in one folder: a backbone, two text encoders, and
     a VAE. A model image that loads all four at once wastes memory, because
     the text encoders finish before the backbone starts.
@@ -49,7 +49,7 @@ defmodule RFD1042 do
     | CLIP text encoder  |     0.12 B |     0.24 GB |     0.07 GB |
     | VAE                |     0.08 B |     0.16 GB |     0.04 GB |
     | **total**          | **16.9 B** | **33.8 GB** | **9.30 GB** |
-    
+
     RFD 1034 checks the bf16 column against the 32 GB worker reserve.
     """
 
@@ -62,7 +62,7 @@ defmodule RFD1042 do
     | height          | int  | 1024    |
     | steps           | int  | 4       |
     | seed            | int  | -1      |
-    
+
     The step default is 4, because this is the Turbo variant. A caller
     that asks for 30 steps gets no better image, and pays 7 times.
     """

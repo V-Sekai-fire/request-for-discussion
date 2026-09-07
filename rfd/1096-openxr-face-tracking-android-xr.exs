@@ -67,21 +67,21 @@ defmodule RFD1096 do
     Extension: `XR_ANDROID_face_tracking`, instance extension 459,
     revision 1, not ratified, OpenXR 1.0+, at the Khronos registry's own
     man page.
-    
+
     Core calls and structs: `xrCreateFaceTrackerANDROID`;
     `xrGetFaceStateANDROID` (returns blend weights at a time, filling
     `XrFaceStateANDROID`); `XrFaceTrackerCreateInfoANDROID`;
     `XrFaceStateGetInfoANDROID`; `XrFaceParameterIndicesANDROID` (68
     scalar parameters, indices 0 through 67, then `MAX_ENUM`).
-    
+
     Android: the "Android XR for OpenXR" extensions hub at
     `developer.android.com`; exact deep-link URLs to a specific
     extension article can move, start from the hub if one 404s.
-    
+
     Web string keys, for the bridge: the WebXR Expression Tracking
     draft (`index.bs`), whose string keys `inferVRMMorphTargets` reuses
     directly.
-    
+
     Android permission: `xrCreateFaceTrackerANDROID` requires
     `android.permission.FACE_TRACKING`, a dangerous permission; declare
     it in the manifest and request it at runtime.
@@ -104,7 +104,7 @@ defmodule RFD1096 do
     3. Each frame, or at 30 or 60 Hz: `xrGetFaceStateANDROID` with `XrFaceStateGetInfoANDROID`, filling `XrFaceStateANDROID`.
     4. Read the `parameters` float buffer, capacity `XR_ANDROID_FACE_PARAMETER_COUNT` (68, per the current enum). `isValid`, `sampleTime`, and `regionConfidences` are optional extras.
     5. Either map indices to WebXR key names in Kotlin or Java, or send the dense array as `openxrParameters` in the JS bridge payload.
-    
+
     Older drafts or slide decks sometimes name different functions;
     trust the Khronos man pages linked above over any of them.
     """
@@ -114,65 +114,65 @@ defmodule RFD1096 do
     | ------------- | ----------------------------------- | ------------------------------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
     | WebXR         | A Chrome immersive session          | The optional `expression-tracking` feature | `XRFrame.expressions`                                | `src/library/xrExpressionTrackingDriver.js`, `applyXRFrameExpressionsToVRMS`                                                                        |
     | Native bridge | The Android XR host, through OpenXR | `XR_ANDROID_face_tracking`                 | Serialized weights, or an `openxrParameters[]` array | The native app calls `window.__weftspun3dStudioNativeFace.push()`, into `src/library/nativeFaceBridge.js`, into `applyExpressionWeightRecordToVRMS` |
-    
+
     The index-to-key mapping lives in
     `src/library/openxrFaceParameterMap.js`
     (`OPENXR_ANDROID_FACE_PARAMETER_WEBXR_KEYS`,
     `openxrFloatParametersToWebXRRecord`).
-    
+
     When both paths are inactive, the avatar's face stays neutral in XR
     (the webcam driver, RFD 1105, is deliberately off during WebXR).
     Precedence: if `getNativeFaceWeightsIfFresh` returns data, it
     overrides WebXR's own `expressions` for that frame, in
     `sceneManager.js`.
-    
+
     ### Dev relay: Chrome WebXR plus the APK's face data (Galaxy XR)
-    
+
     When the browser does not grant `expression-tracking`, the Weftspun
     XR Face APK plus the Vite dev relay stand in:
-    
+
     | Step | Component                                                                                                                                                                                                                       |
     | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
     | 1    | `npm run dev` on the PC enables `POST /__native_face_ingest` and `GET /__native_face_sse`.                                                                                                                                      |
     | 2    | The APK's Jetpack path, or OpenXR's `XR_ANDROID_face_tracking`, POSTs to that ingest endpoint at roughly 30 Hz. OpenXR uses PBuffer GLES, so ingest continues during Chrome's Full Space when `FaceKeeperActivity` is the host. |
     | 3    | Chrome opens the app with `?nativeFaceRelay=1`; `nativeFaceRelay.js`'s `EventSource` feeds `nativeFaceBridge`.                                                                                                                  |
     | 4    | The XR frame loop uses the native weights, the same as the WebView path. The web side caches for 30 seconds while `xrPresenting`; the APK's own handoff staleness is 10 seconds.                                                |
-    
+
     RFD 1082 gives the full APK design this relay depends on.
     """
 
     details "Payload contract, native to web", ~S"""
     Call from Android after obtaining face parameters, in one of two shapes.
-    
+
     ### Option A: a WebXR-shaped object, preferred for debugging
-    
+
     The same string keys as the WebXR draft's `XRExpression` enum (for
     example, `jaw_drop`, `eyes_closed_left`); see `index.bs`, and the
     `XRE_KEYS` list in `xrExpressionTrackingDriver.js`.
-    
+
     ```json
     { "jaw_drop": 0.6, "eyes_closed_left": 0.1, "eyes_closed_right": 0.1 }
     ```
-    
+
     ```json
     { "weights": { "jaw_drop": 0.6 }, "t": 1735689600000 }
     ```
-    
+
     ### Option B: a dense OpenXR `parameters` array
-    
+
     Compact JSON for `xrGetFaceStateANDROID`'s own output: 68 floats, in
     `XrFaceParameterIndicesANDROID` order. The web layer maps this to
     the same keys Option A uses; named keys present in the same payload
     override array slots, for per-shape fixes.
-    
+
     ```json
     { "openxrParameters": [0, 0, ..., 0.85], "t": 1735689600000 }
     ```
-    
+
     `jaw_drop` sits at index 24 in the current Khronos enum.
-    
+
     From Kotlin or Java, through a WebView:
-    
+
     ```java
     webView.evaluateJavascript(
       "window.__weftspun3dStudioNativeFace.push(" + json + ");",
@@ -197,7 +197,7 @@ defmodule RFD1096 do
     `tongue_right`, `tongue_up`, and `tongue_down` in
     `openxrFaceParameterMap.js` for forward compatibility; mouth
     heuristics may ignore them until an explicit tongue drive is added.
-    
+
     Once native data is live, compare the runtime weights against the
     Khronos enum table, and adjust the mapping, or add a normalizer in
     the native layer, if a vendor orders parameters differently (which

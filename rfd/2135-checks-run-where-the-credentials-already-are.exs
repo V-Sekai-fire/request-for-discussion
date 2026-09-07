@@ -20,14 +20,14 @@ defmodule RFD2135 do
     the one place the credentials already are: nothing new is granted
     anywhere. It publishes a health file over a local httpd, and a Fly
     machine check turns the file into a pass or fail in `fly status`.
-    
+
     Two reference cases ship, both on weftspun-fdb. `backup_fresh` reads
     the backup layer's own metadata; a backup is fresh only when it is
     running and its restorable point is close. `cluster_health` fails
     until the data state is healthy and a zone can be lost without losing
     data, so a rolling deploy waits out re-replication after each
     restart, the way the Kubernetes FDB operator gates its own rolls.
-    
+
     Every check refuses to arm unless its self-test controls fire in both
     directions, and an unreadable signal always reads as failure. The
     measurements behind both checks, including the two backups that
@@ -54,13 +54,13 @@ defmodule RFD2135 do
 
     details "The placement, spelled out", ~S"""
     Three candidate homes for a backup staleness gate, two rejected:
-    
+
     | home | verdict | reason |
     | --- | --- | --- |
     | CI | rejected | no production access, and granting it some is a new credential with a new blast radius |
     | the spot-broker keeper | rejected | it holds spend authority; an admin service that accumulates monitoring scripts becomes the home of every capability |
     | the cluster machine | chosen | the credentials are already there; nothing is granted anywhere |
-    
+
     The delivery is a health file under /run, served by busybox httpd on
     :8081, read by a Fly machine check. A failing check is visible in
     `fly status` and gates rolling deploys. Nothing pages, and that is a
@@ -73,7 +73,7 @@ defmodule RFD2135 do
     check going red and a person seeing it is measured in hours and can be
     a weekend. Reliability here cannot be bought with response time; it
     has to be bought with what the system does while nobody is watching.
-    
+
     That shapes the checks. Every failure is fail-closed rather than
     fail-alerting: the roll gate holds a deploy by itself, a stale backup
     blocks nothing but keeps its red state until seen, and no check
@@ -86,7 +86,7 @@ defmodule RFD2135 do
     rather than emitting events, because an event at 03:00 with nobody on
     duty is a fact that evaporates, and a health file that stays absent
     is one that waits.
-    
+
     Paging (a phone that rings) becomes worth adding when a second
     operator exists or when a customer-facing deployment makes hours-long
     staleness a revenue event. Until then it would page the same person
@@ -103,12 +103,12 @@ defmodule RFD2135 do
     SignatureDoesNotMatch. A probe that cannot paginate cannot find the
     newest object, and the working hand-checks had been accidentally
     alphabetical (`list-type`, `max-keys`).
-    
+
     The shipped probe reads the layer's own metadata from `status json`:
     `last_restorable_seconds_behind`, which advances only after durable
     blob writes, and `running_backup`, without which a small lag is a
     stopped backup coasting on its last snapshot.
-    
+
     That guard paid for itself the same afternoon, twice:
     `fdbbackup start` defaults to stop-when-done, so both production
     submissions completed at their first restorable point and
@@ -127,7 +127,7 @@ defmodule RFD2135 do
     ranges under double redundancy. Coordination quorum was never the
     hazard: rolls are one machine at a time and three coordinators
     tolerate one down. The data layer was.
-    
+
     First live exercise, on its own deploy: after each restart the check
     logged `data_healthy=no zone_tolerance=1` and held, the roll waited,
     and all three machines converged to 2 of 2 passing.

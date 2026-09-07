@@ -16,17 +16,17 @@ defmodule RFD1018 do
     decision ~S"""
     Delete the M3 API reference. Do not rewrite it. A code map replaces
     it, naming each module and pointing at the source file.
-    
+
     Delete the Docusaurus site machinery. This step removes the M3 site
     identity and the dependency cost. The markdown files stay, because
     the README links to them.
-    
+
     Rewrite each remaining M3 guide in Weftspun words. Then delete the M3
     original. A rewrite must describe the current code, not the M3 code.
-    
+
     Keep `m3/LICENSE` until the last M3 file goes. A deletion before
     that step would drop a notice the MIT terms require.
-    
+
     Keep an `m3/static/` image only while a surviving markdown file names
     it under `/img/`. Delete the rest now. See `DETAILS.md` for the list.
     """
@@ -38,7 +38,7 @@ defmodule RFD1018 do
     while the M3 content stays. This tree moved here from
     weftspun-3d-studio's own `docs/`; the paths below read `m3/docs/`
     and `m3/static/`, the current location.
-    
+
     The site costs more than it returns. No pipeline builds the site. The
     site keeps a separate package file and two lock files. The site
     caused seven dependency security commits. Its config and its API
@@ -55,7 +55,7 @@ defmodule RFD1018 do
     The site config still names the M3 origin. The rebrand changed only
     the title, so the config now claims the Weftspun name over the M3
     identity.
-    
+
     The API reference under `Developers` copies the source. RFD 1000
     forbids a copy of the source. The reference has also drifted. The
     animation manager source holds 47 methods, and the document lists
@@ -64,7 +64,7 @@ defmodule RFD1018 do
 
     details "Plan", ~S"""
     The work follows this order:
-    
+
     1. Delete the template blog and the template page.
     2. Delete the `Developers` reference. Add the code map.
     3. Rewrite the `Modders` manifest guides. Delete the originals.
@@ -72,14 +72,14 @@ defmodule RFD1018 do
     5. Rewrite the history page as a short lineage note.
     6. Delete the site config, the sidebars, and the package files.
     7. Delete `docs/LICENSE`.
-    
+
     Steps 1, 2, 4, and 5 are complete. Steps 3, 6, and 7 remain open.
     """
 
     details "Risk", ~S"""
     The image folder holds 29 MB. The history page uses many of those
     images. A rewrite of the history page must drop the unused images.
-    
+
     The GitHub Pages workflow named an M3 host. The workflow now runs as
     a check only. It builds the app and runs the animation tests. It no
     longer publishes to any host. RFD 1013 keeps Vercel as the deploy
@@ -102,10 +102,10 @@ defmodule RFD1018 do
     outside this RFD's own work: `E2E_DGX_DEVTOOLS.md`,
     `IWSDK_OPTION_A_MIGRATION_BLUEPRINT.md`, `MCP_SETUP.md`,
     `quickstart.md`.
-    
+
     Six more are deleted now, each superseded rather than rewritten, and
     none linked from any `README.md`:
-    
+
     | File                                     | Why deletion, not a rewrite                                                                            |
     | ---------------------------------------- | ------------------------------------------------------------------------------------------------------ |
     | `WALLET_OWNED_ASSETS_AVATAR_APPROACH.md` | Wallet, minting, and Thirdweb; RFD 1012 abandons this line of work                                     |
@@ -114,9 +114,9 @@ defmodule RFD1018 do
     | `SIMPLE_ADB_CONNECT_GUIDE.md`            | Same script supersedes this Cursor-IDE clickthrough                                                    |
     | `WIRELESS_ADB_SETUP.md`                  | Same script supersedes this guide                                                                      |
     | `SceneControlsIntegration.md`            | Documents merging `SceneControlsBackup.jsx`, a file that no longer exists; the merge already completed |
-    
+
     The remaining four are resolved too, none rewritten:
-    
+
     | File                                  | Disposition                                                                                                                                                                                                            |
     | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
     | `THREEJS_QUICK_START.md`              | Deleted. `getRendererInfo()`, `setupPostProcessing()`, and `createPositionalAudio()` do not exist in `sceneManager.js`; a build that never shipped, or shipped then shrank                                             |

@@ -15,10 +15,10 @@ defmodule RFD1011 do
 
     decision ~S"""
     Add a publish flow for completed tasks.
-    
+
     - Publish RP1 sends the completed mesh to the spatial fabric.
     - Validate OMB tier checks the GLB export against the fabric.
-    
+
     The flow opens the Scene Assembler in a new tab. The spatial
     fabric adapter checks the manifest and the tier presets.
     """

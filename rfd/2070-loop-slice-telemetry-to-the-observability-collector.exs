@@ -59,7 +59,7 @@ defmodule RFD2070 do
     The loop-slice deploy exports OTLP over HTTP to the observability
     collector at `http://host.containers.internal:4318`, with
     `OTEL_SERVICE_NAME=loop-server`.
-    
+
     - The collector listens for OTLP HTTP on 4318 and routes each signal
       to its Victoria backend, so the server's traces, metrics, and logs
       all land without further configuration. HTTP on 4318 matches the
@@ -77,7 +77,7 @@ defmodule RFD2070 do
       carries no default endpoint.
     - A collector on another host overrides `host.containers.internal`
       with that host's address.
-    
+
     The values the deploy sets are
     `OTEL_EXPORTER_OTLP_ENDPOINT=http://host.containers.internal:4318` and
     `OTEL_SERVICE_NAME=loop-server`. Applying them to the deploy's

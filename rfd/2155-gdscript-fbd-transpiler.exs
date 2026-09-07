@@ -25,12 +25,12 @@ defmodule RFD2155 do
     node graph, C# is a familiar language, UdonSharp compiles C# to Udon
     so the author never sees the graph unless they want to. Taskweft has
     the same shape:
-    
+
     1. **GDScript author**: `.gd` -> transpiler -> FBD -> RFD 2150
        compile -> RFD 2154 loads into Godot Sandbox.
     2. **FBD reader**: compiled RECTGTN plan renders back as `.gd` for
        humans debugging the state machine in Godot's editor.
-    
+
     godot-sandbox ships **SafeGDScript** (its own GDScript-to-RISC-V
     compiler; Dec 2025 "42 demo projects" milestone landed feature
     parity). SafeGDScript is the second half: transpiler emits GDScript,

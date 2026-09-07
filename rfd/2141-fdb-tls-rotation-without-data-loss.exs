@@ -19,21 +19,21 @@ defmodule RFD2141 do
     A three-phase rolling rotation using FDB's automatic TLS certificate
     refresh. The cluster stays available and data stays intact at every
     step; each phase is gated on `fdbcli status` reporting healthy.
-    
+
     **Phase 1 (dual-CA trust).** Generate a new CA with the RFD 2134
     profile. Set `FDB_TLS_CA_B64` to old + new CAs concatenated. Rolling
     restart. Every machine trusts certs from either CA.
-    
+
     **Phase 2 (new leaves).** Mint new certs under the new CA for all
     three machines and for bao (`fdb-bao.chibifire.com`). Replace each
     machine's cert/key secrets. Rolling restart.
-    
+
     **Phase 3 (drop old CA).** Set `FDB_TLS_CA_B64` to the new CA only.
     Rolling restart. Store the new CA key in bao and in 1Password.
-    
+
     The cluster file does not change (addresses keep `:tls`), so no
     coordinator reset is needed.
-    
+
     The rotation tool is an Elixir TUI in weft-warp-burrito, packaged
     via Burrito. It walks the phases, gates each on cluster health, and
     stores the CA key on completion. The procedure is in DETAILS.md.
@@ -60,7 +60,7 @@ defmodule RFD2141 do
     uploaded to 1Password, and never stored as a Fly secret. The
     1Password item `OpenBao FDB CA` contains the raft-based bao init
     JSON, not the CA material.
-    
+
     The CA certificate (public half) is stored as `FDB_TLS_CA_B64` on
     weftspun-fdb. The private half is lost. Without it, no new leaf
     certificate can be signed, and the cluster cannot admit a new TLS
@@ -73,7 +73,7 @@ defmodule RFD2141 do
     carry a `:tls` suffix that plaintext addresses lack. A rotation from
     one TLS identity to another does not change the addresses. The
     `:tls` suffix stays, so the coordinated state on disk remains valid.
-    
+
     FoundationDB's TLS certificate refresh (documented in `tls.rst`,
     knob `tls-cert-refresh-delay-seconds`, default enabled) reloads the
     cert, key, and CA files from disk when their mtime changes. The
@@ -84,23 +84,23 @@ defmodule RFD2141 do
 
     details "The rotation in three phases", ~S"""
     ### Prerequisites
-    
+
     The existing CA certificate, extracted from any running machine:
-    
+
         fly ssh console -a weftspun-fdb \
           -C "cat /etc/foundationdb/tls/ca.pem"
-    
+
     ### Phase 1: dual-CA trust bundle
-    
+
     The `-days 3650` (10 years) on the CA below was retracted by
     RFD 2145 on 2026-09-01. Current guidance: 25-year `notAfter` on the
     offline root with 5-year policy rotation; run the command with
     `-days 9125` and schedule the ceremony date in the anti-entropy
     check. Kept in place because a reader working from the earlier text
     should see the change and where it went.
-    
+
     Generate the new CA:
-    
+
         openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 \
           -out new-ca.key
         openssl req -new -x509 -key new-ca.key -days 3650 \
@@ -109,26 +109,26 @@ defmodule RFD2141 do
           -addext "keyUsage=critical,keyCertSign,cRLSign" \
           -addext "subjectKeyIdentifier=hash" \
           -out new-ca.pem
-    
+
     Concatenate old + new CA into a bundle:
-    
+
         cat old-ca.pem new-ca.pem > bundle-ca.pem
         base64 -w0 bundle-ca.pem > bundle-ca.b64
-    
+
     Set the dual-CA bundle on all three machines:
-    
+
         fly secrets set FDB_TLS_CA_B64="$(cat bundle-ca.b64)" \
           -a weftspun-fdb --stage
         fly deploy -a weftspun-fdb --strategy rolling
-    
+
     Verify: `fdbcli status` reports healthy, entrypoint logs
     "2 self-signed anchor(s)".
-    
+
     ### Phase 2: new leaf certificates
-    
+
     For each machine ID (`807130c6674168`, `84e696a22e0308`,
     `84e69ef2251558`) and for bao (`bao`):
-    
+
         CN="fdb-${MID}.chibifire.com"   # or fdb-bao.chibifire.com
         openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 \
           -out "${MID}.key"
@@ -142,56 +142,56 @@ defmodule RFD2141 do
     subjectKeyIdentifier=hash\n\
     authorityKeyIdentifier=keyid,issuer\n') \
           -out "${MID}.pem"
-    
+
     Set each machine's cert and key:
-    
+
         fly secrets set \
           "FDB_TLS_CERT_${MID}_B64=$(base64 -w0 ${MID}.pem)" \
           "FDB_TLS_KEY_${MID}_B64=$(base64 -w0 ${MID}.key)" \
           -a weftspun-fdb --stage
         fly deploy -a weftspun-fdb --strategy rolling
-    
+
     After all three machines are rolled, set the bao client cert:
-    
+
         fly secrets set \
           FDB_TLS_CERT_B64="$(base64 -w0 bao.pem)" \
           FDB_TLS_KEY_B64="$(base64 -w0 bao.key)" \
           FDB_TLS_CA_B64="$(cat bundle-ca.b64)" \
           -a weftspun-bao
-    
+
     Verify: `fdbcli status` healthy, bao can reach the cluster.
-    
+
     ### Phase 3: drop old CA
-    
+
         base64 -w0 new-ca.pem > new-ca.b64
         fly secrets set FDB_TLS_CA_B64="$(cat new-ca.b64)" \
           -a weftspun-fdb --stage
         fly deploy -a weftspun-fdb --strategy rolling
-    
+
         fly secrets set FDB_TLS_CA_B64="$(cat new-ca.b64)" \
           -a weftspun-bao
-    
+
     Verify: `fdbcli status` healthy, 1 self-signed anchor.
-    
+
     ### Store the new CA key
-    
+
         # In bao (once bao reconnects with its new client cert):
         bao kv put secret/fdb/ca-key \
           ca_key_pem="$(cat new-ca.key)" \
           ca_pem="$(cat new-ca.pem)"
-    
+
         # In 1Password:
         op document create new-ca.key \
           --title "weftspun-fdb CA private key" \
           --vault Private --tags weftspun,fdb,tls
-    
+
         # Then delete from disk:
         shred -u new-ca.key *.key *.csr
     """
 
     details "Rollback at each phase", ~S"""
     If `fdbcli status` degrades after a phase:
-    
+
     - **Phase 1 fails:** revert `FDB_TLS_CA_B64` to the old CA only,
       rolling restart. The cluster returns to its previous state.
     - **Phase 2 fails on one machine:** revert that machine's cert/key
@@ -199,7 +199,7 @@ defmodule RFD2141 do
       trusts the old cert.
     - **Phase 3 fails:** revert `FDB_TLS_CA_B64` to the dual bundle,
       rolling restart.
-    
+
     No phase touches data directories, coordinator addresses, or the
     cluster configuration. Every rollback is a secret change and a
     restart.

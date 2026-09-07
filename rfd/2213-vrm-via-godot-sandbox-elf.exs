@@ -22,7 +22,7 @@ defmodule RFD2213 do
     `modules/sandbox` (libriscv). Godot's `GLTFDocument` +
     `GLTFDocumentExtension` API hands raw VRM bytes to the ELF; the
     ELF returns node/skeleton/expression/spring-bone data.
-    
+
     `DETAILS.md` carries the full text of this RFD.
     """
 

@@ -37,7 +37,7 @@ defmodule RFD2052 do
     (broadcast at zero), the drain validates session membership, and
     teardown erases before delete. The pattern matches the single
     pending-slot bug fixed in `fire/webtransportd@f0fc9a4`.
-    
+
     Post-fix, all four clients receive their own announcements and the
     server survives every teardown; the one-listener-per-process limit
     stands. A `FabricMultiplayerPeer` probe (ENet factories injected) also

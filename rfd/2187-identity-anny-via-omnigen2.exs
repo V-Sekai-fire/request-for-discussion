@@ -23,11 +23,11 @@ defmodule RFD2187 do
     and face-detail overlays on the ANNY base mesh, once per character
     (frozen across scenes, unlike dressing in RFD 2186 which changes
     per frame).
-    
+
     Owns V3 parts (See-Through's taxonomy, RFD 2183 stopgap):
     `front-hair`, `back-hair`, `iris`, `eyewhite`, `eyebrow`,
     `eyelash`, `mouth`, `ear`.
-    
+
     Trained under RFD 2184's three-signal pattern: EditScore (RFD 1157
     reward model) for semantic quality, cross-view consistency on
     `sphere_hammersley_sequence` renders for anti-hacking, and

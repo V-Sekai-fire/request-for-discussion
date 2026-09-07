@@ -19,7 +19,7 @@ defmodule RFD1073 do
     mesh generation needed. Compose every card into one USD stage, each
     holding its image and caption as metadata. Serve that stage from
     `usd_viewer_app/`, the companion app already built this session.
-    
+
     Scale honestly against the clock. One shard, of 42, proves the
     mechanism first: extract, downscale, author, package, verify it
     opens, verify it renders. Every later shard runs the same script.
@@ -56,7 +56,7 @@ defmodule RFD1073 do
     `sample_billboard.usdz`, 1,947,665 bytes, and re-opening that `.usdz`
     confirmed all six expected prims: the Xform, the Mesh, the Material,
     and its three Shaders.
-    
+
     A script generating many cards at once,
     `scripts/make_billboard_gallery.py`, exists and was proven on one
     full shard: 358 cards, 13.4 seconds, 1.98 MB of JPEG textures. That
@@ -67,13 +67,13 @@ defmodule RFD1073 do
 
     details "Why this is not 15,000 images, and not in git", ~S"""
     Two corrections landed mid-build, both real.
-    
+
     Committing 358, let alone 15,000, generated images straight into
     `usd_viewer_app/public/` would have put roughly 115 MB of binary
     data into git, permanently. RFD 1062 already names the right pattern
     for exactly this, `idtx_transport`/aria-storage, content-addressed,
     chunked, not committed.
-    
+
     `aria-storage`'s own repository turned out to hold a storage library
     only, `chunk_store.ex`, `chunk_uploader.ex`, `casync_decoder.ex`, no
     HTTP layer implementing the `PUT`/`HEAD`/`GET` contract
@@ -88,9 +88,9 @@ defmodule RFD1073 do
     `versity/versitygw:latest` is real, Apache 2.0, and its `posix`
     backend fronts a plain directory with the S3 API, no chunking
     protocol to build.
-    
+
     Verified locally, with Docker, before wiring it into the Fly image:
-    
+
     1. A standalone `versitygw` container, `posix` backend, real random
        credentials from `/dev/urandom`. An unauthenticated `GET`
        answered `403`, the correct posix-backend default.
@@ -111,12 +111,12 @@ defmodule RFD1073 do
     5. `docker cp` placed the two proof files into the running
        container's `/data/vgw-store/gallery/`, and `ls` confirmed both
        landed at their real, correct byte sizes.
-    
+
     `scripts/push_gallery_to_vgw.exs` replaces the earlier Tigris-target
     script, same `ex_aws_s3` mechanism, pointed at `127.0.0.1:10000`
     instead. It must run from inside the container, or over
     `flyctl ssh console`, since the port is loopback-only by design.
-    
+
     **RFD 1077 reverses this choice**, back to Tigris, once RFD 1076
     split `usd_viewer_app` onto its own machine and made `versitygw`'s
     loopback bind unreachable from it. No technical objection to Tigris
@@ -142,7 +142,7 @@ defmodule RFD1073 do
     A user report that `https://weftspun-studio.fly.dev/` "does not
     load" surfaced two separate, real findings, checked with Playwright
     against the live deployment, not assumed.
-    
+
     **The root path answers 404, correctly.** `router.ex`'s own
     catch-all route returns `{"error":"not found"}` for `GET /`, since
     no frontend route exists yet. RFD 1062 names the built browser
@@ -151,7 +151,7 @@ defmodule RFD1073 do
     deployment is API-only, `/api/v1/*`, by design, not by bug. A
     browser hitting `/` correctly gets a 404, the same one `curl`
     already showed.
-    
+
     **`versitygw test full-flow` took the whole app down, for real.**
     Running the gateway's own stress-test suite on the same
     `shared-cpu-1x`, 512 MB machine that runs CockroachDB starved it.
@@ -164,18 +164,18 @@ defmodule RFD1073 do
     balancing"` for every request to `/`, a real, user-visible outage.
     `flyctl machine restart` recovered it. Health, the catalog, and the
     pipelines all answer correctly again.
-    
+
     The lesson: a stress-test suite against a colocated production
     database, on a machine sized for a router and not for load, is a
     real risk, not a hypothetical one. A future full-flow run belongs
     on a separate machine, or a bigger one, not this one.
-    
+
     `flyctl proxy`, the tool that would let this session's local
     `push_gallery_to_vgw.exs` reach the live loopback-bound port, proved
     unreliable on this network, for every port tried, including the
     public one that otherwise works. That is a local networking
     problem, not a flaw in `versitygw` or the deploy.
-    
+
     `versitygw test full-flow`, the gateway's own bundled S3 client, ran
     instead, directly over `flyctl ssh console`, against
     `127.0.0.1:10000`, with the real deployed credentials. It is a large
@@ -192,7 +192,7 @@ defmodule RFD1073 do
     The live gallery loaded its billboard mesh but showed no texture.
     Playwright's own console log read the real error:
     `Error: Unknown file: /sample_billboard.usdz[./sample_billboard.png]`.
-    
+
     The cause sits in `usd-viewer`'s own `getTexture` function.
     `UsdUtils.CreateNewUsdzPackage` writes internal asset references in
     `./name` relative form, USD's own convention, confirmed by reading
@@ -202,13 +202,13 @@ defmodule RFD1073 do
     real deployed file. `getTexture` builds its file-lookup key from the
     raw `./name` reference, so the key never matches the flat entry, for
     every `.usdz` `CreateNewUsdzPackage` produces, not only this one.
-    
+
     Reading `coryrylan/usd-viewer`'s own `main` branch on GitHub
     confirmed the same unpatched code sits there today, and its issue
     tracker held nothing about it. This is a real, confirmed upstream
     defect, not a misuse on this project's side, and not something a
     newer release already fixed.
-    
+
     The OpenUSD spec itself settles which side the bug is on. Its own
     package-resolver contract says a path beginning with `./` or `../`
     is "interpreted in the virtual filesystem described by the
@@ -218,7 +218,7 @@ defmodule RFD1073 do
     skips that normalization and compares the raw, un-anchored string
     instead, so the defect sits in `usd-viewer`'s own code, not in any
     ambiguity the format leaves open.
-    
+
     `weftspun/usd-viewer` now holds a real fork with the fix, branch
     `fix-usdz-relative-texture-path`, and
     [github.com/coryrylan/usd-viewer/pull/4](https://github.com/coryrylan/usd-viewer/pull/4)
@@ -239,7 +239,7 @@ defmodule RFD1073 do
     the sRGB transfer curve before use as a `diffuseColor`, the spec's
     own default ("auto") behavior even with no attribute authored at
     all, and our card's `.usda` sets it explicitly to `"sRGB"` besides.
-    
+
     Grepping the patched `render-delegate.js` for `sourceColorSpace`,
     `colorSpace`, or `encoding` found zero matches. `usd-viewer` never
     reads the authored color space and never marks a loaded texture as
@@ -249,7 +249,7 @@ defmodule RFD1073 do
     transform brightens an already-too-high value a second time. That
     is the real, confirmed mechanism behind "too bright," not an HDR
     display artifact.
-    
+
     Patched, scoped to `diffuseColor` and `emissiveColor`, per the
     spec's own guidance, leaving `roughness`, `metallic`, `normal`,
     `occlusion`, and `opacity` linear, matching UsdPreviewSurface's own
@@ -269,7 +269,7 @@ defmodule RFD1073 do
     all, three.js's own default, `FrontSide` only. A single-sided flat
     quad is invisible from behind, and `autoRotate` guarantees the
     camera reaches behind it once per cycle.
-    
+
     Patched to carry `side` over from the shared fallback material
     (`d.side`, already `DoubleSide`) into the replacement material,
     rather than dropping it. Not filed upstream, per this session's own
@@ -282,7 +282,7 @@ defmodule RFD1073 do
     Running `make_billboard_gallery.py --shards 42` and pushing every
     resulting card to object storage (RFD 1077 decides which, below),
     not baking them into a Docker image. Neither step has run yet.
-    
+
     `usd_viewer_app` (now `apps/usd_viewer_app/`, its own deployed app
     per RFD 1076) still does not fetch from object storage at all. It
     holds the three verified proof files under `public/usd/`, baked
@@ -304,7 +304,7 @@ defmodule RFD1073 do
     `Adapters.HttpGallery`. `weftspun_studio` no longer holds the
     gallery's bytes on disk at all, a real improvement RFD 1076 records,
     but the asset is still image-baked, not fetched from object storage.
-    
+
     **This section originally named `versitygw` as where the asset
     belongs. RFD 1077 changes that decision: Tigris, not `versitygw`.**
     `versitygw` binds `127.0.0.1:10000`, loopback-only inside
@@ -320,7 +320,7 @@ defmodule RFD1073 do
     as a real, working substitute for the CDN this project asked about
     separately. Migration cost is small: only the two files
     `versitygw test full-flow` already proved land, need moving.
-    
+
     The proper version needs an S3 client (`ex_aws`/`ex_aws_s3`, or
     Tigris's own recommended SDK path) as a real dependency of
     `apps/usd_viewer_app/`, the natural owner now since it is the one

@@ -25,7 +25,7 @@ defmodule RFD2166 do
     the bus, encode one clip per edit at 8 fps with matte + card. Filename
     comes from the citation's title, lowercased with non-word runs
     hyphenated: `anny-mask-score-<edit>.mkv` + matching `.cff`.
-    
+
     The ASR panel transcripts from RFD 1173.2164.1 become S_TEXT/WEBVTT
     subtitle tracks in the MKV, one per judge, tagged with LANGUAGE
     metadata (auto detect per Whisper for text tracks; ipa/phn-* for

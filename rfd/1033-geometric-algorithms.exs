@@ -16,7 +16,7 @@ defmodule RFD1033 do
     decision ~S"""
     List the geometric algorithms apart from the neural models. RFD 1016
     holds the neural models.
-    
+
     See `DETAILS.md` for the algorithm table, how they scale with mesh
     size instead of parameter count, and a license note on
     `quadwild_retopology`.
@@ -41,7 +41,7 @@ defmodule RFD1033 do
     | instant_meshes_retopology | Mesh retopology | BSD-3   |
     | xatlas_uv_unwrapping      | UV unwrapping   | MIT     |
     | colmap_3dgs_reconstruct   | Photos to splat | BSD-3   |
-    
+
     Each one is packaged as its own model image, per RFD 1036.
     """
 
@@ -49,7 +49,7 @@ defmodule RFD1033 do
     These algorithms hold no weights. Their memory scales with the mesh,
     and not with a parameter count. A capacity plan must therefore use the
     vertex budget, and not a bf16 figure.
-    
+
     src/library/aiModelsCatalog.js caps the mesh at 210,000 vertices. The
     constant is `API_MAX_MESH_VERTICES`, and it matches the API upload cap.
     """

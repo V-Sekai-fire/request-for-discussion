@@ -58,9 +58,9 @@ defmodule RFD2059 do
     outcome before the explanation, so the explanation reads as context
     rather than as suspense, and a reader who needs only the outcome stops
     after one line.
-    
+
     A status report carries three parts in order:
-    
+
     1. The bottom line comes first. The opening sentence states the
        outcome plainly, the slip, the failure, the result, with no
        buffer, no apology, and no warm-up. A reader who reads only this
@@ -70,13 +70,13 @@ defmodule RFD2059 do
        carries the why without holding it back.
     3. The next step closes the report: the fix underway, the alternative
        open to the reader, or the time of the next update.
-    
+
     The voice rules out two habits:
-    
+
     - A progress buffer that opens on what went well and defers the
       outcome to the end.
     - An apology or hedge in place of the outcome in the first sentence.
-    
+
     A good outcome takes the same shape: the first sentence states the
     result, and the rest carries the why and the next step.
     """

@@ -37,7 +37,7 @@ defmodule RFD2067 do
     was no defined convention for what version strings to use at each
     stage of a build's lifecycle, no incrementable counter within a stage,
     and no agreed way to list tags in progression order.
-    
+
     A first attempt used `v0.1.0-dev`, which has no counter and cannot be
     incremented without replacing the tag. A second attempt used numeric
     stage prefixes (`v0.1.0-1dev.001`, `v0.1.0-2beta.001`) to force
@@ -58,62 +58,62 @@ defmodule RFD2067 do
 
     details "Design", ~S"""
     **Tag format**
-    
+
     Semver pre-release identifiers (same scheme as Kubernetes, Node.js,
     Rust):
-    
+
     ```
     v<major>.<minor>.<patch>-<stage>.<N>   # pre-release
     v<major>.<minor>.<patch>               # final release
     ```
-    
+
     | Stage   | Example tag     |
     | ------- | --------------- |
     | dev     | `v0.1.0-dev.1`  |
     | beta    | `v0.1.0-beta.1` |
     | rc      | `v0.1.0-rc.1`   |
     | release | `v0.1.0`        |
-    
+
     The counter (`1`, `2`, …) is unpadded, zero-padding (`001`) was only
     needed for lexicographic ordering within a stage, which is
     unnecessary once creator-date sort is adopted.
-    
+
     **Ordering**
-    
+
     Tags are always created in forward chronological order (dev builds
     precede beta, beta precedes rc, rc precedes the release tag). Correct
     progression order is therefore recovered with:
-    
+
     ```sh
     git tag --sort=creatordate
     ```
-    
+
     Neither `sort` nor `git tag --sort=version:refname` gives the correct
     cross-stage order for these names, `beta` precedes `dev`
     alphabetically and bare `v0.1.0` precedes all suffixed forms as a
     string prefix, so creator date is the authoritative sort key.
-    
+
     **Workflow inputs**
-    
+
     The `version` workflow input maps directly to `LOOP_PKG_VERSION`. Pass
     the stage suffix when dispatching pre-release builds:
-    
+
     ```
     version: 0.1.0-dev.1    # → LOOP_PKG_VERSION=0.1.0-dev.1
     version: 0.1.0-beta.1   # → LOOP_PKG_VERSION=0.1.0-beta.1
     version: 0.1.0-rc.1     # → LOOP_PKG_VERSION=0.1.0-rc.1
     version: 0.1.0            # → LOOP_PKG_VERSION=0.1.0  (final release)
     ```
-    
+
     The build scripts already treat any version containing `-` as a
     prerelease (`--prerelease` flag on `gh release create`); bare versions
     produce a full release.
-    
+
     **Tagging procedure**
-    
+
     After a successful workflow run, tag the packaging repo commit that
     produced the artifacts:
-    
+
     ```sh
     git tag v0.1.0-dev.1
     git push origin v0.1.0-dev.1

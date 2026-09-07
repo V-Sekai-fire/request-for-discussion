@@ -20,7 +20,7 @@ defmodule RFD1106 do
     proprietary, not granted by the OSS license: the trademark, the
     hosted `3DAIGC-API` with its model tuning and quality gates, and the
     marketplace/personalization services built on it.
-    
+
     See `DETAILS.md` for the architecture split diagram and the
     per-area table.
     """
@@ -50,7 +50,7 @@ defmodule RFD1106 do
     | Hosted AI               | The commercial `3DAIGC-API` queue, model-matrix tuning, and quality gates, running on operator hardware.                             |
     | Marketplace graph       | Curated mint paths, soulbound identity and equippable assets, official secondary listings.                                           |
     | Personalization service | Optional, user-approved profile context for generation. A compute product, not a sale of raw user data.                              |
-    
+
     Two areas this page's own source document once listed here, payment
     rails (x402/wallet) and a phygital passport registry, are gone from
     this table. RFD 1109 gives why: both are abandoned, per RFD 1012 and
@@ -66,7 +66,7 @@ defmodule RFD1106 do
            +--> Trademark + official drops (brand moat)
            +--> Marketplace / personalization loop (network moat)
     ```
-    
+
     Forking the repository grants the client source under its own
     license. It grants nothing else: not the right to operate as
     "Weftspun," and not access to the hosted AI or marketplace backends

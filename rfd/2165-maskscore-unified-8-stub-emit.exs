@@ -23,13 +23,13 @@ defmodule RFD2165 do
 
     decision ~S"""
     Extend `maskscore_rung_1_stubs.py` with an unified schema:
-    
+
       root         (key, task_type, dimension, input_column, input_asset,
                     input_asset_kind, poses)
       candidates   (row_key, candidate, rank, candidate_asset)
       scores       (row_key, candidate, view_index_or_frame,
                     metric_name, metric_value)
-    
+
     `metric_name` is an interned vocabulary (depth_l1, normal_l1,
     normal_dot, wavlm_cos, wer, vlm_score). All 8 stubs share these three
     tables. Consumers join on row_key to sweep across modalities.

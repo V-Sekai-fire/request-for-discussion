@@ -22,7 +22,7 @@ defmodule RFD2140 do
     `ListPage`, interactive transactions (`BeginTx`/`BeginReadOnlyTx`
     with Commit/Rollback), and pins the FDB 7.3.79 Go binding
     (`headerVersion = 730`). Build tag `foundationdb`, `CGO_ENABLED=1`.
-    
+
     Deployment files in weftspun/service-openbao. The bao machine carries
     only the FDB client library and connects to the cluster via a TLS
     client certificate. Interface details and deploy measurements are
@@ -50,12 +50,12 @@ defmodule RFD2140 do
     details "The three interface changes", ~S"""
     OpenBao's `physical.Backend` diverged from Vault's after v1.14.x.
     The port rewrites three sites.
-    
+
     **ListPage.** Vault's `List(prefix)` returned all keys. OpenBao added
     `ListPage(ctx, prefix, after, limit)` to the interface. The FDB
     implementation uses a range query with `after` as a begin-selector
     offset and `limit` as the range option.
-    
+
     **Interactive transactions.** Vault used a one-shot
     `Transaction([]*TxnEntry)`. OpenBao replaced it with `BeginTx` and
     `BeginReadOnlyTx`, each returning a `physical.Transaction` carrying
@@ -65,7 +65,7 @@ defmodule RFD2140 do
     (`ErrTransactionReadOnly`, `ErrTransactionAlreadyCommitted`,
     `ErrTransactionCommitFailure`). PostgreSQL's `transaction.go` was the
     reference for the shape.
-    
+
     **Backend registry.** `internal/command/commands.go` gains one import
     and one map entry (`"foundationdb": physFDB.NewFDBBackend`), wired the
     same way file, inmem, raft, and postgresql are.
@@ -85,15 +85,15 @@ defmodule RFD2140 do
     Dockerfile.fdb is a two-stage build: Go 1.27 on bookworm compiles
     with the `foundationdb` build tag and CGO, then a slim runtime image
     installs the FDB client library deb (not the server).
-    
+
     The bao machine connects to the existing weftspun-fdb cluster (3
     machines, double redundancy, mutual TLS per RFD 2134) over Fly 6PN.
     It presents its own TLS client certificate (`fdb-bao.chibifire.com`)
     and verifies the cluster with the same rule the cluster uses.
-    
+
     Listener binds `[::]:8200` (dual-stack) so the machine is reachable
     over 6PN from other apps in the org.
-    
+
     Storage: `auto_stop_machines = "suspend"`, `min_machines_running = 1`.
     """
 
@@ -107,13 +107,13 @@ defmodule RFD2140 do
 
     details "What the anchor creds cover", ~S"""
     Two KV v2 paths carry the FDB cluster's identity material:
-    
+
     `secret/fdb/tls-anchor`: the CA certificate (base64 PEM), the
     cluster ID, and the verify-peers rule.
-    
+
     `secret/fdb/blobstore`: the Tigris S3 credentials used by the FDB
     backup agents (AWS key pair, endpoint, region, bucket name).
-    
+
     Both were written from a weftspun-fdb machine over 6PN, where the
     Fly secrets are available as environment variables.
     """

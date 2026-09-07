@@ -17,7 +17,7 @@ defmodule RFD2185 do
 
     decision ~S"""
     Combined **Flow-LCM + QAFT-nf4** training loop, one artefact:
-    
+
     `DETAILS.md` carries the milestones, verification, scope revisions and what is not in this RFD.
     """
 
@@ -41,12 +41,12 @@ defmodule RFD2185 do
 
     details "Problem", ~S"""
     Session 2026-09-02/03 measured Lumina-Image-2.0 on the 3090:
-    
+
     | Config | Steps | Wall (1024²) | VRAM peak |
     |---|---|---|---|
     | bf16, no offload | 30 | 31.6 s | 13.19 GB |
     | nf4 (bnb, transformer-only) | 30 | 33.9 s | 9.33 GB |
-    
+
     nf4 cuts VRAM by 3.86 GB at the cost of 2.3 seconds. It does NOT reduce
     step count. Independently, a Lightning-style distill LoRA
     (`qpqpqpqpqpqp/Lumina_Image_2.0_Distill_Lora`) exists in the community
@@ -55,7 +55,7 @@ defmodule RFD2185 do
     that vanilla Lumina2 doesn't have. Neither knob, alone, satisfies the
     combined constraint the workspace actually wants: **fewer steps, smaller
     weights, one artefact**.
-    
+
     Doing the two sequentially, distill first at bf16, then quantize to
     nf4, has a known failure mode: the quantization noise is applied AFTER
     the LoRA has learned to correct for bf16 noise levels, so the LoRA does
@@ -66,7 +66,7 @@ defmodule RFD2185 do
 
     details "Decision", ~S"""
     Combined **Flow-LCM + QAFT-nf4** training loop, one artefact:
-    
+
     - **Teacher:** vanilla `Alpha-VLLM/Lumina-Image-2.0` transformer in bf16,
       frozen. Runs the reference forward that defines the target sampling
       trajectory.
@@ -79,7 +79,7 @@ defmodule RFD2185 do
       frozen in both roles, no reason to duplicate.
     - **Loss:** endpoint-consistency in flow-matching parameterization.
       For sampled `(t, dt)`:
-    
+
       ```
       x_t   = (1, t)   * x_0 + t   * noise
       x_tdt = (1, tdt) * x_0 + tdt * noise           # tdt = t + dt
@@ -89,14 +89,14 @@ defmodule RFD2185 do
       x0_student = x_t  , t   * v_student
       loss = huber(x0_student, stopgrad(x0_teacher))
       ```
-    
+
       Enforces the LCM invariant "predicted endpoint should be constant
       along the flow trajectory," adapted for flow matching's velocity
       parameterization. Standard LCM's DDPM-native math doesn't apply here
       because Lumina2 predicts velocity `v`, not noise `epsilon`.
-    
+
     ### VRAM budget (measured / estimated)
-    
+
     | Component | GB |
     |---|---|
     | Text encoder (Gemma2-2B, bf16, shared) | ~5 |
@@ -106,13 +106,13 @@ defmodule RFD2185 do
     | LoRA weights + AdamW state (rank 32) | ~0.5 |
     | Activations at 512², batch 1 | ~2 |
     | **Total** | **~20 GB** |
-    
+
     Fits 24 GB card with ~4 GB headroom. The bf16 teacher is the largest
     single VRAM cost; if training OOMs, first cut is to move teacher to
     `enable_model_cpu_offload()` (adds ~2× per-step penalty, still fits).
-    
+
     ### Smoke run
-    
+
     - 1000 prompts (deterministic subset of `EditScore-Reward-Data/train`,
       `text_change` parked per memory `parked-language-to-vision-edit-pair`)
     - LoRA rank 32, batch 1, 512², 1 epoch (~1000 steps)
@@ -120,7 +120,7 @@ defmodule RFD2185 do
     - **Success criterion:** loss monotonically decreases, no NaN. Produces
       a LoRA that reduces step count from 30 to ~8 at nf4 with acceptable
       quality vs the bf16-30-step baseline.
-    
+
     Not a shippable LoRA, the smoke uses random-latent `x_0` as a proxy for
     real image latents. A shippable LoRA needs real image latents from the
     same pipeline's VAE encoder (see "Follow-up" below).
@@ -134,13 +134,13 @@ defmodule RFD2185 do
       baseline on. Compare visually AND with EditScore-7B (via the pilot
       harness) on a stratified n=10 prompt subset. Two axes reported side
       by side (rule 4):
-    
+
       | Config | Steps | Wall | EditScore.overall |
       |---|---|---|---|
       | bf16, no LoRA (baseline) | 30 | 31.6 s | (measure) |
       | nf4, no LoRA | 30 | 33.9 s | (measure) |
       | **nf4 + this LoRA** | **8** | (measure) | (measure) |
-    
+
     - **Negative control (rule 2):** load a randomly-initialized LoRA of the
       same rank onto nf4 base, generate. Must produce noticeably worse
       output than the trained LoRA on the same prompt/seed. If not, the

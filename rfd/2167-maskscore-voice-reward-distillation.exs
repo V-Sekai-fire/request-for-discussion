@@ -23,13 +23,13 @@ defmodule RFD2167 do
     decision ~S"""
     Train a small reward model that predicts our composite score from
     raw audio, then freeze it as the reward signal for RL fine-tuning.
-    
+
       base       Gemma-4-12B QAT Q4_0 (Apache-2.0, already local)
       training   pairwise ranking on 150 rank pairs from RFD 2164
       input      (reference_audio, target_text, candidate_audio)
       output     scalar reward; ~50 ms per pair on MPS
       loss       Bradley-Terry on the 10-rank ladders
-    
+
     Same Gemma serves image + voice reward roles (subsumes the parked
     Qwen3-VL -> Gemma swap).
     """

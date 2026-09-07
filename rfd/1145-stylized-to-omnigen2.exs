@@ -19,14 +19,14 @@ defmodule RFD1145 do
 
     decision ~S"""
     Run it, and treat everything it touches as evaluation only.
-    
+
     **The hazard is the holdout.** The COCO-OOD stylized sets are
     `val2017` restyled, so they are held out twice over: derived from the
     blinded holdout, and generated. CLAUDE.md states the rule this loop is
     most likely to break — anything derived from `val2017` inherits its
     status, and a set generated from a held-out photo carries that photo's
     content wherever it goes.
-    
+
     So loop 3 produces no training data, whatever it produces. A stylized
     corpus that reaches a training run has taken the holdout with it, and
     nothing downstream would report that it had.
@@ -37,7 +37,7 @@ defmodule RFD1145 do
     proposes a restyled image, OmniGen2 edits it, EditScore scores the
     result and OmniGen2 repairs. The artifact is an edited png and the size
     is M, the same as loop 2.
-    
+
     What makes it a separate loop rather than a variant is where its input
     comes from, and that is a licensing question before it is a technical
     one.

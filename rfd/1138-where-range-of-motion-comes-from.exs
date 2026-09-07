@@ -17,7 +17,7 @@ defmodule RFD1138 do
 
     decision ~S"""
     Open. Three candidate sources and what each costs.
-    
+
     **Constructed, from our own assets.** Sweep ANNY's pose library or a
     licence-clean motion set through the rig and measure the envelope. True
     by construction, reproducible, and narrower than a body: it measures
@@ -25,7 +25,7 @@ defmodule RFD1138 do
     **AddBiomechanics ROM.** Real bodies, already in the kusudama datasets.
     The blocklist row is about identity and this is a joint angle, a
     distinction to decide rather than assume.
-    
+
     **Our own photographs.** Circular: recovering 3D angles from single
     uncalibrated views needs the limits the range would define. The blinded
     holdout cannot source it and the cosplay library is validation only.
@@ -36,7 +36,7 @@ defmodule RFD1138 do
     through each other and reports 0.022% of stature. Nothing in the loop
     sees it, because the residual measures reprojection and so does the
     referee. A joint bound would, and a bound needs a range of motion.
-    
+
     The only such data here is `addbio_*_rom` in the kusudama project.
     CLAUDE.md blocklists AddBiomechanics `.b3d` as an IDENTITY source, for
     a narrow and inequitable population. Bounding a joint angle is a

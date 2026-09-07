@@ -34,7 +34,7 @@ defmodule RFD2171 do
     section "Details", ~S"""
     - `atelier-workshop` (the pipeline). The compound keeps the elegance of the French loanword for readers who know it, and the plain-English gloss for those who do not. RFD 2136 (gacha ladder: 10-rung generation pipeline) is the concrete atelier-workshop.
     - `shuttle` (the portable-character deliverable), a portable VRM at rung 6 of RFD 2136. Retained without change; `nx-shuttle` already uses it for the same weft-across-warp metaphor. The two uses do not conflict: one shuttles a character out, the other shuttles a graph across.
-    
+
     Never use `atelier` alone in shipping prose (loanword, pretentious without the gloss). `Workshop` alone is permitted where context already fixes it (the 2021 `character-workshop` decision doc stays).
     """
 

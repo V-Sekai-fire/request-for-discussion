@@ -22,10 +22,10 @@ defmodule RFD2149 do
     Abstract interpretation is staged; the SFC types carry the fields,
     the analysis is a follow-on that needs either a Lean-native interval
     domain or a Z3 bridge.
-    
+
         char *grafcet_static_analyse(const char *sfc_json);
         void  grafcet_static_free(char *buf);
-    
+
     A stub in `c_src/grafcet_static_stub.c` returns `{"error":"stub"}` so
     the NIF links today; swapping the stub for the Lean-produced library
     closes this RFD. `DETAILS.md` carries semantics, staging, verification.
@@ -51,19 +51,19 @@ defmodule RFD2149 do
     AGRAFE's tool ships three: structural (step reachability), structural
     (pairwise concurrency), and abstract interpretation of variable
     domains. This RFD closes the first two and stages the third.
-    
+
     **Reachability.** The set of step ids that appear in some marking
     reachable from the initial marking by simultaneous-firing IEC 60848
     semantics. Implemented as a fuel-bounded BFS through the firing graph
     in `SFC.reachableSteps`. Fuel is a parameter; a real deployment
     supplies `2 ^ |steps|` as the state-space upper bound.
-    
+
     **Pairwise concurrency.** The set of `(a, b)` step-id pairs (ordered
     by name to avoid duplicates) that co-occur in some reachable marking.
     `SFC.concurrentPairs`. This is what surfaces an OR-divergence with
     non-exclusive receptivities: the two branches show up as a concurrent
     pair, which is a chart bug the author should see.
-    
+
     **Abstract interpretation.** Variable domain analysis over internal
     variables. Staged; the SFC types carry the fields (`Step.storedTarget`,
     receptivity `V.<var>` atoms), the analysis itself is empty. Landing
@@ -81,7 +81,7 @@ defmodule RFD2149 do
     for reachability (a step reachable under unrestricted variables is
     reachable under any restriction). Abstract interpretation replaces
     this with a real domain check.
-    
+
     `SFC.fire` is simultaneous-firing IEC 60848: every enabled transition
     fires at once, sources come out of the marking, targets go in. The
     result is `eraseDups`ed because the union may put a step in twice
@@ -90,14 +90,14 @@ defmodule RFD2149 do
 
     details "Why Lean", ~S"""
     Two reasons over "just port to Elixir".
-    
+
     **Proof.** The port opens the door to proving `reachableSteps` sound
     and complete against the semantics: `s ∈ SFC.reachableSteps sfc` iff
     there is a firing sequence from the initial marking that puts `s` in
     some marking. Those theorems land in `Theorems.lean`; they are the
     value-add over the Java tool, which asserts them rather than proving
     them.
-    
+
     **C ABI, no runtime.** Lean 4 compiles to C, links as a static or
     shared library, and imposes no runtime BEAM or JVM. That is the
     minimum interface a NIF can pull; the fully-linked NIF is one
@@ -106,21 +106,21 @@ defmodule RFD2149 do
 
     details "The C ABI", ~S"""
     `c_src/grafcet_static.h`:
-    
+
         char *grafcet_static_analyse(const char *sfc_json);
         void  grafcet_static_free(char *buf);
-    
+
     Ownership: caller frees. The reply is a null-terminated UTF-8 JSON
     string. Success shape:
-    
+
         {"reachable": ["init", "find", "pickup_from_table",
                        "unstack", "mark_done"],
          "concurrent_pairs": [["pickup_from_table", "unstack"]]}
-    
+
     Error shape:
-    
+
         {"error": "reason"}
-    
+
     The stub returns `{"error":"stub","reason":"...","see":"rfd 2144"}`
     until the Lean-produced shared library replaces it.
     """
@@ -131,7 +131,7 @@ defmodule RFD2149 do
     `libgrafcet_static.dylib`, calls `grafcet_static_analyse`, hands the
     JSON string back as an Elixir binary. Runs on a dirty CPU scheduler
     because the BFS is CPU-bound and unbounded in the fuel argument.
-    
+
     Exposed at `Taskweft.Grafcet.Static.analyse/1` in the taskweft
     project; called from the loader when a `.grafcet.jsonld` document
     lands, so a chart with an unreachable step or an unintended
@@ -151,10 +151,10 @@ defmodule RFD2149 do
       Lean library and the smoke-test executable.
     2. `./.lake/build/bin/grafcet_static` runs the blocks_get_or fixture
       (RFD 2148's OR-divergence worked example) and prints:
-    
+
           reachable: [init, find, pickup_from_table, unstack, mark_done]
           concurrent pairs: [(pickup_from_table, unstack)]
-    
+
       The concurrent pair correctly flags that the two OR branches share
       the same receptivity; an author-visible symptom of a chart where
       the AGRAFE tool would say "not mutually exclusive".
@@ -181,7 +181,7 @@ defmodule RFD2149 do
     here changes. Reachability and pairwise concurrency are graph queries
     on the SFC step/transition structure carried in the input JSON-LD;
     that structure is unchanged by whatever the emitter ships downstream.
-    
+
     A separate analyser reading the FBD output (to catch defects
     introduced during the FBD encoding; a mis-wired reset input, a
     missing first-scan latch) is a follow-on. This one stays authoritative

@@ -33,21 +33,21 @@ defmodule RFD2075 do
     giving fundamentally lower write latency than CockroachDB's Raft
     consensus path. For a write-heavy benchmark, the database is the
     bottleneck.
-    
+
     **2. Active Apple development.** FDB 7.3.79 (July 2026), actively
     maintained by Apple. CockroachDB's v-sekai fork is a dead engine with
     no upstream activity.
-    
+
     **3. Pure C client.** `libfdb_c` is a native C shared library, no JVM,
     no JNI, no gRPC bridge. The C API is callback-based
     (`fdb_future_set_callback`), integrating naturally with h2o's event
     loop.
-    
+
     **4. Native ACID transactions.** FDB transactions are built in:
     `fdb_database_create_transaction` / `fdb_transaction_set` /
     `fdb_transaction_commit`. No `BEGIN`/`COMMIT` SQL parsing, no pipeline
     mode complexity. The transaction object IS the transaction.
-    
+
     **5. No SQL layer overhead.** Raw key-value operations eliminate SQL
     parsing, planning, and optimization. The framework's throughput is
     measured against the raw storage engine, not an SQL interpreter.

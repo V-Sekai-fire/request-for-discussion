@@ -19,7 +19,7 @@ defmodule RFD2184 do
     Add a Lumina2 block family to stable-diffusion.cpp, then compose the
     OmniGen2 DiT out of those blocks, then land the GGUF weight loader that
     maps `calcuis/omnigen2-gguf`'s Q4_K_M safetensors to ggml tensors.
-    
+
     `DETAILS.md` carries the milestones, verification, scope revisions and what is not in this RFD.
     """
 
@@ -46,7 +46,7 @@ defmodule RFD2184 do
 
     details "Problem", ~S"""
     Session 2026-09-02 measured OmniGen2 on the 3090:
-    
+
     - **bf16 + sequential CPU offload:** 12 s/step × 50 = 10 min per 1024²
       image. 15.5 GB weights spilled through PCIe every step.
     - **bf16 + no offload:** fits at 97 % VRAM but activations at 1024²
@@ -54,30 +54,30 @@ defmodule RFD2184 do
     - **bitsandbytes nf4 (PTQ):** hits bnb's slow-kernel fallback because
       `hidden_size=2520` isn't a multiple of the fast kernel's blocksize=64.
       Measured 10+ min without completing one denoising step.
-    
+
     The community demonstrably runs OmniGen2 at Q4_K_M, `calcuis/omnigen2-gguf`
     ships the weights, `ComfyUI-GGUF` loads them. But that runtime is
     ComfyUI-specific and drags a large Python stack; the workspace prefers
     ggml through a headless C++ path (llama.cpp, stable-diffusion.cpp) so
     inference is one binary + one weights file, no orchestrator, no
     supply-chain surface for a rewrite of the diffusers pipeline.
-    
+
     `stable-diffusion.cpp` (leejet/stable-diffusion.cpp) is the right family:
     plain C/C++ on ggml, first-class GGUF, no Python at runtime. But its
     supported model list (SD1.x/2.x, SDXL, SD3, FLUX.1-dev/schnell,
     FLUX.2, Chroma, Qwen Image, plus image-edit models Flux-Kontext / Qwen
     Image Edit / Boogu / Mage-Flow-Edit) **does not include OmniGen2's
     architecture family**.
-    
+
     Session 2026-09-02 also verified, from `transformer_omnigen2.py` in
     the OmniGen2 checkout, that OmniGen2 is a **Lumina2-family DiT**, not
     a FLUX descendant:
-    
+
     ```python
     from .block_lumina2 import LuminaLayerNormContinuous, LuminaRMSNormZero,
         LuminaFeedForward, Lumina2CombinedTimestepCaptionEmbedding
     ```
-    
+
     Single `OmniGen2TransformerBlock`, not FLUX's `DoubleStreamBlock` +
     `SingleStreamBlock` split. Custom `OmniGen2RotaryPosEmbed`, not
     `FluxPosEmbed`. RMS norm + SwiGLU + fused attention, LLaMA-family
@@ -90,7 +90,7 @@ defmodule RFD2184 do
     Add a Lumina2 block family to stable-diffusion.cpp, then compose the
     OmniGen2 DiT out of those blocks, then land the GGUF weight loader that
     maps `calcuis/omnigen2-gguf`'s Q4_K_M safetensors to ggml tensors.
-    
+
     **Lean4 as an assist** (not a substitute for measurement): the ggml
     graph code is easy to write and hard to check numerically at scale.
     Each ggml block that gets added is paired with a Lean4 spec of the same
@@ -100,9 +100,9 @@ defmodule RFD2184 do
     composition of operations before we numerically diff against the
     PyTorch reference. This is the same shape `formal/rfdetr_proofs/` uses
     today for the RF-DETR backward primitives, the pattern transfers.
-    
+
     The two artefacts that verify each block:
-    
+
     1. **Lean4 spec**, the block's operation as a total function, typed
        in tensor shape + dtype (`LuminaRMSNormZero.apply` etc.), with the
        composition lemmas that let a `TransformerBlock` reduce to a
@@ -111,18 +111,18 @@ defmodule RFD2184 do
        block with ggml, runs it on synthetic input, diffs against
        PyTorch. Bound: whatever `test_backbone`-style tolerance the port's
        own gate later settles on.
-    
+
     A Lean4 proof that stands alone does not certify correctness of the
     ggml graph; a numeric diff that passes does not certify absence of
     edge-case bugs the diff's inputs did not exercise. **Both are required
     per block.** A block that has one but not the other is not "done" in
     this RFD's sense.
-    
+
     ### Milestones
-    
+
     Ladder in the Gall's-law sense: no rung is added until the one below
     it demonstrably runs a real reference.
-    
+
     1. **Fork stable-diffusion.cpp** into `weftspun/stable-diffusion-cpp-upstream`.
        Add `3-interactor/omnigen2-sdcpp-port/` as the workspace-side project
        holding the Lumina2 additions as PR-shaped patches + the Lean4 proofs
@@ -151,7 +151,7 @@ defmodule RFD2184 do
     9. **Ship a PR upstream to leejet/stable-diffusion.cpp** adding the
        Lumina2 block family as a first-class supported architecture, with
        OmniGen2 as the first consumer.
-    
+
     Estimated calendar time: **2-4 weeks** at a milestone every 2-4 days.
     Estimated per-rung compute: milestone 6's numeric diff needs the fp32
     PyTorch reference forward (~10 min on the 3090); nothing else needs
@@ -161,14 +161,14 @@ defmodule RFD2184 do
     details "Verification", ~S"""
     Every ggml block that lands carries the pair, Lean4 spec + numeric
     diff, described above. Rungs 5 and 6 additionally carry:
-    
+
     - **A negative control** (rule 2): a block wired with the wrong RoPE
       axis assignment MUST fail the numeric diff, and the Lean4 spec's
       composition lemma MUST refuse to type-check. Both directions.
     - **A silent-skip guard** (rule 3): any block whose ggml test is
       compile-skipped because a dependency isn't landed FAILS the port's
       CI job by name. No "green" summaries with 4 of 5 blocks tested.
-    
+
     The gate that decides RFD closure is not "the port compiles", it is
     **the fp32 forward-pass diff at milestone 6 is below the tolerance set
     in `test_omnigen2_forward.cpp`, and the Q4_K_M inference at milestone 7
@@ -199,7 +199,7 @@ defmodule RFD2184 do
     `Alpha-VLLM/Lumina-Image-2.0` in a source comment) and
     `src/model/diffusion/boogu.hpp`, an image-edit model with an even closer
     match to OmniGen2's config:
-    
+
     | Field | Boogu | OmniGen2 | Match? |
     |---|---|---|---|
     | `axes_dim` | `{40, 40, 40}` | `[40, 40, 40]` | **yes** |
@@ -212,15 +212,15 @@ defmodule RFD2184 do
     | `hidden_size` | 3360 | 2520 | different, config-only |
     | `num_double_stream_layers` | 8 | (n/a in OmniGen2 config) | needs check |
     | mllm text encoder | qwen_image | Qwen2.5-VL slice | different integration |
-    
+
     So the LOAD-BEARING work, `LuminaRMSNormZero`, `LuminaFeedForward`,
     3D RoPE with `axes_dim = {40, 40, 40}`, AdaLN modulation, is already
     implemented and shipping. The port is **adapt Boogu's implementation to
     OmniGen2's config + integrate OmniGen2's specific text-encoder path**,
     not build the Lumina2 blocks from scratch.
-    
+
     **Revised milestone map:**
-    
+
     - **Milestones 2, 3, 4:** superseded by existing Boogu/ZImage code. No
       new ggml blocks needed. Lean4 specs of the shared primitives still
       worthwhile as documentation, but not blocking.
@@ -234,12 +234,12 @@ defmodule RFD2184 do
       remap from calcuis's Q4_K_M to stable-diffusion.cpp's tensor names.
     - **Milestone 8 (CLI):** likely inherits from Boogu's CLI path with
       minimal changes.
-    
+
     **Revised calendar estimate: days, not weeks.** Milestones 5-8 as
     config-value/weight-remap work land in ~1-3 days of focused effort each.
     Milestone 9 (upstream PR) may be as small as "wire OmniGen2 into the
     existing Boogu code path with OmniGen2's config struct."
-    
+
     **Load-bearing question that decides the revision:** does Boogu's
     `DoubleStreamBlock` layout with OmniGen2's `hidden_size=2520` produce
     numerically-identical outputs to `OmniGen2TransformerBlock.forward()` in
@@ -247,7 +247,7 @@ defmodule RFD2184 do
     config-mostly. If no, some Boogu-specific choice (adaLN split, gating,
     residual placement) differs from OmniGen2 and warrants a per-difference
     audit, still much less work than a from-scratch block family.
-    
+
     The Lumina2 upstream benchmark (`Alpha-VLLM/Lumina-Image-2.0`, fired
     2026-09-03 as `bu8k6yvbc`) will settle the reference-speed baseline that
     milestones 6 and 7 must meet.

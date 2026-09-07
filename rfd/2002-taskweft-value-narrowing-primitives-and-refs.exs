@@ -60,7 +60,7 @@ defmodule RFD2002 do
     details "Motivation", ~S"""
     Three real, separate things make this worth a project-level record
     instead of a one-off note.
-    
+
     First, `zf_kv.c` and (this session's own new) `mud_kv.c` both hand-roll
     one packed C struct per stored value type (`zf_zone_val_t`,
     `zf_entity_val_t`, `mud_session_val_t`). Every new value type needs a new
@@ -70,14 +70,14 @@ defmodule RFD2002 do
     one shared tagged union covers every value type this project has needed
     so far (integers, floats, strings, small maps), and a plain-string
     convention covers references without a second tagged-union arm.
-    
+
     Second, `mud_kv.c`'s own turn-history keyspace
     (`zf/mud/turn/{session_id}/{turn}`) already stores a plain string value
     (the narration text) with no packed struct at all, it already,
     independently, arrived at the same "some values are just strings" shape
     `TwValue` uses, without deliberately copying it. That is a real signal
     the pattern fits this project's own data, not just taskweft's.
-    
+
     Third, `taskweft/nif`'s own NIF boundary (`c_src/taskweft_nif.cpp`)
     narrows even further at the actual ABI crossing: no `TwValue` ever
     crosses that boundary directly, only `std::string` (carrying serialized
@@ -92,16 +92,16 @@ defmodule RFD2002 do
 
     details "Proposal", ~S"""
     ### The real `TwValue` shape, as it exists in `taskweft/nif`
-    
+
     File `standalone/tw_value.hpp`:
-    
+
     ```cpp
     class TwValue {
     public:
         enum class Type { NIL, BOOL, INT, FLOAT, STRING, ARRAY, DICT };
         using Array = std::vector<TwValue>;
         using Dict  = tsl::ordered_map<std::string, TwValue>;
-    
+
     private:
         Type    _type = Type::NIL;
         bool    _b    = false;
@@ -111,7 +111,7 @@ defmodule RFD2002 do
         std::unique_ptr<Array>      _arr;
         std::unique_ptr<Dict>       _dct;
     ```
-    
+
     A hand-written tagged union, not `std::variant`, deep-copying copy
     constructor, a `stable_hash()` used for planner memoization (sorted dict
     keys, `NaN` and `-0.0` normalized), and structural `operator==`/`<`.
@@ -119,16 +119,16 @@ defmodule RFD2002 do
     matches Python dict insertion order, for determinism against a reference
     implementation, stated directly in the file's own header comment, not
     inferred.
-    
+
     ### References are `STRING`s shaped as JSON Pointers, not a distinct kind
-    
+
     `standalone/tw_loader.hpp`:
-    
+
     ```cpp
     // RFC 6901, parse a JSON Pointer into decoded reference tokens.
     // Empty string -> {} (whole-document reference).
     inline std::vector<std::string> parse_rfc6901(const std::string &ptr) { ... }
-    
+
     // Resolve a templated pointer into Taskweft's 2-segment (var, key) shape.
     inline std::pair<std::string, TwValue> parse_pointer(
             const std::string &ptr, const Params &params) {
@@ -137,10 +137,10 @@ defmodule RFD2002 do
         return {std::move(tokens[0]), TwValue(std::move(tokens[1]))};
     }
     ```
-    
+
     `standalone/tw_state.hpp` holds what those pointers resolve against: a
     flat `var -> Dict` map, not a slotmap or entity-handle table.
-    
+
     ```cpp
     struct TwState {
         tsl::ordered_map<std::string, TwValue> vars;
@@ -150,7 +150,7 @@ defmodule RFD2002 do
         TwValue get_var(const std::string &key) const { ... }
     };
     ```
-    
+
     RFD 2002 in `taskweft/taskweft` itself (its own numbering, a different
     sequence from this repo's) is where the `pointer/get`/`pointer/set`
     node-type convention was introduced, aligning on the glTF
@@ -161,19 +161,19 @@ defmodule RFD2002 do
     shape. RFD 2004 there is the one with the ABI-crossing line this
     project's earlier work already cited correctly: "Values cross the ABI
     as JSON, reusing existing `TwValue` (de)serialization."
-    
+
     ### Recommendation for this project's own FDB value encoding
-    
+
     `zf_kv.h`/`mud_kv.h` today: one packed C struct per value type, one
     hand-written encode function, one hand-written decode function, per
     type. Real, working, and already verified (this project's own golden-
     vector and multi-zone-isolation tests), but every new value type this
     project adds needs the same three-part boilerplate again.
-    
+
     Proposed direction, not yet built: a single narrow tagged value type for
     new FDB value encoding, shaped like `TwValue` but scoped to what this
     project's own data actually needs --
-    
+
     ```c
     typedef enum {
         ZF_VAL_INT,
@@ -184,14 +184,14 @@ defmodule RFD2002 do
                             not replaced, see Open questions below */
     } zf_value_kind_t;
     ```
-    
+
     with references handled the same way `TwValue` handles them: not a
     distinct kind, a `ZF_VAL_STRING` whose content is one of this project's
     own existing FDB key-builder outputs (`zf_kv_entity_key`,
     `mud_kv_turn_key`, ...), resolved by a plain FDB `fdb_async_get()` at
     the point of use, mirroring `parse_pointer`'s own resolve-at-use-time
     shape rather than eagerly dereferencing.
-    
+
     This is a real, scoped design proposal, not a decision, see Open
     questions below for what blocks moving from proposal to implementation.
     """
@@ -204,7 +204,7 @@ defmodule RFD2002 do
     deployed to. `mud_kv.c`'s own turn-history value (plain narration text,
     no struct) already follows this RFD's own recommendation by coincidence;
     treat that as the first real example, not an exception to fix.
-    
+
     Next real step, not done by this RFD: prototype `zf_value_kind_t` (or an
     equivalent) against one genuinely new value type this project needs
     next, and verify it against a real golden-vector test the same way

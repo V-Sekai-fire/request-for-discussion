@@ -18,13 +18,13 @@ defmodule RFD2184 do
     V3 parts ANNY joints do not cover (front-hair, back-hair, iris,
     eyewhite, eyebrow, eyelash, mouth, ear, torso-back, footwear,
     handwear, accessory, background) under two combined signals:
-    
+
     1. EditScore (RFD 1157 reward model) for semantic quality.
     2. Cross-view consistency on multi-view `sphere_hammersley_sequence`
        renders: same VRM from N angles must produce geometrically
        consistent per-part generations. This is a physical constraint,
        not a learned reward, and it stops EditScore from being gamed.
-    
+
     Mix the 10 joint-covered parts (`anny_v3_face_groups.py` in
     anny-render-corpus) into every batch as ground-truth anchor.
     """

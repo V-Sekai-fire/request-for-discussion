@@ -20,16 +20,16 @@ defmodule RFD1114 do
     `--app-content-top`, set on `:root`, never redefined on `.app`. A
     fixed pixel top, or a chrome-calc top without that measured
     variable, both regress this.
-    
+
     Both collapsed rails (`.sidebar`, `.weftspun-sidebar`) share one set
     of `--collapsed-rail-*` tokens for width, icon size, gap, and
     padding, defined once on `.app`. Neither rail takes a per-side
     override.
-    
+
     Three z-index layers stack in one order: side panels at 998
     (`--z-side-panel`), the header at 1001, the scene controls row at 1002. A side panel overlapping the header gets a `top` fix, never a
     z-index raise past 998.
-    
+
     See `DETAILS.md` for the full token table, the forbidden-change
     list, and the visual-check steps each rule's own checklist named.
     """
@@ -71,7 +71,7 @@ defmodule RFD1114 do
     Containers: `.collapsed-sidebar-icons`, `.collapsed-weftspun-icons`.
     Buttons: `.sidebar-icon`, `.weftspun-sidebar-icon`. Collapsed width:
     `.sidebar.collapsed`, `.weftspun-sidebar.collapsed`.
-    
+
     In-panel hamburgers (`.hamburger-menu`, `.weftspun-sticky-hamburger`)
     set `display: none` when collapsed. The scene-controls row hamburgers
     stay the active controls in that state.

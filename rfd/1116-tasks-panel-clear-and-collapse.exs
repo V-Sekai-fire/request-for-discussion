@@ -20,7 +20,7 @@ defmodule RFD1116 do
     set, unloading the viewport, then calls `clearCompletedTasks()`,
     which removes only the completed rows from the list. Task history
     outside the completed rows survives a viewport Clear.
-    
+
     `bash scripts/verify_tasks_panel_ui.sh` runs before a merge touching
     this toolbar.
     """

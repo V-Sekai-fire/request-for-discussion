@@ -58,7 +58,7 @@ defmodule RFD2026 do
     Chosen option: sentence-case prose with no prefix, because the
     subject stays a sentence a reader understands on sight, and the repos
     gain nothing from a commit type that no tool reads.
-    
+
     A commit subject opens with a capital letter and reads as a plain
     sentence, such as `Add the macOS and Windows release workflows`. It
     carries no `feat:`, `fix:`, `chore:`, or `type(scope):` prefix, and no
@@ -89,20 +89,20 @@ defmodule RFD2026 do
     details "Confirmation", ~S"""
     The rule is machine-checked by `scripts/check_commit_style.py`. It
     gates commits reachable in `<base>..HEAD` for three properties:
-    
+
     1. No Conventional-Commits `type:` or `type(scope):` prefix on the
        subject.
     2. Subject opens with an uppercase letter, digit, or bracket.
     3. Subject does not end with a trailing period.
-    
+
     The gate skips silently on any repo whose remotes do not include a
     `github.com/weftspun/...` URL, per the fork exception above. Its
     self-test carries six subject controls (three that pass, three that
     fail) plus four URL-classification controls (two own, two fork).
-    
+
         python scripts/check_commit_style.py --base origin/main
         python scripts/check_commit_style.py --self-test
-    
+
     Review reads each subject as a capitalised sentence with no type
     prefix and no trailing period. The history after this decision shows
     subjects in that form.

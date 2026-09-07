@@ -45,7 +45,7 @@ defmodule RFD2066 do
     `build/openxr/loop-slice.exe`) is the external feedback artifact. It
     runs the full hub-to-field-to-loot round trip and is the
     SteamVR-compatible path for PCVR reviewers.
-    
+
     The game-loop is complete when `smoke.sh` passes, the OpenXR Windows
     build exports without error, and at least one external reviewer runs
     the full loop against a live server.

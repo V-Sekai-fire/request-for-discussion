@@ -23,10 +23,10 @@ defmodule RFD2186 do
     handwear, and accessory overlays on the ANNY base mesh, per-scene
     (changes across frames unlike identity, which is frozen per
     character in RFD 2187).
-    
+
     Owns V3 parts (See-Through's taxonomy, RFD 2183 stopgap):
     `footwear`, `handwear`, `torso-back` (cloth surface), `accessory`.
-    
+
     Trained under RFD 2184's three-signal pattern: EditScore (RFD 1157
     reward model) for semantic quality, cross-view consistency on
     `sphere_hammersley_sequence` renders for anti-hacking, and

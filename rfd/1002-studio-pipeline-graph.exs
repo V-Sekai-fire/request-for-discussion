@@ -17,16 +17,16 @@ defmodule RFD1002 do
     Model the pipeline as a locked node graph. Each node is one stage.
     Each edge is a dependency. The graph has two views: a flow graph
     and a kanban board.
-    
+
     Stages, in order: Prompt, Image, Layers, Mesh, Rig, Motion, Export.
-    
+
     Runnable kinds, in order: text_to_image, layer_decomposition,
     image_to_3d, auto_rigging, motion_validation.
-    
+
     The data model stays pure. The executor runs the nodes. Old saved
     projects migrate to the new template. Migration inserts missing
     stages.
-    
+
     See `DETAILS.md` for file references.
     """
 

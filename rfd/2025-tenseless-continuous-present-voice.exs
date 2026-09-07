@@ -55,22 +55,22 @@ defmodule RFD2025 do
     sentence that states a present truth stays correct as long as the code
     it describes stays the same, and goes stale visibly the moment the
     code changes.
-    
+
     Every comment and documentation sentence states what is currently true
     of the system. Prose describes behaviour ("the parser streams
     tokens"), and an unfinished area reads as a present gap ("the parser
     handles no Unicode escapes yet") rather than as a task or a past edit.
     The voice covers code comments, doc pages, and decision records alike.
-    
+
     The voice rules out three habits:
-    
+
     - Past-tense narration of edits, such as "removed the legacy path" or
       "we switched to a queue".
     - Future or imperative planning, such as "will add validation" or
       "TODO: handle retries".
     - Temporal qualifiers that age, such as "now", "currently changed", or
       "previously".
-    
+
     A TODO document states each open item as a present gap, so the file
     reads as a description of where the system stands rather than a
     logbook of intentions.

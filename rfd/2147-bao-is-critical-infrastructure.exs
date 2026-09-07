@@ -16,7 +16,7 @@ defmodule RFD2147 do
     decision ~S"""
     Bao's availability class rises to match its consumers'. Recovery
     becomes hands-off, not operator-with-1P.
-    
+
     1. **Replicas across zones, coordinated over FDB.** `ha_enabled = true`,
        three Bao machines minimum (matching FDB's three-zone spread and
        fault-tolerance-1 posture); consumers hit `weftspun-bao.internal`.
@@ -30,7 +30,7 @@ defmodule RFD2147 do
        records have Cloudflare terminating TLS at its edge, every byte
        plaintext at CF for the round trip. Workspace services stay
        DNS-only; edge cache, if needed, is Fly-side or origin-side.
-    
+
     Details, sub-decisions, migration in `DETAILS.md`. S2147.
     """
 
@@ -54,7 +54,7 @@ defmodule RFD2147 do
     operator. Under that arrangement, Bao being down meant one thing was
     down: the Bao API. Everything else routed around Bao by holding its
     credentials in Fly secrets or 1P.
-    
+
     RFD 2146 turned that inside out. Every consumer now authenticates to
     Bao with its per-service cert, reads its credentials from Bao at
     runtime, and coordinates state through Bao's KV. When Bao goes down,
@@ -73,14 +73,14 @@ defmodule RFD2147 do
     workload; 512 MiB is the ceiling to size for once cache and
     per-connection state land). Consumers reach `weftspun-bao.internal`,
     which Fly's DNS round-robins across live replicas.
-    
+
     Standby replicas can either serve reads directly (`disable_performance_
     standby = false`) or forward every request to the leader. Read-serving
     standbys are the right choice given the read/write ratio the cert-auth
     path establishes (many reads per one write), and standby-served reads
     cannot go stale beyond FDB's read version, which is what we already
     key cached grants on.
-    
+
     The 3-machine scale exposes one wrinkle: three machines mean three
     seal states, three unseal calls per fleet restart. This is the reason
     auto-unseal is not optional.
@@ -89,7 +89,7 @@ defmodule RFD2147 do
     details "Auto-unseal: KMS wrapper, Shamir stays as break-glass", ~S"""
     Shamir with a manual share is the right seal for one-of-one, wrong for
     three-of-three. Options:
-    
+
     - **Cloud KMS seal** (AWS KMS, GCP KMS, Azure Key Vault, Oracle). The
       key stays in the cloud KMS; Bao decrypts the master key at boot via
       the KMS API. Standard pattern. Cost is per-request against the KMS,
@@ -100,13 +100,13 @@ defmodule RFD2147 do
     - **HSM / PKCS#11**. Right answer for a fleet in a datacenter with
       its own HSM. Overkill for this workspace's scale.
     - **HCP Vault / OpenBao managed**. Not this workspace's shape.
-    
+
     Recommendation: cloud KMS. The workspace does not yet have a KMS
     account of any of the three big providers; standing one up is the
     tax. Fly does not offer a first-party KMS at this scale. The Shamir
     key in 1P stays as break-glass for the day the KMS itself is the
     outage (RFD 2144 defect #11's day).
-    
+
     An auto-unseal wrapper does not change the CRL-loop bug logged
     during the DR (Bao's authenticated paths going flaky after a
     particular sequence of issuer imports). That is a separate item.
@@ -114,11 +114,11 @@ defmodule RFD2147 do
 
     details "Consumer-side cache: what and for how long", ~S"""
     Every read against Bao is a Bao dependency. Two ends of the spectrum:
-    
+
     - Never cache. Simple, correct, hot dependency on Bao.
     - Cache forever. Wrong for rotating secrets (RFD 2145 leaves at
       90 days; a hot bearer at hour 720 leaks past its rotation).
-    
+
     The middle: cache for a duration shorter than the shortest thing the
     cached value protects. For a DNS bearer that itself has a Cloudflare
     API-token lifetime, minutes-to-an-hour is safe. For an FDB cluster
@@ -135,11 +135,11 @@ defmodule RFD2147 do
     trip. CF is not the workspace's tenant. That is a MITM regardless of
     intent, and it is not compatible with services that carry auth
     tokens or hostname-bound credentials.
-    
+
     Records for services this workspace runs stay `proxied: false`. Edge
     caching, if it is ever needed, lives Fly-side (Fly's own Anycast +
     edge) or origin-side (an in-process cache).
-    
+
     One record in the `chibifire.com` zone as of 2026-09-01 is
     CF-proxied: `hub-700a.chibifire.com`, pointing at
     `173.180.240.105 / 2001:569:7e58:dd00:...`. That is a personal home
@@ -150,7 +150,7 @@ defmodule RFD2147 do
 
     details "Migration path", ~S"""
     Enabling all of this on the live cluster is:
-    
+
     1. Update `service-openbao/config-fdb.hcl`: `ha_enabled = "true"`,
        pick a `disable_performance_standby` value.
     2. Add seal wrapper config for chosen KMS.
@@ -162,7 +162,7 @@ defmodule RFD2147 do
        handoff.
     6. Retire the manual unseal path in scripts and runbooks (leave the
        Shamir break-glass entry in RFD 2144's DR runbook).
-    
+
     The blocker between now and step 1 is picking the KMS provider.
     That is a policy question with two implications: cost surface and
     "which cloud can be the workspace's identity trust anchor". Neither

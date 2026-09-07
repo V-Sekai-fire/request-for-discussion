@@ -43,7 +43,7 @@ defmodule RFD2091 do
 
     details "Verification", ~S"""
     Real, not assumed:
-    
+
     - `mud/guest/test/gyre_smoke_test.cpp`: a native (non-riscv64) link of
       `mud_guest.cpp` that drives `mud_boot()` and `mud_step()` through the
       whole Gyre loop (look, go east, look). Built and run locally against
@@ -65,7 +65,7 @@ defmodule RFD2091 do
       mock. It has not run against one yet. It stays red until a real
       deployment with the Gyre domain exists, the same state
       `mud.spec.ts` itself documented before its own first real deploy.
-    
+
     The team did not verify a `riscv64-musl` and `libriscv` build and run
     of the changed guest code. The team's own environment had no cross
     toolchain for that. The team did not attempt an FDB or H2O real build
@@ -78,7 +78,7 @@ defmodule RFD2091 do
     differential test, matching `DIFFERENTIAL_TEST.md`'s own Middleham
     precedent. Only then treat this as more than a reviewed, natively
     tested diff.
-    
+
     `rfd/0085`'s fuller room graph, contract catalog, and item set stay
     design only. Porting them past the two-room smallest loop is a
     separate, larger task. This RFD does not claim the team finished that

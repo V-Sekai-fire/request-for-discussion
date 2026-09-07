@@ -30,16 +30,16 @@ defmodule RFD1157 do
     deployed size is the 8B, at 6.75 GiB NF4 in `weft_score.py`. Four
     bits fit 8 GB and eight land on the ceiling, so this meets RFD 1128
     after all.
-    
+
     The adapter holds 516 tensors at either size: 504 language-model
     layers and 12 at `deepstack_merger_list.{0,1,2}.linear_fc{1,2}`,
     with no `visual.blocks.*`, so the ViT is stock.
-    
+
     Whether that matters turns on where the compiled part ends, and
     `tools/mtmd/clip.cpp:3850` answers it:
-    
+
         // Hailo HEF replaces ViT + projector, so mm_* tensors are not loaded.
-    
+
     The projector is inside the artifact and the GGUF's `mm_*` tensors
     are never read, so a stock encoder carries stock mergers and
     EditScore's 12 are never applied. The failure is silent: a score

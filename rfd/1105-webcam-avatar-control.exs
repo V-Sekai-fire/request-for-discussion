@@ -22,7 +22,7 @@ defmodule RFD1105 do
     session, reading the draft WebXR `XRFrame.expressions` feature when
     a user agent grants it. Neither driver touches `enableVR()`,
     `enableAR()`, or reference spaces.
-    
+
     See `DETAILS.md` for the feature list, the Android XR native-bridge
     path, and remote-logging setup for headset debugging.
     """
@@ -50,7 +50,7 @@ defmodule RFD1105 do
     `expressionManager` and humanoid bones. Features: blink (optionally
     per eye), mouth shapes (Ah, Ee, Oh, Ou), and smoothed neck/head
     rotation from the same landmarks.
-    
+
     `src/library/webcamAvatarDriver.js` is created, started, and stopped
     from `SceneContext`; the UI toggle lives in `BottomDisplayMenu`. It
     acts on the same VRM files the rest of the app uses (character
@@ -71,14 +71,14 @@ defmodule RFD1105 do
     `XR_ANDROID_face_tracking` weights into the page through
     `nativeFaceBridge.js`. See RFD 1096 for that native path, and
     `native/android-xr-face-bridge/README.md`.
-    
+
     On a supported user agent (Chrome on Android XR, for instance),
     immersive VR and AR sessions request the optional
     `expression-tracking` feature descriptor. When granted, each
     `XRFrame` may expose `frame.expressions`, a draft WebXR Expression
     Tracking map of roughly FACS-like weight keys; the runtime maps
     headset sensors to `XR_ANDROID_face_tracking` semantics underneath.
-    
+
     Implemented: `src/library/xrExpressionTrackingDriver.js` reads
     `XRFrame.expressions` and maps weights heuristically to VRM presets
     (`Blink`, `Ah`, `Ee`, `Oh`, `Ou`), with light per-VRM smoothing.
@@ -88,23 +88,23 @@ defmodule RFD1105 do
     `session.enabledFeatures` includes it, and applies the mapping every
     XR render frame. `SceneContext` registers the same VRM-list resolver
     webcam control uses.
-    
+
     Debugging: append `?xrExpressionProbe=1` to log one `XRFrame`
     introspection (`maybeProbeXRFrame`).
-    
+
     ### Why a second permission prompt may not appear
-    
+
     On Android XR, Chrome can fold several sensitive capabilities,
     including tracked face, eye, and hand data, into the initial WebXR
     or spatial-mapping consent, rather than a separate dialog per
     sensor, per Android's own "Develop for the web on Android XR" page.
     No extra prompt after entering AR or VR is the expected case.
-    
+
     Separately, `expression-tracking` is optional: if a Chrome build
     does not implement the draft `XRFrame.expressions` API yet,
     `session.enabledFeatures` may not list it, and the avatar's face
     stays neutral in XR with no error.
-    
+
     Galaxy XR development workaround: install the "Weftspun XR Face"
     APK, run `npm run dev` on a PC, open Chrome's menu, "Open in Chrome
     for WebXR (+ face)" (`?nativeFaceRelay=1`), and keep the APK visible
@@ -112,7 +112,7 @@ defmodule RFD1105 do
     can relay to the dev server during Chrome's Full Space AR. See RFD
     1096 and the Android Studio AI brief (weftspun-3d-studio-designs'
     own numbering) for the fuller setup.
-    
+
     First-frame diagnostics log as `[XR][expression] First-frame
     diagnostics`, with `enabledFeatures`, `expressionTrackingGranted`,
     and `expressionsNonNull`. Forward that line from a headset with
