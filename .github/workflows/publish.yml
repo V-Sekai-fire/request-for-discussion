@@ -17,6 +17,7 @@ jobs:
   # workflow's own terms.
   site:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write
     steps:
@@ -60,6 +61,7 @@ jobs:
 
   book:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: site
     continue-on-error: true
     permissions:
