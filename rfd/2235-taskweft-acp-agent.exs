@@ -138,20 +138,44 @@ defmodule RFD2235 do
     editor that answers instantly, five runs of ten steps, on this desk on
     2026-09-07:
 
-    | store mode              | p50 ms/step | p95 ms/step |
-    | ----------------------- | ----------- | ----------- |
-    | floor (memory store)    | 0.31        | 0.41        |
-    | plain (helper + SQLite) | 1.64        | 1.95        |
-    | fabric (weft_fdb)       | not run     | not run     |
+    | store mode, on this desk | p50 ms/step | p95 ms/step |
+    | ------------------------ | ----------- | ----------- |
+    | floor (memory store)     | 0.31        | 0.41        |
+    | plain (helper + SQLite)  | 1.64        | 1.95        |
+    | fabric (weft_fdb)        | not run     | not run     |
 
-    The fabric row waits for the cluster, which is 6PN-only, so it is measured
-    from the Fly machine once its credentials exist. Plain mode costs about
-    1.3 ms per step over the floor: one helper round trip and one SQLite
-    transaction per event. On the desk the taskweft NIF and the helper build
-    with llvm-mingw (operator directive: not Visual Studio), and the stdio
-    bridge answers `initialize` two seconds after launch. The fabric build
-    needs `FDB_API_VERSION=730` defined, as the bao plugin's cgo flags do; the
-    first Fly build failed without it.
+    The cluster is 6PN-only, so the fabric row is measured from the Fly
+    machine (`shared-cpu-1x`, 512 MB, sjc) once its credentials exist, the
+    same five runs through `bin/taskweft_acp_deploy rpc`:
+
+    | store mode, on the Fly machine | p50 ms/step | p95 ms/step |
+    | ------------------------------ | ----------- | ----------- |
+    | floor (memory store)           | 0.31        | 0.46        |
+    | plain (helper + SQLite)        | 26.43       | 29.38       |
+    | fabric (weft_fdb)              | 27.20       | 32.21       |
+
+    On the machine the cluster costs what the machine's own disk costs: a
+    step is several appended events, each one commit, and the machine's
+    root disk syncs about as slowly as the cluster answers. The desk's
+    plain row is the same helper on a local NVMe. The bench leaves its
+    `bench_<stamp>_*` databases in the cluster; `fdbcli` clears them.
+
+    Reaching the cluster exposed two packaging defects the plain mode never
+    could: the migrations directory and the built-in domain path were
+    resolved at compile time into the build tree, so the first boot that
+    connected crashed and Fly stopped the machine after ten restarts. Both
+    are runtime lookups now, and a defect while opening the store faults the
+    release (operator: "it must fault"); only an unreachable cluster degrades.
+
+    The client certificate is `fdb-taskweft-acp.chibifire.com`, issued by
+    bao's PKI role `fdb-server` for 90 days (RFD 2145) and placed as the four
+    secrets of RFD 2134 by `scripts/issue_cluster_credentials.sh`, which is
+    written as a state machine over observed states (PITFALLS 12). On the
+    desk the taskweft NIF and the helper build with llvm-mingw (operator
+    directive: not Visual Studio), and the stdio bridge answers `initialize`
+    two seconds after launch. The fabric build needs `FDB_API_VERSION=730`
+    defined, as the bao plugin's cgo flags do; the first Fly build failed
+    without it.
     """
 
     drafted_by :ai

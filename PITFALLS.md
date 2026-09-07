@@ -218,3 +218,35 @@ immediately.
 
 **When not to enable:** a repo with a single committer and rarely-concurrent PRs. The
 queue adds serialisation overhead where there is no contention to serialise.
+
+## 12. A timeout is not a state
+
+The hosted door's cluster credentials took four runs to land on 2026-09-07, and every
+failed run ended in a timeout standing in for a state nobody had read:
+
+1. `op read` from a background process reported `authorization timeout`. The state was
+   "a human has not approved the prompt", and no retry from that process could change it.
+2. bao's listener answered `tls: certificate required`. The state was "no client
+   certificate presented": the script carried three of the credential helper's four
+   variables.
+3. flyctl on Windows exits 1 after a clean `ssh console -C`. Under `pipefail` the
+   script stopped after the leaf was minted, and its cleanup trap deleted the
+   material, silently.
+4. `fly secrets set` triggered a deploy whose health checks never passed. The state
+   was a crash loop on a priv path resolved at compile time, which the log states
+   plainly as `max restart count of 10`.
+
+A fifth, while measuring: a log poll matched `BENCH-DONE` in the line that echoed the
+command it was waiting for, and reported done before the download had finished.
+
+**Guard:** a multi-step operation is a state machine over observed states. Each step
+names the state it needs and the state it leaves behind, checks the artifact rather than
+the tool's exit status (a leaf that verifies against its chain, a cluster string with an
+`@`, the four secret names in the list, a health body that says `primary`), and a failure
+names the state. Minted material is placed before anything optional runs and is never
+deleted by a later step's failure. A human approval is a state the human's own process
+reaches (`! <command>` in the session), not something to wait out. A packaging defect
+faults the release (operator, 2026-09-07: "it must fault"); only an unreachable cluster
+degrades. `scripts/issue_cluster_credentials.sh` in `transport-taskweft-acp` is the
+shape, and rule 3 above (a silent skip reads like a pass) is the same guard for a
+script's silent stop.
