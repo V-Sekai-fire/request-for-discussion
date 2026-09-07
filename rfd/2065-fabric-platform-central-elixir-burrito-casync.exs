@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2065. `mix rfd.render` in rfd_dsl/ renders rfd/2065-fabric-platform-central-elixir-burrito-casync/README.md and
+# RFD 2065. `mix rfd.render` renders rfd/2065-fabric-platform-central-elixir-burrito-casync/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2065 do
   use RFD.DSL

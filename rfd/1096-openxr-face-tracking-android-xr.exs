@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1096. `mix rfd.render` in rfd_dsl/ renders rfd/1096-openxr-face-tracking-android-xr/README.md and
+# RFD 1096. `mix rfd.render` renders rfd/1096-openxr-face-tracking-android-xr/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1096 do
   use RFD.DSL

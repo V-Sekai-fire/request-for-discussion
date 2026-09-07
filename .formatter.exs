@@ -4,9 +4,15 @@
 # `*/*` reached scripts/ when the logbook merged in, and its .exs files were
 # never mix-formatted. Each half keeps the convention it arrived with.
 [
-  inputs: ["[0-9][0-9][0-9][0-9]-*/*.{ex,exs}", "rfd/*.exs", "SERIALS*.exs"],
+  inputs: [
+    "{mix,.formatter}.exs",
+    "{config,lib,test}/**/*.{ex,exs}",
+    "[0-9][0-9][0-9][0-9]-*/*.{ex,exs}",
+    "rfd/*.exs",
+    "SERIALS*.exs"
+  ],
   line_length: 98,
-  # RFD.DSL's fields (rfd_dsl/.formatter.exs exports the same list) read as
+  # RFD.DSL and RFD.Register fields read as
   # declarations: `state :discussion`, not `state(:discussion)`.
   locals_without_parens: [
     rfd: 3,

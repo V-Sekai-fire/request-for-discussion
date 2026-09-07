@@ -48,19 +48,6 @@ defmodule RFDTest do
     assert RFD.Doc.details(doc()) == nil
   end
 
-  test "the qmd rendering carries front matter and the body without title or metadata" do
-    q = RFD.Doc.qmd(doc(flight_level: :l2))
-
-    assert String.starts_with?(
-             q,
-             "---\nrfd: 2999\ntitle: \"a test RFD\"\nstate: \"discussion\"\n"
-           )
-
-    assert q =~ "flight_level: \"L2\"\n---\n\n## Decision\n"
-    refute q =~ "# RFD 2999:"
-    refute q =~ "**State:**"
-  end
-
   # Negative controls: each must be refused, or the DSL certifies the defect.
   test "an unknown state is refused" do
     assert ["state :draft is not one of" <> _] = RFD.Doc.problems(doc(state: :draft))

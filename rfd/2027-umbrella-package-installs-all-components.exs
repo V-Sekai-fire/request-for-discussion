@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2027. `mix rfd.render` in rfd_dsl/ renders rfd/2027-umbrella-package-installs-all-components/README.md and
+# RFD 2027. `mix rfd.render` renders rfd/2027-umbrella-package-installs-all-components/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2027 do
   use RFD.DSL

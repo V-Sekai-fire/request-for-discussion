@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2058. `mix rfd.render` in rfd_dsl/ renders rfd/2058-webtransport-persistent-framed-stream/README.md and
+# RFD 2058. `mix rfd.render` renders rfd/2058-webtransport-persistent-framed-stream/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2058 do
   use RFD.DSL

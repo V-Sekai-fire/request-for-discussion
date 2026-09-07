@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2162. `mix rfd.render` in rfd_dsl/ renders rfd/2162-maskscore-usdz-skinning-and-15-edit-emit/README.md and
+# RFD 2162. `mix rfd.render` renders rfd/2162-maskscore-usdz-skinning-and-15-edit-emit/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2162 do
   use RFD.DSL

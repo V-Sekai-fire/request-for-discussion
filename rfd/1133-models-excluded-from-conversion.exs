@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1133. `mix rfd.render` in rfd_dsl/ renders rfd/1133-models-excluded-from-conversion/README.md and
+# RFD 1133. `mix rfd.render` renders rfd/1133-models-excluded-from-conversion/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1133 do
   use RFD.DSL

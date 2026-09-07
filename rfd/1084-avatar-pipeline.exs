@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1084. `mix rfd.render` in rfd_dsl/ renders rfd/1084-avatar-pipeline/README.md and
+# RFD 1084. `mix rfd.render` renders rfd/1084-avatar-pipeline/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1084 do
   use RFD.DSL

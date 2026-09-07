@@ -3,15 +3,12 @@
 
 defmodule RFD.Doc do
   @moduledoc """
-  One RFD as data, the shape RFD 1000 gives it, and the three renderings of it.
+  One RFD as data, the shape RFD 1000 gives it, and the two renderings of it.
 
-  The README rendering is what `scripts/check-rfd-structure.py` and
-  `scripts/render_site.py` read: CommonMark, `# RFD NNNN: title`, the metadata
-  lines State / Feature / Scope in that order, then the spine Decision, Problem,
-  References, Related, then the attestation sentence. `render_site.py` turns that
-  README into the `index.md` Quarto lists, so a README this module writes is a
-  Quarto document by construction. `qmd/1` writes the same document with YAML
-  front matter for a Quarto project that has no `render_site.py` in front of it.
+  The README rendering is what `scripts/check-rfd-structure.py` and the site
+  read: CommonMark, `# RFD NNNN: title`, the metadata lines State / Feature /
+  Scope in that order, then the spine Decision, Problem, References, Related,
+  then the attestation sentence.
   """
 
   @states ~w(abandoned committed discussion ideation moved prediscussion published)a
@@ -149,7 +146,7 @@ defmodule RFD.Doc do
     end
   end
 
-  @doc "The README as the gates and render_site.py read it."
+  @doc "The README as the gates and the site read it."
   def readme(%__MODULE__{} = d) do
     meta =
       [
@@ -219,32 +216,6 @@ defmodule RFD.Doc do
     Enum.map_join(Enum.reject(parts, &(&1 in [nil, false])), "\n\n", & &1) <> "\n"
   end
 
-  @doc "A Quarto document with YAML front matter, the shape render_site.py's index.md has."
-  def qmd(%__MODULE__{} = d) do
-    front =
-      [
-        {"rfd", d.serial},
-        {"title", d.title},
-        {"state", Atom.to_string(d.state)},
-        d.feature && {"feature", d.feature},
-        d.scope && {"scope", d.scope},
-        d.flight_level && {"flight_level", d.flight_level |> Atom.to_string() |> String.upcase()}
-      ]
-      |> Enum.reject(&(&1 in [nil, false]))
-      |> Enum.map_join("\n", fn {k, v} -> "#{k}: #{yaml(v)}" end)
-
-    body =
-      %{d | front_matter: nil}
-      |> readme()
-      |> String.split("\n")
-      |> Enum.drop_while(
-        &(&1 == "" or String.starts_with?(&1, "# ") or String.starts_with?(&1, "**"))
-      )
-      |> Enum.join("\n")
-
-    "---\n#{front}\n---\n\n#{body}"
-  end
-
   @doc "The register row fragment for SERIALS-*.usda, for a human to paste or a tool to insert."
   def register_row(%__MODULE__{} = d, slug) do
     level =
@@ -272,7 +243,4 @@ defmodule RFD.Doc do
       do: "",
       else: "\n\n`DETAILS.md` carries the rest of this RFD."
   end
-
-  defp yaml(v) when is_integer(v), do: Integer.to_string(v)
-  defp yaml(v) when is_binary(v), do: inspect(v)
 end

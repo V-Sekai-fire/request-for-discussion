@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1138. `mix rfd.render` in rfd_dsl/ renders rfd/1138-where-range-of-motion-comes-from/README.md and
+# RFD 1138. `mix rfd.render` renders rfd/1138-where-range-of-motion-comes-from/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1138 do
   use RFD.DSL

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2086. `mix rfd.render` in rfd_dsl/ renders rfd/2086-defer-nogod-gossip-zone-authority/README.md and
+# RFD 2086. `mix rfd.render` renders rfd/2086-defer-nogod-gossip-zone-authority/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2086 do
   use RFD.DSL

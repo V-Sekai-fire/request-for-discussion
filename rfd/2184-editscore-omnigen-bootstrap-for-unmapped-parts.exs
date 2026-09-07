@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2184. `mix rfd.render` in rfd_dsl/ renders rfd/2184-editscore-omnigen-bootstrap-for-unmapped-parts/README.md and
+# RFD 2184. `mix rfd.render` renders rfd/2184-editscore-omnigen-bootstrap-for-unmapped-parts/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2184 do
   use RFD.DSL

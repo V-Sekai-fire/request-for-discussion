@@ -249,7 +249,7 @@ def base_register(root, base):
         fh.write(r.stdout)
     r = subprocess.run(
         ["mix", "rfd.usda", fh.name],
-        cwd=os.path.join(root, "rfd_dsl"), capture_output=True, text=True, shell=os.name == "nt",
+        cwd=root, capture_output=True, text=True, shell=os.name == "nt",
     )
     os.unlink(fh.name)
     if r.returncode != 0:

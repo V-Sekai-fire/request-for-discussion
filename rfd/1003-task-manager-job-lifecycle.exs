@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1003. `mix rfd.render` in rfd_dsl/ renders rfd/1003-task-manager-job-lifecycle/README.md and
+# RFD 1003. `mix rfd.render` renders rfd/1003-task-manager-job-lifecycle/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1003 do
   use RFD.DSL

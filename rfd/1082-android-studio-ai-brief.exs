@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1082. `mix rfd.render` in rfd_dsl/ renders rfd/1082-android-studio-ai-brief/README.md and
+# RFD 1082. `mix rfd.render` renders rfd/1082-android-studio-ai-brief/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1082 do
   use RFD.DSL

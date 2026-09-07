@@ -346,7 +346,7 @@ defmodule RFD.Import do
     # Copyright (c) 2026 K. S. Ernest (iFire) Lee
     # SPDX-License-Identifier: MIT
     #
-    # RFD #{doc.serial}. `mix rfd.render` in rfd_dsl/ renders rfd/#{slug}/README.md and
+    # RFD #{doc.serial}. `mix rfd.render` renders rfd/#{slug}/README.md and
     # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
     defmodule RFD#{doc.serial} do
       use RFD.DSL

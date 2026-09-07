@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2188. `mix rfd.render` in rfd_dsl/ renders rfd/2188-one-ggml-across-workspace/README.md and
+# RFD 2188. `mix rfd.render` renders rfd/2188-one-ggml-across-workspace/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2188 do
   use RFD.DSL

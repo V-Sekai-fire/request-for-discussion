@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1055. `mix rfd.render` in rfd_dsl/ renders rfd/1055-beam-workers-local-first/README.md and
+# RFD 1055. `mix rfd.render` renders rfd/1055-beam-workers-local-first/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1055 do
   use RFD.DSL

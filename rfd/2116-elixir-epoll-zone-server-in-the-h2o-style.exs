@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2116. `mix rfd.render` in rfd_dsl/ renders rfd/2116-elixir-epoll-zone-server-in-the-h2o-style/README.md and
+# RFD 2116. `mix rfd.render` renders rfd/2116-elixir-epoll-zone-server-in-the-h2o-style/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD2116 do
   use RFD.DSL

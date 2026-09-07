@@ -1,7 +1,7 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 1035. `mix rfd.render` in rfd_dsl/ renders rfd/1035-legacy-model-identifiers/README.md and
+# RFD 1035. `mix rfd.render` renders rfd/1035-legacy-model-identifiers/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
 defmodule RFD1035 do
   use RFD.DSL
