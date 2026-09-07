@@ -189,6 +189,8 @@ defmodule Serials.VSekaiFabric do
       serial 2230, "ggml-adapters-in-godot-sandbox"
       serial 2232, "rfd-dsl-in-elixir", flight_level: :l2
       serial 2233, "close-out-gates-red-green-scout"
+      serial 2234, "dress-on-pipeline"
+      serial 2235, "taskweft-acp-agent"
     end
 
     deleted do
