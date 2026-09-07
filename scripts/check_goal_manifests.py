@@ -85,6 +85,7 @@ def check(text=None):
 
 def self_test():
     """Each control must make `check` fail. A gate with none certifies whatever it is given."""
+    global archived_repos
     real = CLAUDE_MD.read_text(encoding="utf-8")
     archived, err = archived_repos()
     if archived is None:
@@ -92,7 +93,6 @@ def self_test():
         return 1
     # An organisation with nothing archived still has to prove the gate can fire, so
     # the victim is planted into the archived set the controls read.
-    global archived_repos
     real_archived_repos = archived_repos
     if archived:
         victim = sorted(archived)[0]
