@@ -2,10 +2,7 @@
 
 Every RFD and both serial registers as Elixir sources; one Mix project renders, gates, serves and answers them over MCP.
 
-    rfd/NNNN-slug.exs          one RFD, `use RFD.DSL`
-    SERIALS*.exs               one serial register per site, `use RFD.Register`
-    lib/                       the DSL, the renderers, the site, the MCP server
-    logbook/                   what was measured, next to what it retracts
+An RFD is `rfd/NNNN-slug.exs`; a site's serial register is `SERIALS*.exs`:
 
     defmodule RFD2232 do
       use RFD.DSL
