@@ -174,6 +174,25 @@ defmodule RFD2237 do
     controller ran through `mix taskweft_acp.body` over its trace, 24 ticks
     and no fault, every tick an `acp/tick` event in session
     `acp_eea7cd92dfa237ba` of the desk's plain store.
+
+    The controller corpus (`taskweft-fbd-teacher`, family `react`): five
+    templates (walk from the stick, face the stick, tracker lost freezes the
+    chains, a button plays a style then idles, a speed-limited run), 5,000
+    rows in 534 seconds at 8 workers, 1,000 per template, 4,500 train and
+    500 holdout with 100 of each template held out, three constructed traces
+    per row scored by the reference scan, no nulls in any parquet, published
+    as `chibifire/taskweft-fbd-react-train`. Two rows stopped earlier passes
+    and both were findings: a hold of 0.8 s in 0.1 s frames expired one frame
+    late (eight additions of 0.1 sum to 0.7999999999999999), so the traces
+    tick at 0.125 s; and a sweep that never reached the speed cap let the
+    halved-cap mutant match, so every sweep now visits the stick's corners.
+    The scores over the 4,500 train rows:
+
+    | candidate | parses | compiles | runs | effect | ticks | refused |
+    | --------- | ------ | -------- | ---- | ------ | ----- | ------- |
+    | rank1     | 1.00   | 1.00     | 1.00 | 1.00   | 36    | 0       |
+    | rank3     | 1.00   | 1.00     | 1.00 | 0.00   | 36    | 0       |
+    | rank5     | 1.00   | 0.00     | 0.00 | 0.00   | 0     | 4,500   |
     """
 
     drafted_by :ai
