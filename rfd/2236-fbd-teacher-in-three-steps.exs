@@ -120,15 +120,65 @@ defmodule RFD2236 do
     serves.
     """
 
+    details "The text form and the reverse edit", ~S"""
+    A diagram now arrives in three forms told apart by extension: the PLCopen
+    XML the corpus stores, a text form with one line per block, literals
+    inline and wires by name (`b5 = READ_FILE(EN=b3.ENO, PATH="out.txt")`),
+    and a SafeGDScript guest lifted back into blocks, each PLAN entry the
+    block its kind names with EN chained to the step before and the header's
+    not-lowered blocks kept. The text reader numbers localIds in order of
+    appearance, so text to XML to text is a fixed point and the XML printer
+    reproduces the fixture byte for byte; `fbd_text.gbnf` in the door repo
+    admits the same subset. The teacher samples the text form and the XML is
+    derived, because of the table below; the operator's reverse edit (a
+    diagram edited as GDScript lifts back, one edited as text emits GDScript)
+    holds through one POU.
+
+    Gemma 4's tokenizer over every rank1 candidate of the train split, the
+    three round trips asserted on each (text to XML to text a fixed point;
+    the plan from the text, the XML and the lifted guest identical):
+
+    | form                 | rows  | tokens mean | tokens p50 | tokens max | chars mean |
+    | -------------------- | ----- | ----------- | ---------- | ---------- | ---------- |
+    | PLCopen XML          | 4,500 | 444.4       | 354.5      | 1,086      | 1,696      |
+    | text form            | 4,500 | 70.7        | 55.0       | 183        | 165        |
+    | SafeGDScript guest   | 4,500 | 314.0       | 287.5      | 509        | 895        |
+
+    4,500 of 4,500 round trips held; the text form costs 6.29 times fewer
+    tokens than the XML and 4.4 times fewer than the guest. Controls refused
+    by name: an unwired pin, an unknown block, an unknown step kind.
+    """
+
     details "What was measured", ~S"""
     The compiler builds on Lean 4.30.0 in 12 jobs; `check` accepts the
     reference diagram (2 blocks, 2 operating-system, 1 variable, 3 literals),
     `plan` lowers it to two steps, and `check` refuses the tag-soup control
     with "<note> is not part of the FBD subset". The writer wrote 8 rows in
     2.2 seconds on this desk with every control holding, and its negative
-    control refused the emit with "identity control failed". The 5,000-row
-    corpus and its holdout are the next table in this section, with the
-    template counts and the compiler SHA from the manifest.
+    control refused the emit with "identity control failed".
+
+    The corpus was written twice. The first pass assigned templates by row
+    index modulo four and held out every tenth seed, so the holdout carried
+    only the two one-step templates; templates now cycle every ten seeds and
+    the second pass is what shipped, 5,000 rows in 282 seconds at 8 workers
+    against compiler `083f3c3`, 1,250 rows per template, 4,500 train and 500
+    holdout with 125 of each template in the holdout, no nulls in any of the
+    eight ZStandard parquets, published as
+    `chibifire/taskweft-fbd-editscore-train`. The scores the compiler and
+    the runner set, as means over the 4,500 train rows (the holdout's are
+    within 0.01 of every cell):
+
+    | candidate | parses | compiles | runs | effect | steps | refused |
+    | --------- | ------ | -------- | ---- | ------ | ----- | ------- |
+    | rank1     | 1.00   | 1.00     | 1.00 | 1.00   | 1.88  | 0       |
+    | rank3     | 1.00   | 1.00     | 0.75 | 0.00   | 1.44  | 0       |
+    | rank5     | 0.50   | 0.00     | 0.00 | 0.00   | 0.00  | 4,500   |
+
+    rank3's runs column is the read-a-missing-file mutant stopping short on
+    its second step; rank5's parses column is the unknown-block mutant,
+    which the parser refuses, against the unwired-pin and cycle mutants,
+    which parse and fail in the lowering. Every row's three controls held,
+    so the table is the construction read back rather than a finding.
     """
 
     drafted_by :ai
