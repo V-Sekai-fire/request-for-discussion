@@ -259,6 +259,38 @@ defmodule RFD2236 do
     so the table is the construction read back rather than a finding.
     """
 
+    details "The corpus after the surfaces", ~S"""
+    Every family below was written on this desk at 5,000 rows with the three
+    controls asserted on each row, no nulls in any parquet, and the census's
+    leak control refused; each is published under `chibifire/taskweft-fbd-
+    <family>-train` with `train`, `test` and `evaluation` named in the viewer.
+    `test` is every tenth seed; `evaluation` is the held-out families and
+    block kinds (for the API families, held-out signatures), never trained
+    or tuned on.
+
+    | family | train | test | evaluation | held out | surface in train | wall |
+    | --- | --- | --- | --- | --- | --- | --- |
+    | fbd | 3,375 | 375 | 1,250 | `write_then_count` | 3 block kinds | 282 s |
+    | react | 3,600 | 400 | 1,000 | `button_sequence_then_idle` | 5 block kinds | 1,432 s |
+    | harness | 4,059 | 451 | 490 | TOF, RS, GE, MOD | 24 of 28 block kinds | 1,418 s |
+    | compose | 3,600 | 400 | 1,000 | `walk_from_stick` + `tracker_lost_freezes` | 8 block kinds | 761 s |
+    | plan | 4,050 | 450 | 500 | `session_reactions take_seat` | 7 block kinds | 1,431 s |
+    | godot | 3,897 | 433 | 670 | 2D-node family, `Camera3D.unproject_position` | 44 of 52 signatures (8 uncovered by name) | 1,141 s |
+    | trainer | 3,807 | 423 | 770 | `push` family, `Reward.self_collisions` | 28 of 36 signatures (2 uncovered by name) | 1,001 s |
+
+    Two defects the runs caught, both in the harness family's rank3: a
+    mutation that the three picked traces could not tell from the original
+    (a `TOF` whose preset is wired from a product, a `LIMIT` whose bounds
+    the perturbation had made equal), so rank3 is now the first candidate
+    the traces distinguish, with spare traces swapped in and equal bounds
+    kept apart; and a publisher that uploaded the writer's scratch tree
+    (45,011 files) beside the parquets, now skipped and removed from the
+    hub. The Udon family's 5,000-row run was in flight when this section
+    was written; its smoke of 110 rows across the eleven shapes held every
+    control, and the fixture census stands at 0 lifted of 63 methods with
+    the reasons counted.
+    """
+
     drafted_by :ai
   end
 end

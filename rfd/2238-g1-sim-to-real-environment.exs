@@ -163,8 +163,25 @@ defmodule RFD2238 do
     metric with an unresolved joint selection (29 against 8), fixed by
     resolving the gate's regexes when the manager has not; and the
     recorder's shards were named by seed alone, so sweeps overwrote each
-    other, fixed by naming them by sweep too. The roll-out corpus census is
-    the next table in this section.
+    other, fixed by naming them by sweep too.
+
+    The roll-out corpus, from the smoke checkpoint over 8 seeds and 7 sweeps
+    at 64 environments and 500 steps each, enumerated by `census_rollouts.py`
+    (nulls 0; the planted seed leak and the planted obs-width mismatch both
+    refused):
+
+    | split | seeds | shards | frames | episodes | ROM clearance | reward/step | terminal |
+    | --- | --- | --- | --- | --- | --- | --- | --- |
+    | train | 0 to 5 | 42 | 1,344,000 | 20,809 | 0.8017 | 0.0673 | 0.0135 |
+    | test | 6 | 7 | 224,000 | 3,480 | 0.8029 | 0.0675 | 0.0136 |
+    | evaluation | 7 | 7 | 224,000 | 3,451 | 0.8020 | 0.0677 | 0.0135 |
+
+    Nearly every episode ends by termination (18,157 of 20,809 in train):
+    the smoke policy falls, which is what a policy at 300 iterations does,
+    and the corpus records that faithfully. It is published privately as
+    `chibifire/motionbricks-g1-rollouts` (1.8 GB, 113 parquets) with the
+    run table naming the checkpoint, because no G1 policy publishes before
+    the three rulings; the public dataset waits for a real checkpoint.
     """
 
     drafted_by :ai
