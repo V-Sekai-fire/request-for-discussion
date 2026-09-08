@@ -34,8 +34,8 @@ defmodule RFD2240 do
     encoded intermediates as CineForm, but nothing said how a citation reaches
     the asset a reviewer opens. A `.cff` beside a clip is separated from it the
     first time either is copied, and no editor or player reads YAML attribution.
-    Review markup had no named format, review timelines had no interchange, and
-    the same citation was retyped into cards and titles by hand.
+    Review timelines had no interchange, the vector formats were used without
+    being named, and the same citation was retyped by hand.
     """
 
     references ~S"""
@@ -168,21 +168,27 @@ defmodule RFD2240 do
     | `transport-cineform-tui` | source complete, a manifest root of its own, the job sender over the bus |
     | `service-cineform` | composes the two so one `contract-bus` is checked out rather than two, and states which pin wins where they disagree |
     | the engine-side writer | `modules/cineform` on the fork's `cineform-movie-writer` branch: `movie_writer_cineform.cpp`, `video_stream_cineform.cpp`, the class reference and a demo, with `thirdparty/cineform` and `thirdparty/libwebm` vendored on that branch. The branch is not merged into the working branch the manifest names |
-    | a Lottie renderer | ThorVG is vendored in the fork at `thirdparty/thorvg`, but its build carries only the SVG and raster loaders; the Lottie loader is not among them |
+    | Lottie, written | already here and older than this document: `scripts/keypoint_render.py` writes an animation, `scripts/lottie.schema.json` is the 1.0 schema vendored with its provenance, and `scripts/check_lottie_spec.py` validates against it and caught 207 errors when first run |
+    | Lottie, read | ThorVG is vendored in the fork at `thirdparty/thorvg` with only the SVG and raster loaders; the loader sources are not in the placed tree, and a branch of the fork carries the re-vendoring unmerged. Upstream 1.0.3 is now placed at `2-contract/thorvg` with the loader intact |
     | OpenColorIO | a build option of the OpenUSD source vendored under `datasource-flow`, not built here |
-    | cmake and ninja | not installed on this desk; the workspace's mechanism for a build toolchain is a `pixi` environment, so this is a declaration to write rather than a blocker |
+    | cmake and ninja | **present and running**: cmake 4.4.3 and ninja 1.13.2 from the `datasource-flow` and `voxhammer.cpp` environments. Neither is on the default `PATH`, which is what an earlier reading of mine mistook for absence |
     | FFmpeg | blocklisted, and now with the row that says so. Not installed and not on `PATH`, but two runnable copies sit in package caches; the one that runs is a GPL build and does hold a `cfhd` encoder, which is why the row argues licence rather than capability |
 
-    Three of those readings correct an earlier claim of mine. The engine-side
-    writer is not an unplaced repository: RFD 1123 recorded that the separate
-    repository was created, used and deleted and that the module shipped inside
-    the fork, and the fork is placed. A Lottie renderer is present, just built
-    without its Lottie loader. And a missing build tool is not a blocker in a
-    workspace whose rule is that an environment is declared in `pixi`.
+    Four of those rows correct an earlier claim of mine, and the pattern behind
+    every one is the same: I probed a `PATH` or a single manifest and reported
+    a filesystem fact. The engine-side writer is not an unplaced repository;
+    RFD 1123 recorded that the separate repository was created, used and
+    deleted and that the module shipped inside the fork, and the fork is
+    placed. cmake and ninja run here. Lottie is not a new format for this
+    workspace at all: a writer, a vendored schema and a validator predate this
+    document, and this document's contribution is to say that the extension
+    that validator already demands is the one the workspace uses.
 
-    Each of the three CineForm repositories is a manifest root of its own, and
-    reading only the goal manifest misses what they place. That is the reading
-    error behind all three.
+    That gate had never run. Nothing invoked it, its `jsonschema` dependency
+    was declared nowhere, and the writer kept emitting `.json` while the gate
+    refused anything but `.lot`, so the rename it was written to force never
+    happened. The dependency is pinned and the writer renamed in the same
+    change as this document.
     """
 
     details "The gates", ~S"""
