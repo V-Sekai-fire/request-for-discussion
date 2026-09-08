@@ -191,6 +191,7 @@ defmodule Serials.VSekaiFabric do
       serial 2233, "close-out-gates-red-green-scout"
       serial 2234, "dress-on-pipeline"
       serial 2235, "taskweft-acp-agent"
+      serial 2236, "fbd-teacher-in-three-steps"
     end
 
     deleted do
