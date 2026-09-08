@@ -1755,7 +1755,7 @@ banned." This row was overdue; RFD 1175 had asserted the ban since it was
 written and no row carried it, which is exactly the drift
 `check_blocklist_detail.py` exists to catch in the other direction.
 
-**What this row blocks.** FFmpeg, libav* and any wrapper over them
+**What this row blocks.** FFmpeg, libav\* and any wrapper over them
 (`imageio-ffmpeg`, `av`, `moviepy`) as a dependency of anything the workspace
 ships or of any pipeline in the manifest; `ffmpeg` or `ffprobe` invoked as a
 build-time or corpus-time tool, because a corpus tool that nobody else can run
