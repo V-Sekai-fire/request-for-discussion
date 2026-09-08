@@ -1730,3 +1730,42 @@ licences and are out of scope here.
 **Substitute:** the matting model already in the dress-on pipeline, pinned to
 a revision sha, with the model name, that sha and the input photograph's sha
 recorded per matte. RFD 2239 carries the argument in full.
+
+### FFmpeg is blocklisted, and the single-binary export is why
+
+**The licence decides this, not the capability.** FFmpeg can encode CineForm;
+`libavcodec/cfhdenc.c` exists and this workspace's own `scripts/cfhd_probe.py`
+once drove it with `-c:v cfhd -quality film3+`. Capability was never the
+question. FFmpeg is LGPL-2.1-or-later, and what this workspace ships is one
+native binary per platform out of a Godot fork, with every module linked in.
+The LGPL asks that a user be able to relink the covered library with their own
+build. A single statically linked export cannot offer that, so taking FFmpeg
+into the shipping tree takes on an obligation we cannot meet.
+
+**The alternative is not a compromise.** The GoPro CineForm SDK is
+`Apache-2.0 OR MIT`, matching our own code, and it holds both an encoder and a
+decoder, so one dependency covers both directions. RFD 1123 made that choice
+and RFD 1137's pair does the work today: `transport-cineform-tui` sends a job,
+`interactor-cineform` encodes, `service-cineform` owns the bus and the runtime.
+Inside the engine the same codec is `modules/cineform`, a `MovieWriter` and a
+`VideoStream` on the fork.
+
+**Operator directive, 2026-09-08, on being asked:** "remember ffmpeg is still
+banned." This row was overdue; RFD 1175 had asserted the ban since it was
+written and no row carried it, which is exactly the drift
+`check_blocklist_detail.py` exists to catch in the other direction.
+
+**What this row blocks.** FFmpeg, libav* and any wrapper over them
+(`imageio-ffmpeg`, `av`, `moviepy`) as a dependency of anything the workspace
+ships or of any pipeline in the manifest; `ffmpeg` or `ffprobe` invoked as a
+build-time or corpus-time tool, because a corpus tool that nobody else can run
+is not reproducible and the CineForm pair already runs here.
+
+**What the row does not cover.** Reading FFmpeg's source to understand a
+container or a codec. A measurement already recorded that used it, which stays
+in the record as a measurement rather than being retracted. A third party's
+own use of it outside anything we ship.
+
+**Substitute:** the CineForm SDK for the codec, `interactor-cineform` for
+batch encoding, `modules/cineform` for the engine's `--write-movie`, and
+Matroska as the container (RFD 1123 measured why, and RFD 2240 restates it).

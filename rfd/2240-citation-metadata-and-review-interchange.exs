@@ -149,11 +149,14 @@ defmodule RFD2240 do
     that survives in this workspace is a runner wrapping a model and says so in
     its first line, which a metadata converter is not.
 
-    One thing the specification asserts that this workspace has not measured:
-    that FFmpeg is unavailable to us. RFD 1175 states it is blocklisted, and no
-    row in `BLOCKLIST.md` says so. The licence argument in RFD 1123 is the real
-    one and it is about linking into a shipped binary, not about a build-time
-    tool. That inconsistency is named here and left for its own change.
+    FFmpeg is blocklisted and now carries the row that says so. RFD 1175 had
+    asserted the ban since it was written while no row backed it; the operator
+    confirmed it on 2026-09-08 and the row and its argument landed in the same
+    change as this document. The argument is the licence: FFmpeg is
+    LGPL-2.1-or-later, what this workspace ships is one statically linked
+    binary per platform, and the relinking the licence asks for is a thing that
+    binary cannot offer. Capability was never the question, since FFmpeg does
+    hold a CineForm encoder.
     """
 
     details "What is built and what is not", ~S"""
@@ -161,19 +164,25 @@ defmodule RFD2240 do
 
     | piece | state |
     | --- | --- |
-    | `interactor-cineform` | source complete, dependencies vendored and placed, **not compiled here**; no `build/` and no binary |
-    | `transport-cineform-tui` | source complete, the job sender over the bus |
-    | `service-cineform` | the bus and runtime owner; `cineform-sdk`, `libwebm`, `iceoryx2` and `ftxui` all placed under `thirdparty/` |
-    | `entities-godot-cineform` | **unplaced**: a name in two documents, absent from the manifest and from disk |
-    | cmake and ninja | **absent from this desk**, so the build recipe cannot run yet |
-    | ffmpeg | absent from this desk |
-    | OpenTimelineIO, OpenColorIO, a Lottie player | not present in any environment |
+    | `interactor-cineform` | source complete, **its own manifest root**; `contract-bus`, QCBOR, `cineform-sdk` and `libwebm` placed by it. Not compiled here |
+    | `transport-cineform-tui` | source complete, a manifest root of its own, the job sender over the bus |
+    | `service-cineform` | composes the two so one `contract-bus` is checked out rather than two, and states which pin wins where they disagree |
+    | the engine-side writer | `modules/cineform` on the fork's `cineform-movie-writer` branch: `movie_writer_cineform.cpp`, `video_stream_cineform.cpp`, the class reference and a demo, with `thirdparty/cineform` and `thirdparty/libwebm` vendored on that branch. The branch is not merged into the working branch the manifest names |
+    | a Lottie renderer | ThorVG is vendored in the fork at `thirdparty/thorvg`, but its build carries only the SVG and raster loaders; the Lottie loader is not among them |
+    | OpenColorIO | a build option of the OpenUSD source vendored under `datasource-flow`, not built here |
+    | cmake and ninja | not installed on this desk; the workspace's mechanism for a build toolchain is a `pixi` environment, so this is a declaration to write rather than a blocker |
+    | FFmpeg | blocklisted, and now with the row that says so |
 
-    So the standard is written before its tools are built, deliberately: the
-    sidecar and the mapping bind every deliverable from today, and they need
-    only the converter, while the clip half needs a toolchain this desk does not
-    yet carry. `entities-godot-cineform` being unplaced is the drift the Sides
-    rule exists to stop and is called out in RFD 2239's open list.
+    Three of those readings correct an earlier claim of mine. The engine-side
+    writer is not an unplaced repository: RFD 1123 recorded that the separate
+    repository was created, used and deleted and that the module shipped inside
+    the fork, and the fork is placed. A Lottie renderer is present, just built
+    without its Lottie loader. And a missing build tool is not a blocker in a
+    workspace whose rule is that an environment is declared in `pixi`.
+
+    Each of the three CineForm repositories is a manifest root of its own, and
+    reading only the goal manifest misses what they place. That is the reading
+    error behind all three.
     """
 
     details "The gates", ~S"""
