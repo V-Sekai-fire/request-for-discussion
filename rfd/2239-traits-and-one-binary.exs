@@ -73,7 +73,7 @@ defmodule RFD2239 do
     | peel none: items 1, 2 and 4 fold whole | DressOn, DressEdit, Body, Spring and Identity below; react and compose retire into Body |
     | "Port everything first": Elixir before any new trait | the `taskweft_fbd_teacher` app; each Python tool deleted after a scorer-parity smoke; a Python or shell file that survives is a runner wrapping a model and says so in its first line |
     | the trusted list bounds data sources; code repositories are fine | the `Trust` module gates every fetch and publish on `magi-16739d--trusts--<source>` tuples; forks are tooling; udon2godot's translations and the constraint-twist sample are constructed fixture inputs |
-    | "FSQ categories become code enums - like float categories rather than float numerics" | `codebook` declarations and `name#c.c.c` literals (DSL rung 1); an enum in Elixir, a `Fin` triple in Lean, an int triple in the guest; `Codebook.lean` proves the decode injective, bounded and monotone |
+    | "FSQ categories become code enums", "like float categories rather than float numerics" | `codebook` declarations and `name#c.c.c` literals (DSL rung 1); an enum in Elixir, a `Fin` triple in Lean, an int triple in the guest; `Codebook.lean` proves the decode injective, bounded and monotone |
     | place the fashion set and the anthropometry table, then `repo sync` | manifest PR 129, merged at `a9a2f4fd`: three datasets under `6-datasource`, the motion-bricks bundle under `5-repository`, four pins moved |
     | "the entire system must run as a monolithic binary" with the ggml dependencies in `entities-godot` | `modules/ggml`, `modules/motionbricks`, `modules/taskweft`, `modules/game` and the sandbox pin advance in the Godot 4.7 fork; nothing at runtime reaches a Python, a WSL or a listener |
     | "interchangable parts methology is required. See also Japanese methods of industrial processes" | the RFD 2229 table per leg; jidoka, poka-yoke, genchi genbutsu, andon, takt, heijunka, kanban, 5S and kaizen each tied to a gate or a task rather than left as a slogan |
@@ -121,7 +121,7 @@ defmodule RFD2239 do
 
     A codebook is a mixed-radix index over three levels of eight, 512 codes,
     and the value is an affine image of the index over the rationals:
-    `decode c = min + index(c) * (max - min) / (N - 1)`. Reused from the
+    `decode c = min + index(c)*(max-min)/(N-1)`. Reused from the
     recommender's Lean model: the stage index and its injectivity, bound and
     round-trip theorems. Not reused: the encoder side, whose value sum is not
     injective. A template's distinct-program space is then the product of its
