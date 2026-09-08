@@ -149,6 +149,53 @@ defmodule RFD2236 do
     by name: an unwired pin, an unknown block, an unknown step kind.
     """
 
+    details "The surfaces the teacher speaks", ~S"""
+    The operator's direction (2026-09-08): train the teacher on the engine as
+    the sandbox exposes it, and on any surface brought in the way the
+    microduck trainer's is. The workspace already keeps those surfaces as
+    signature tables under the compiler's `sigs/` (one line per entry,
+    `Class.method(args) -> Ret`); the teacher's only output is a diagram, so
+    an API call is a block. `CALL[Class.method](TARGET=..., arg=...)` names a
+    signature in its bracket; its pins are `TARGET` (a node path, a singleton,
+    the tree, a builtin literal, or the `RET` of an earlier CALL) and the
+    signature's arguments; its outputs are `RET` and `ENO`. The compiler loads
+    every table (`TASKWEFT_SIGS_DIR`, else `sigs/` beside it), refuses an
+    unknown signature or an unwired argument at `check`, lowers each CALL to a
+    `call` step (`command`, `path`, `args` in table order, an earlier RET as
+    `#<id>.RET`), and lifts the step back by that id; text, XML and guest are
+    a fixed point on the API fixture, and the two controls are refused by
+    name. `sigs/mjlab_trainer.sigs` is the trainer surface at rung 0 (38
+    entries: reward, observation, termination and event terms, the action and
+    command configs, the microduck actuator fields).
+
+    The Godot family scores a row by what the engine did. `api_fixture.tscn`
+    (in `taskweft-godot-sandbox`) holds one node of every class the rung-0
+    engine table names and the resources a call hands between them;
+    `api_runner.gd` instantiates it, performs each call step deferred on the
+    first frame (a node added during the tree's `_initialize` is not yet
+    inside the running tree, so a Timer will not start there), and writes
+    every return back. Fifteen templates (a position set and read, a
+    transform, the generic property setter, label and button text, a 2D node,
+    a rigid body's mass, a timer started and stopped, vector and transform
+    arithmetic, builtin values, resources handed between nodes, tree
+    operations, introspection, the loader, camera and input) cover 52 of the
+    table's 60 entries; rank3 carries a wrong argument, rank5 a signature
+    outside the table. Eight entries are named uncovered rather than sampled
+    around: `Object.connect` (a Callable has no literal form), `RefCounted.
+    unreference` (it frees its target), the five virtual callbacks (what a
+    guest implements, not what a plan calls), and `OS.get_ticks_msec`, which
+    Godot 4 does not have; that last one is a defect in the rung-0 index the
+    anti-entropy pass should carry to the generated header.
+
+    A Godot row's block column holds its signatures, so the census enumerates
+    the surface and `--holdout-blocks <signature>` is the signature holdout
+    axis beside the family axis; the first corpus holds out the 2D-node family
+    and `Camera3D.unproject_position`, both to the evaluation split. The
+    trainer family and the Udon family (udon2godot's output lifted through a
+    `lift-gd` mode, differential in Godot) follow the same shape and are not
+    yet written.
+    """
+
     details "What was measured", ~S"""
     The compiler builds on Lean 4.30.0 in 12 jobs; `check` accepts the
     reference diagram (2 blocks, 2 operating-system, 1 variable, 3 literals),

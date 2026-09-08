@@ -193,6 +193,7 @@ defmodule Serials.VSekaiFabric do
       serial 2235, "taskweft-acp-agent"
       serial 2236, "fbd-teacher-in-three-steps"
       serial 2237, "body-scan-controller"
+      serial 2238, "g1-sim-to-real-environment"
     end
 
     deleted do
