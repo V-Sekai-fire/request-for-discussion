@@ -217,6 +217,39 @@ defmodule RFD2239 do
     | rf-detr-cpp, voxhammer.cpp, nx-ggml | no licence file | stay out of any redistributed binary until fixed |
     """
 
+    details "Every artefact lives in the parquet, in its modality's format", ~S"""
+    Operator, 2026-09-08, reading a published row: "Make sure all the data is in
+    parquet. I can't seem to find the source text of
+    `rows/udon_scale_add/1/rank3.fbd`... this is a problem for the entire
+    training datasets if we don't have that corpus data and it gets discarded.
+    This is a problem for all the modalities and the i/o of the editscore data."
+
+    The defect was real and complete. The writer kept each candidate's diagram
+    under `rows/` and stored the *path* in `fbd_text`; the publisher uploads
+    with `rows/` ignored and deletes any `rows/` already on the Hub. Every one
+    of the eight published corpora therefore carried scores for diagrams it did
+    not contain. A reader could see that rank3 compiled and missed the effect,
+    and could not see the diagram that did it.
+
+    The rule, stated once: **a row's artefacts are columns, not paths.** A
+    candidate carries `fbd_text` and `fbd_xml` verbatim, `plan_json` and
+    `result_json` where the family has a runner, `fbd_sha` over the text it was
+    built from, and `fbd_path` only as provenance. The root row carries its
+    traces as JSON strings, so the input half of an EditScore row is in the
+    table with the output half. An artefact a family does not produce is an
+    empty string; ETNF forbids the null.
+
+    The formats, per modality (operator, same day): **CineForm** for image or
+    audio data, because alignment across streams is the problem it exists to
+    solve; **OpenUSD** for mesh data; any tensor format for latents; ZStandard
+    parquet for the tabular carrier, as before.
+
+    And the reader has to be able to look: a bare binary column shows the
+    dataset viewer a byte count. A media column is a struct of `bytes` and
+    `path`, and the card's `dataset_info` declares the feature; together those
+    two make the viewer render a picture as a picture.
+    """
+
     details "The green-screen keyer is not the matting model", ~S"""
     The operator asked whether a green-screen keying tool could replace the
     matting model for the dress-on garments, noting it may be used for
