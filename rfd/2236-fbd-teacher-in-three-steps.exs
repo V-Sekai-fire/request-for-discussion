@@ -190,10 +190,41 @@ defmodule RFD2236 do
     A Godot row's block column holds its signatures, so the census enumerates
     the surface and `--holdout-blocks <signature>` is the signature holdout
     axis beside the family axis; the first corpus holds out the 2D-node family
-    and `Camera3D.unproject_position`, both to the evaluation split. The
-    trainer family and the Udon family (udon2godot's output lifted through a
-    `lift-gd` mode, differential in Godot) follow the same shape and are not
-    yet written.
+    and `Camera3D.unproject_position`, both to the evaluation split.
+
+    The trainer family writes configuration programs over
+    `sigs/mjlab_trainer.sigs`, one CALL per term, and scores them by the
+    configuration mjlab would run: `trainer_cfg_runner.py` (in
+    `mjlab_motionbricks`, served from WSL one JSON line per plan) applies the
+    calls to a fresh task config and reads the term table back from the
+    config objects (reward weights and parameters, observation noise,
+    metrics, terminations, the action and command configs, the sim rate, the
+    scene, the events, the PD actuators). Thirteen templates cover 36 of 38
+    entries; the BAM and backlash actuator models are named uncovered because
+    the environment has no actuator class for them. A non-number, an unknown
+    term and an inverted command range are refused by the runner and are its
+    self-test controls.
+
+    The Udon family is the direction udon2godot does not go. A seeded
+    UdonSharp method (eleven shapes: scaling, blending, clamping, selection,
+    band tests, branches that assign, boolean logic, min and max, weighted
+    mixes) is written as C#, translated with the pinned udon2godot in WSL,
+    and lifted by `gd_lift.py` into a scan controller: one input per
+    parameter, `ret` for the return, a block per operation, a `SEL` per
+    variable a branch assigns, a computed local emitted once and read by
+    wire. Everything outside that subset is refused by reason (loops,
+    member access, arrays, strings, `abs`, conversions, void methods,
+    returns inside branches). The reference is Godot itself: `udon_runner.gd`
+    runs the translated class on the row's traces through the udon runtime
+    addon, and the diagram's simulation must match it tick for tick; rank3
+    is the first mutation the traces can tell apart, rank5 reads an input
+    the program never declared. The intent is the C# source. The fixture
+    methods udon2godot ships are counted by the same lift: none of them lifts
+    today (void test harnesses, `Array` and `Vector3` signatures, `absf`),
+    and an `ABS` block is the first addition that would admit real ones. The
+    lift lives in the teacher's tools rather than the Lean compiler for now;
+    the compiler checks and simulates its output, which is what the
+    measurement rests on.
     """
 
     details "What was measured", ~S"""
