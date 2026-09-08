@@ -194,6 +194,7 @@ defmodule Serials.VSekaiFabric do
       serial 2236, "fbd-teacher-in-three-steps"
       serial 2237, "body-scan-controller"
       serial 2238, "g1-sim-to-real-environment"
+      serial 2239, "traits-and-one-binary"
     end
 
     deleted do
