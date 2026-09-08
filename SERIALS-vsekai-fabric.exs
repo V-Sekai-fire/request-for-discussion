@@ -192,6 +192,7 @@ defmodule Serials.VSekaiFabric do
       serial 2234, "dress-on-pipeline"
       serial 2235, "taskweft-acp-agent"
       serial 2236, "fbd-teacher-in-three-steps"
+      serial 2237, "body-scan-controller"
     end
 
     deleted do
