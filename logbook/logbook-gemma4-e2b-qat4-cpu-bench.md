@@ -52,6 +52,13 @@ is excluded from the guard until it has a real kernel, because a slow row
 there is a known artefact rather than a regression. A slower model, a slower
 build or a runner too small to hold the working set fails the job by name.
 
+Run 34180629470, the first with the guard in place, passed. The guard step
+read six rows (the four above, each build also at 8 threads) and printed
+its floor line: tg64 minimum 16.89 tokens per second against the rail of
+6.0, pp128 minimum 33.30 against 32.0. The pp128 margin is 4 per cent, so a
+slower runner in the hosted pool trips it first; that is the intended
+signal, and the rail moves only with a measurement beside it.
+
 ## Apparatus
 
 - Model: `google/gemma-4-E2B-it-qat-q4_0-gguf`, file
