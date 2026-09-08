@@ -6,7 +6,8 @@
 defmodule RFD2238 do
   use RFD.DSL
 
-  rfd 2238, "Sim-to-real for the body on the G1 rig: the environment, the ROM envelope and the smoke run" do
+  rfd 2238,
+      "Sim-to-real for the body on the G1 rig: the environment, the ROM envelope and the smoke run" do
     state :discussion
 
     flight_level :l2
