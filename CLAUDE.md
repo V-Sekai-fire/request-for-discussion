@@ -499,6 +499,7 @@ Sources excluded from corpora, with the reason:
 | **Gemma 3** family as an on-device model                                    | operator directive 2026-09-05: Gemma 3 blocklisted, Gemma 4 allowlisted; workspace ships against the Gemma 4 line (E2B / E4B) only — see below                                                                                                                     |
 | **ONNX Runtime Web** and **TensorFlow.js** as in-browser inference runtimes | operator directive 2026-09-05: both blocklisted as browser inference runtimes; the workspace's inference path is ggml (RFD 2188) with the Vulkan backend on native, not a second JS-runtime stack — see below                                                      |
 | **WebGPU** as a workspace render / compute target                           | on native, Vulkan has ~10 years of production QA vs WebGPU's ~2, is Godot 4's primary renderer, and skips a translation layer on Linux/Windows (MoltenVK's two hops on macOS are battle-tested vs Dawn's newer Metal backend) — see below                          |
+| **CorridorKey** as a matte generator                                        | green/blue screen unmixer needing an alpha hint the matting model already makes, and CC BY-NC-SA 4.0 plus terms, which is both the share-alike row and the generator row — see below                                                                              |
 
 The cosplay photo library may be used for **validation only**, never training.
 

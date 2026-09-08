@@ -218,10 +218,11 @@ defmodule RFD2239 do
     """
 
     details "The green-screen keyer is not the matting model", ~S"""
-    The operator asked whether the Corridor Key tool could replace the
-    matting model for the dress-on garments, noting the tool may be used for
-    dataset generation but not resold as a hosted service. Two findings, and
-    the first settles it on its own.
+    The operator asked whether a green-screen keying tool could replace the
+    matting model for the dress-on garments, noting it may be used for
+    dataset generation but not resold as a hosted service. It is now a
+    blocklist row, and `BLOCKLIST.md` carries the argument under that row's
+    subject. Two findings, and the first settles it on its own.
 
     **It is not a substitute.** The tool takes two inputs: a green or blue
     screen plate, and a coarse alpha hint that something else produced. It
@@ -245,10 +246,11 @@ defmodule RFD2239 do
     environments.
 
     Where it would be admissible: a passthrough pass over screen-plate
-    footage whose derived mattes are never published. No such footage is in
-    the workspace. The matting model at a pinned revision stays the
-    dress-on hint generator, with the model name, revision sha and input
-    photo sha recorded per matte.
+    footage whose derived mattes are never published, which the tool's own
+    terms permit and the row leaves alone. No such footage is in the
+    workspace. The matting model at a pinned revision stays the dress-on hint
+    generator, with the model name, revision sha and input photo sha recorded
+    per matte.
     """
 
     details "Measurements", ~S"""

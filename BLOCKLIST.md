@@ -1680,3 +1680,53 @@ docs). ggml's Vulkan backend, which is what replaces WebGPU.
 
 **Substitute:** ggml Vulkan backend + Godot's native Vulkan
 renderer + MoltenVK on macOS.
+
+### CorridorKey keys a screen plate, and its licence is non-commercial share-alike
+
+**Asked, 2026-09-08.** The operator asked whether CorridorKey could replace
+the matting model that produces the dress-on garment alphas, noting the tool
+may be used for dataset generation but not resold as a hosted service. Two
+findings, and the first settles it without the second.
+
+**It is not the same task.** CorridorKey takes two inputs: a green or blue
+screen plate, and a coarse alpha hint that something else produced. What it
+does is unmix the screen colour out of edge pixels, so hair, motion blur and
+translucency come out with a straight-colour foreground and a linear alpha.
+Isolating a subject on an arbitrary background is a different job, and the
+tool does not do it. The garment photographs in the second-hand fashion set
+are studio and marketplace product shots on white, grey and room backgrounds;
+there is no screen colour to unmix. The repository makes the relationship
+plain: it ships a `BiRefNetModule` wrapper as one of its optional AlphaHint
+generators, so the matting model is upstream of it, not replaced by it. Its
+heavier hint options want about 80 GB of VRAM, which no desk here has.
+
+**The licence propagates.** CORRIDOR KEY LICENCE version 1.0 is the Creative
+Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
+plus additional terms that take precedence: no repackaging, redistribution,
+sublicensing or resale as a standalone or competing product; no paid API or
+inference service, directly or indirectly; and a separate written agreement
+required to incorporate the tool into a commercial software package or
+inference service. The operator's reading of the resale clause is correct.
+The workspace binds tighter than the licence does, in two rows that already
+exist. **CC-BY-SA** is refused above for share-alike exposure, and NC-SA is
+share-alike with a use restriction on top. **OpenRAIL-M as a generator** is
+refused because use restrictions propagate into anything trained on the
+output, with passthrough use exempt. A matte that ships inside a CC-BY-4.0
+corpus, on both the rank1 and rank3 arms of every dress-on row, is generator
+use rather than passthrough. The installer also drives `uv`, refused above
+for project environments.
+
+**What this row blocks.** CorridorKey and CorridorKeyBlue checkpoints as a
+source of any alpha, matte or mask that reaches a corpus, a published dataset
+or a shipped asset; the tool as a dependency of any pipeline in the manifest.
+
+**What the row does not cover.** Reading the repository to understand
+screen-colour unmixing. A passthrough pass over screen-plate footage whose
+derived mattes are never published or trained on, which the tool's own terms
+permit and this row leaves alone; no such footage is in the workspace today.
+The GVM and VideoMaMa weights it can optionally call, which carry their own
+licences and are out of scope here.
+
+**Substitute:** the matting model already in the dress-on pipeline, pinned to
+a revision sha, with the model name, that sha and the input photograph's sha
+recorded per matte. RFD 2239 carries the argument in full.
