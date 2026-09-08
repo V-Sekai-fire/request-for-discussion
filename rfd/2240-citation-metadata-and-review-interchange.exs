@@ -171,7 +171,7 @@ defmodule RFD2240 do
     | a Lottie renderer | ThorVG is vendored in the fork at `thirdparty/thorvg`, but its build carries only the SVG and raster loaders; the Lottie loader is not among them |
     | OpenColorIO | a build option of the OpenUSD source vendored under `datasource-flow`, not built here |
     | cmake and ninja | not installed on this desk; the workspace's mechanism for a build toolchain is a `pixi` environment, so this is a declaration to write rather than a blocker |
-    | FFmpeg | blocklisted, and now with the row that says so |
+    | FFmpeg | blocklisted, and now with the row that says so. Not installed and not on `PATH`, but two runnable copies sit in package caches; the one that runs is a GPL build and does hold a `cfhd` encoder, which is why the row argues licence rather than capability |
 
     Three of those readings correct an earlier claim of mine. The engine-side
     writer is not an unplaced repository: RFD 1123 recorded that the separate

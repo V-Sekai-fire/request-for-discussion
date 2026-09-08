@@ -1755,6 +1755,23 @@ banned." This row was overdue; RFD 1175 had asserted the ban since it was
 written and no row carried it, which is exactly the drift
 `check_blocklist_detail.py` exists to catch in the other direction.
 
+**Measured on this desk the same day, correcting a claim made an hour
+earlier.** "FFmpeg is not on this desk" was wrong. It is not installed and not
+on `PATH`, and two runnable copies sit in package caches, reachable by absolute
+path: `imageio_ffmpeg`'s bundled build under the `uv` cache and a second under
+the rattler cache. The one that runs reports `ffmpeg version
+7.1-essentials_build`, configured `--enable-gpl --enable-version3`, and lists
+`VF...D cfhd  GoPro CineForm HD` among its encoders. So the cached build is
+**GPL**, not the LGPL the argument above is written against, which fails the
+test harder rather than softer.
+
+**Nothing in the workspace depends on it, and this row breaks no build.** Every
+`ffmpeg` line in `taskweft-nmm-personas`, `tropes-removal-model` and
+`voxhammer-upstream`'s lock files is an optional extra of `imageio`'s own
+metadata (`extra == 'ffmpeg'`), never a selected package; no `pixi.lock` here
+locks an ffmpeg package, and no `.pixi/envs` tree contains the binary. The
+caches are residue, not a dependency.
+
 **What this row blocks.** FFmpeg, libav\* and any wrapper over them
 (`imageio-ffmpeg`, `av`, `moviepy`) as a dependency of anything the workspace
 ships or of any pipeline in the manifest; `ffmpeg` or `ffprobe` invoked as a
