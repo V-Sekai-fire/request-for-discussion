@@ -323,6 +323,70 @@ defmodule RFD2236 do
     the reasons counted.
     """
 
+    details "The Elixir port, in order, with parity as the gate", ~S"""
+    Operator, 2026-09-08: port everything to Elixir first, and no new trait
+    before the teacher's Python is Elixir. The order is Python size ascending,
+    so a defect is found on a small file: `frames` at 64 lines,
+    `compose_templates` at 85, `census` at 135, `plan_rows` at 156,
+    `fbd_templates` at 180, `harness_templates` at 217, `react_templates` at
+    218, `udon_templates` at 276, `trainer_api_templates` at 417,
+    `write_fbd_rows` at 526, `godot_api_templates` at 566. `gd_lift` at 436
+    goes last, immediately before the Udon rows, and is deleted together with
+    `udon_templates.py`.
+
+    **Parity is the gate before any Python file is deleted.** Re-scoring a
+    family's existing `rows/` tree with the Elixir scorer under one committed
+    compiler hash must give identical score rows. The parity table records each
+    Python stage's original hash and the single reference hash. Rank1 hash
+    equality for seeds 0 to 39 is required only for families with no seeded
+    draws, because `:rand` cannot reproduce Python's Mersenne Twister; the
+    Elixir corpora are a new generation with their own `rng` in the manifest
+    and `-v2` cards, rather than a port of that generator for byte parity.
+
+    Each family closes with its parity smoke and one logbook line of days
+    spent, and the operator's go comes after the first three land.
+
+    What does not get ported is named rather than left implicit. A surviving
+    Python file is a runner wrapping a model and says so in its first line: the
+    ANNY line server, the VoxHammer readback, the matting and render and judge
+    model runtimes, the mjlab trainer runner, and the Hub upload call until the
+    Req commit path is proven.
+    """
+
+    details "Staged row counts: 10,000 before 100,000, and why that is free", ~S"""
+    Operator, 2026-09-08: every trait lands at 10,000 rows first and is promoted
+    to 100,000 only after its census, duplicate gate and leak controls are clean
+    on the smaller stage. A bad template then costs an hour to find instead of
+    eight.
+
+    **Staging is free rather than a tenth extra, and that is a constraint on the
+    allocator rather than an assumption about it.** Rows are allocated by seed
+    range per template, so a template's row for seed `s` does not depend on the
+    quota; raising the quota appends and never rewrites, and `--resume` at the
+    higher quota keeps the first 10,000 and writes only the remaining 90,000.
+
+    The control: writing 10,000 and extending to 100,000 gives a first 10,000
+    rows byte-identical to a single 100,000-row run of the same family under the
+    same rng and compiler hash. If that control fails, staging costs the extra
+    tenth, and the manifest says so rather than this document assuming it did
+    not.
+
+    Only the 100,000-row stage is published. The 10,000-row stage is a gate, and
+    its manifest is kept beside the full one so the promotion is auditable.
+
+    Measured cost at 5,000 rows on 8 workers, in seconds per row: fbd 0.161,
+    compose 0.152, trainer 0.200, godot 0.228, harness 0.284, plan 0.286, react
+    0.286, udon 0.653. Linear to 100,000 that is about 50 hours for the six
+    families that carry over, of which udon is 18. New traits are estimated from
+    the nearest sibling and measured on a 500-row smoke before any long run.
+
+    The staging is also the budget lever between this work and the audio leg of
+    RFD 2241. Every trait at 10,000 is about 8 to 9 hours across all of them;
+    the promotions are the other 72 to 81. Because a promotion appends,
+    deferring every promotion until after that leg lands costs time-to-100,000
+    and nothing else. Nothing is cut and nothing is redone.
+    """
+
     drafted_by :ai
   end
 end
