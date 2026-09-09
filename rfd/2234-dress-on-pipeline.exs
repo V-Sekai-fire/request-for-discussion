@@ -690,7 +690,7 @@ defmodule RFD2234 do
     `voxhammer.cpp` shaped like `pixal3d.cpp`. Blender is already off; Mitsuba
     stays, it is C++ (operator), and only its Python binding here is glue.
     **USD in C++ has exactly one sanctioned path.** `3-interactor/datasource-flow`
-    (github.com/v-sekai-fabric/datasource-flow) *is* the workspace's OpenUSD
+    (github.com/V-Sekai-fire/datasource-flow) *is* the workspace's OpenUSD
     implementation: it builds OpenUSD 26.05 from source (`SConstruct`,
     `env.BuildOpenUSD`), keeps `pxr::` inside `flow/core`, and exposes a flat C
     ABI in `flow/ports` (`idtx_core.sigs` → dlsym thunks, the same shape as
