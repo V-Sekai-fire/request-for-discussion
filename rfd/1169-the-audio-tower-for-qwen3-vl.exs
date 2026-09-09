@@ -195,6 +195,29 @@ defmodule RFD1169 do
     All three are ungated Apache-2.0 and take **128 mel bins**, exactly the
     front end this proposal specified.
 
+    **A fourth candidate trades size for language coverage.**
+    `github.com/facebookresearch/omnilingual-asr`, published 2025-12, is
+    Apache-2.0 for code and weights, ungated, and covers 1,600+ languages.
+    Its published table:
+
+        checkpoint        parameters     download   VRAM      RTF
+
+        omniASR_CTC_300M    325,494,996   1.3 GiB    ~2 GiB   0.001
+        omniASR_LLM_300M  1,627,603,584   6.1 GiB    ~5 GiB   0.090
+        omniASR_LLM_7B    7,801,041,536  30.0 GiB   ~17 GiB   0.092
+
+    Sizes step 300M, 1B, 3B, 7B in each family, and the card reports
+    character error rate under 10 for 78% of the languages. Clips run
+    under 40 seconds, or 15 minutes on the `unlimited` LLM variants.
+
+    **Its front end is not the one specified, and the card does not state
+    it.** The encoder is wav2vec2-shaped, so the input is waveform rather
+    than 128-bin log-mel, and no mel-bin count, encoder width or layer
+    count is published for any variant. Only the 300M CTC row fits the
+    device's 8 GB at published precision. The RTF figures are the card's
+    own on hardware it does not name, and nothing here has exported the
+    graph or run `gate_onnx_device.py` against it.
+
     **The 1.7B is the one to take, and it fits.** Its parameter count is
     2.04 B whole, 4.08 GB at bf16 and 2.04 GB at eight bits against the
     device's 8 GB, so unlike almost every row in RFD 1166 it does not meet
