@@ -305,6 +305,80 @@ defmodule RFD2239 do
     spring hold threshold of 0.1 mm per tick is a sheet of paper.
     """
 
+    details "Item 4 dropped, items 1 and 2 parked, FBD is the critical path", ~S"""
+    Operator, 2026-09-08, in three steps. First the cost: "this is too
+    expensive ... we have to drop 4 (generate identity)". Then a reversal on
+    being shown where the cost actually sat: "is there a way to make this
+    cheaper I dont want to cut identity trait" — the trait is CPU solves worth
+    8 to 14 hours, while the photo leg hanging off it was a 2.15 TB transfer.
+    Then the final ruling: "I think we should drop the 4 generate-identity",
+    and separately "can you park dress on, and generate identity mixins. We
+    need to ladder our work and currently the critical path is through fbd ->
+    generate pose. We should also park generate pose too."
+
+    So: the `Identity` trait is dropped with its `sigs/identity/` allowlist and
+    the silent-stills leg that existed to calibrate its head fit. `anny.sigs`
+    survives reduced to the four methods `DressOn` calls — the appendix-E
+    solve, `Anny.build`, `Measure.stature`, `Measure.mass` — so the ANNY line
+    server is still built. Items 1 and 2 park with their specifications intact;
+    generate-pose is next off the ladder rather than cancelled, which is what
+    "the critical path is through fbd -> generate pose" means.
+
+    Two cost rulings stand with it. Rows land at 10,000 per trait before
+    promotion to 100,000, and the promotion is free rather than a tenth extra
+    because rows are allocated by seed range, so raising the quota appends
+    instead of rewriting; the control is that 10,000 extended to 100,000 gives
+    a first 10,000 byte-identical to a single 100,000-row run. And the photo
+    set, if it ever returns, is read by byte range over a derived selection
+    rather than downloaded whole: a zip's central directory sits at its tail
+    and each member is independently deflated, so a seekable HTTP file lists a
+    zip and fetches only the members wanted.
+    """
+
+    details "Segmenting the garment out of a VoxHammer edit does not work", ~S"""
+    The operator asked for basic segmentation by mesh and image operations, so
+    the original body could be reused under a new dress-on. Measured on
+    `female-p1__g0` and reported rather than worked around, because the answer
+    is no.
+
+    Vertex colour cannot classify: the far-from-body, near-body, in-box and
+    out-of-box groups all sit between 0.542 and 0.601 grey, so there is no
+    albedo to separate cloth from skin.
+
+    The dressed and undressed decodes differ everywhere, not at the garment:
+    137,106 vertices against 95,482, 59 per cent of the dressed mesh's
+    vertices more than 10 units-mm from the undressed decode's nearest vertex,
+    and that far set spread through the leg and head bands rather than
+    concentrated in the torso boxes — 58 per cent of it falls inside a box,
+    and 72 per cent of the in-box set is far.
+
+    The decode does not conserve the body. In one shared unit-height frame,
+    `body.usda` measures 0.0388 cubic metres, about 38 kg at water density and
+    plausible for a 1.4 m first-percentile female; the undressed decode is
+    0.0143 and the dressed one 0.0247. The dressed mesh exceeds the undressed
+    by roughly 10 litres, and no garment is 10 litres of cloth. So the
+    difference between the two decodes is dominated by what TRELLIS did, not
+    by the garment, and any distance threshold on it measures the decoder.
+
+    What works instead needs no model and no new capture. The garment's extent
+    is already known by construction in the conditioning views: `composite.json`
+    records the paste (`placed_at`, `size`, `rotation_deg`, `scale`,
+    `alpha_threshold`, `torso_coverage`, `fraction_inside_body_mask`) and
+    `view.json` records the camera that saw it (`frame`, `index`,
+    `camera_position`, `forward_dot`, `mask_bbox`), and the garment alpha is an
+    input we hold. Back-projecting that known region onto the body surface
+    labels the cloth without inferring anything. This also answers the
+    structured-light suggestion: a projected pattern buys correspondence, and
+    here correspondence is already exact because the camera and the paste are
+    ours. Structured light is the right tool for a capture rig with no
+    geometry, not for a render we authored.
+
+    The reusable direction is stronger than the one asked for: the original
+    body was never destroyed. `body.usda` is exact, per-row, and regenerable
+    from `identity.json`, so the open work is the garment as a shell over the
+    body surface, which transfers to another body.
+    """
+
     details "What this RFD does not decide", ~S"""
     The llama.cpp pairing with the canonical ggml; the godot-sandbox
     revision to advance to and who redoes the six conversion commits; where
