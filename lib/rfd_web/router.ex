@@ -91,7 +91,7 @@ defmodule RFDWeb.Router do
               else: ""
 
           html(conn, "RFD #{e.serial}: #{e.title}", """
-          <p class="meta"><a href="/rfd/#{canonical}/README.md">README.md</a>#{if e.details, do: ~s( · <a href="/rfd/#{canonical}/DETAILS.md">DETAILS.md</a>), else: ""} · <a href="https://github.com/v-sekai-fabric/request-for-discussion/blob/main/rfd/#{canonical}.exs">source</a>#{if e.flight_level, do: " · " <> level(e.flight_level), else: ""}</p>
+          <p class="meta"><a href="/rfd/#{canonical}/README.md">README.md</a>#{if e.details, do: ~s( · <a href="/rfd/#{canonical}/DETAILS.md">DETAILS.md</a>), else: ""} · <a href="https://github.com/V-Sekai-fire/request-for-discussion/blob/main/rfd/#{canonical}.exs">source</a>#{if e.flight_level, do: " · " <> level(e.flight_level), else: ""}</p>
           #{markdown(e.readme)}
           #{details}
           """)

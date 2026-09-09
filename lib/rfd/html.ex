@@ -39,7 +39,7 @@ defmodule RFD.HTML do
     <title>#{escape(title)}</title><style>#{@css}</style></head>
     <body><header><nav><a class="brand" href="/">Request for Discussion</a>#{nav}</nav></header>
     <main>#{body}</main>
-    <footer>Rendered from the Elixir sources in <a href="https://github.com/v-sekai-fabric/request-for-discussion">v-sekai-fabric/request-for-discussion</a>. The same corpus answers over MCP at <code>/mcp</code>.</footer>
+    <footer>Rendered from the Elixir sources in <a href="https://github.com/V-Sekai-fire/request-for-discussion">v-sekai-fabric/request-for-discussion</a>. The same corpus answers over MCP at <code>/mcp</code>.</footer>
     </body></html>
     """
   end

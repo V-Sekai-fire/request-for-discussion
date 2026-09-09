@@ -188,7 +188,7 @@ did not run.
 
     plan(domain: "cineform_delivery", problem: "…/problem.ex")
 
-taskweft is at github.com/taskweft/taskweft and serves `plan` and
+taskweft is at github.com/V-Sekai-fire/interactor-taskweft and serves `plan` and
 `validate` over MCP. RFD 1037 gives the DSL and the type rules: there
 is no `:string`, so a subject, a rig and a file handle are each `:ref`.
 Both files are real Elixir, so `Code.string_to_quoted/1` checks them

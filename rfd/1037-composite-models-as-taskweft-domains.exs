@@ -15,7 +15,7 @@ defmodule RFD1037 do
 
     decision ~S"""
     Model each composite as a taskweft domain and a paired problem.
-    taskweft is an HTN planner at github.com/taskweft/taskweft, and it
+    taskweft is an HTN planner at github.com/V-Sekai-fire/interactor-taskweft, and it
     serves `plan` and `validate` over MCP at
     https://taskweft-mcp.fly.dev/mcp.
 
