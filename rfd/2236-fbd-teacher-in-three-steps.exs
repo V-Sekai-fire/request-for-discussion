@@ -387,6 +387,49 @@ defmodule RFD2236 do
     and nothing else. Nothing is cut and nothing is redone.
     """
 
+    details "The port order was by file size, and the import graph disagrees", ~S"""
+    Corrected 2026-09-09 by doing the first port rather than by reading the list again.
+
+    `frames` ported and passed its parity gate: every one of the nine templates at
+    seeds 0 to 99, enumerated rather than sampled because the population is fixed and
+    small, gives the frame index and the filled sentence the Python returned. 900
+    cases, none differing, and two planted defects, one in a sentence and one in a
+    frame index, both reported. The fixture and its control now live in the test
+    suite, so the two answers stay pinned together.
+
+    **It could not then be deleted, which is what exposed the ordering defect.**
+    `fbd_templates.py` and `react_templates.py` both `from frames import pick`, and
+    both are ported later. Parsing the twelve modules for their in-repo imports shows
+    the same shape almost everywhere: **nine of the twelve carry a deletion blocker**,
+    an importer scheduled after them.
+
+    The order was also wrong in the other direction, which matters more because it
+    blocks work rather than deferring a deletion. `react_templates` sits eighth by
+    size and is imported by five modules scheduled before it, so
+    `compose_templates`, `plan_rows` and `harness_templates` would each have been
+    ported against a dependency that did not exist yet.
+
+    The order is therefore a topological sort of the import graph, with file size as
+    the tie-break so the original intent survives where the graph allows it:
+
+        0  frames                 64      6  plan_rows             156
+        1  census                135      7  harness_templates     217
+        2  gd_lift               436      8  trainer_api_templates 417
+        3  fbd_templates         180      9  godot_api_templates   566
+        4  react_templates       218     10  udon_templates        276
+        5  compose_templates      85     11  write_fbd_rows        556
+
+    `gd_lift` moves nine places earlier, from last to third: it has no in-repo
+    imports and `udon_templates` needs it. The plan had it last on the reasoning that
+    it should be deleted immediately before the Udon rows, which confuses when a
+    module is ported with when its Python is deleted.
+
+    **So parity and deletion are separate events.** Parity closes a port and is the
+    gate on trusting the Elixir; deletion waits until the last importer is ported and
+    is the gate on removing the Python. Recording them as one step is what put
+    `frames` first and made its deletion impossible at that position.
+    """
+
     drafted_by :ai
   end
 end
