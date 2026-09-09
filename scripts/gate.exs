@@ -36,7 +36,13 @@ defmodule Gate do
   def mechanisms(abs) do
     prek = if File.exists?(Path.join(abs, ".pre-commit-config.yaml")), do: [:prek], else: []
     pixi = if pixi_gate_env?(abs), do: [:pixi_gate], else: []
-    prek ++ pixi
+    inc = if engine_tree?(abs), do: [:includes], else: []
+    prek ++ inc ++ pixi
+  end
+
+  # An engine checkout, recognised by the roots an engine include is written against.
+  def engine_tree?(abs) do
+    Enum.all?(["core", "scene", "servers"], &File.dir?(Path.join(abs, &1)))
   end
 
   defp pixi_gate_env?(abs) do
@@ -128,8 +134,53 @@ defmodule Gate do
     mechanisms(abs)
     |> Enum.map(fn
       :prek -> {:prek, run_prek(abs, ref, files)}
+      :includes -> {:includes, run_includes(abs, ref, files)}
       :pixi_gate -> {:pixi_gate, run_pixi_gate(abs)}
     end)
+  end
+
+  @engine_roots ~w(core scene servers editor main drivers platform)
+
+  @doc """
+  Every engine-rooted `#include "..."` in the changed sources resolves to a file.
+  Catches the relocation class, where upstream moves a header and git reports the
+  merge clean because nothing conflicted; it surfaces only at compile time.
+  """
+  def run_includes(abs, ref, files) do
+    sources =
+      (files || changed_files(abs, ref))
+      |> Enum.filter(&(Path.extname(&1) in [".c", ".h", ".cpp", ".hpp", ".cc", ".hh", ".inc"]))
+      |> Enum.reject(&String.contains?(&1, "thirdparty/"))
+
+    broken =
+      for f <- sources,
+          abs_f = Path.join(abs, f),
+          File.regular?(abs_f),
+          inc <- engine_includes(abs_f),
+          not File.regular?(Path.join(abs, inc)),
+          do: "#{f} -> #{inc}"
+
+    case Enum.uniq(broken) do
+      [] -> {:ok, "#{length(sources)} source(s), every engine include resolves"}
+      bad -> {:fail, "unresolved include(s):\n" <> Enum.join(Enum.take(bad, 20), "\n")}
+    end
+  end
+
+  defp engine_includes(abs_f) do
+    abs_f
+    |> File.read!()
+    |> String.split("\n")
+    |> Enum.flat_map(fn line ->
+      case Regex.run(~r/^\s*#include\s+"([^"]+)"/, line) do
+        [_, inc] -> [inc]
+        _ -> []
+      end
+    end)
+    # Generated headers do not exist until SCons writes them, and a module-relative
+    # include resolves through a CPPPATH this check cannot see. Both are excluded, so
+    # the floor is: only engine-rooted, non-generated includes are checked.
+    |> Enum.filter(&(hd(String.split(&1, "/")) in @engine_roots))
+    |> Enum.reject(&String.ends_with?(&1, ".gen.h"))
   end
 
   def dirty_files(abs) do
@@ -167,7 +218,11 @@ defmodule Gate do
       {"a planted always-failing hook is reported as a failure", planted(:fail) == :fail},
       {"a planted always-passing hook is reported as a pass", planted(:pass) == :ok},
       {"a defect that is only in the working tree is reported as a failure",
-       uncommitted_control() == :fail}
+       uncommitted_control() == :fail},
+      {"a planted unresolved engine include is reported as a failure",
+       include_control(:broken) == :fail},
+      {"a generated .gen.h include is not reported as unresolved",
+       include_control(:generated) == :ok}
     ]
 
     Enum.each(results, fn {name, ok} ->
@@ -203,6 +258,32 @@ defmodule Gate do
 
     result =
       if Enum.any?(gate(dir, nil), fn {_, r} -> match?({:fail, _}, r) end), do: :fail, else: :ok
+
+    File.rm_rf!(dir)
+    result
+  end
+
+  # A tree shaped like an engine checkout, with one source whose include either does not
+  # resolve or is generated. The second direction matters as much as the first: a check
+  # that flags every .gen.h is noise, and a noisy gate gets switched off.
+  defp include_control(kind) do
+    dir = Path.join(System.tmp_dir!(), "gate_inc_#{kind}_#{System.unique_integer([:positive])}")
+    Enum.each(["core", "scene", "servers", "modules/m"], &File.mkdir_p!(Path.join(dir, &1)))
+    File.write!(Path.join(dir, "servers/real.h"), "// present\n")
+
+    include =
+      case kind do
+        :broken -> "servers/audio/effects/moved_away.h"
+        :generated -> "core/object/gdvirtual.gen.h"
+      end
+
+    File.write!(Path.join(dir, "modules/m/a.cpp"), ~s(#include "#{include}"\n#include "servers/real.h"\n))
+
+    result =
+      case run_includes(dir, nil, ["modules/m/a.cpp"]) do
+        {:ok, _} -> :ok
+        {:fail, _} -> :fail
+      end
 
     File.rm_rf!(dir)
     result
