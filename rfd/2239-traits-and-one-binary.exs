@@ -422,6 +422,56 @@ defmodule RFD2239 do
     payload gate, and a logbook line carrying what was measured.
     """
 
+    details "The deferred rulings, three of them retired by looking", ~S"""
+    The plan carried about twenty questions marked for the operator to rule on, each
+    scheduled to surface at the moment it blocked a rung. That shape spends an
+    operator turn per question and spends them at the worst time, mid-rung. Measured
+    2026-09-09, three of them were not questions at all.
+
+    **Which godot-sandbox revision carries SafeGDScript.** Upstream v0.58, published
+    2026-09-07, carries 71 paths naming SafeGDScript or `.sgd`. The plan named v0.54
+    as the first and left the revision open. It is a pin advance rather than a
+    ruling. What remains open is narrower and worth keeping: who redoes the six
+    in-tree conversion commits against it.
+
+    **Where `entities-godot-cineform` lives and how it is placed.** It does not
+    exist, in either organisation, and it is not needed: `modules/cineform` is
+    already in the fork on `feat/module-cineform` and rides into the assembly with
+    the other twenty branches. The question assumed a repository that was never
+    created and whose function is in-tree.
+
+    **Whether `transport-taskweft-acp` must be unarchived for rung 3.** No. The
+    concern was that widening the `Plan` family to 100,000 distinct rows means
+    writing seeded domain variants into `priv/domains/*.ex` inside an archived
+    repository, with three ways out, all of them costly. But
+    `mix taskweft_acp.plan_sgd` resolves its domain as
+    `Keyword.get(opts, :domain)` and then `File.read!` on that path, so the path is
+    arbitrary. Generated variants live in the teacher repository and are passed in.
+    The archived repository stays read-only and is read, which is what an archive
+    permits. Neither unarchiving, nor moving the planner, nor dropping `Plan` is
+    required.
+
+    **What is left, and when it is actually needed.** Batched by the rung that wants
+    it rather than discovered when it blocks:
+
+    - Rung 1, the Elixir port: nothing.
+    - Rung 2, the compiler's second half: the codebook defaults, which is one line.
+      Three stages of eight levels giving 512 codes per real quantity, with the range
+      declared per quantity; `[40]` for TIME on the 125 ms grid; INT ranges as one
+      stage. A different ruling is a one-line change and the proofs are unaffected.
+    - Rung 3, distinctness: nothing, now that the archived-repository question is
+      answered.
+    - Rung 5, promotion: one go per trait on the measured hours, which is the point
+      of the gate and not a question to retire.
+    - Rung 6, the binary: the llama.cpp pairing, accepting stage A as an interim
+      oracle, how the teacher weights are distributed, the G1-to-VRM retarget path,
+      the policy for a machine with only an integrated GPU, and who redoes the
+      sandbox conversion commits.
+
+    So the ladder needs **one ruling before rung 5**, and the rest cluster where the
+    binary is built. An operator can leave the ladder alone from here to rung 4.
+    """
+
     details "What this RFD does not decide", ~S"""
     The llama.cpp pairing with the canonical ggml; the godot-sandbox
     revision to advance to and who redoes the six conversion commits; where
