@@ -776,9 +776,9 @@ defmodule RFD2234 do
     meshes for 36 candidate rows, and `2d_render_front` byte-equal to
     `2d_render_back` on every row. The published dataset therefore asserted
     that three different candidates share one geometry, and this RFD's own
-    negative control -- swapping rank1's asset for rank5's must make the emit
-    exit non-zero -- could not fail, because the two already pointed at one
-    file. The destination now carries the candidate and the side, and two
+    negative control could not fail. That control swaps rank1's asset for
+    rank5's and requires the emit to exit non-zero, and the two already pointed
+    at one file. The destination now carries the candidate and the side, and two
     different sources reaching one destination is refused rather than aliased.
     After: 36 of 36 distinct by content, front differing from back on all 24
     that carry both, and the negative control exits non-zero.
@@ -787,8 +787,8 @@ defmodule RFD2234 do
     carried `metersPerUnit = 1` while `body.usda`, rank5 and the masks carried
     the identity's stature, on all twelve targets, so a consumer honouring USD
     units read the two edited candidates 30 to 49 per cent too small. Geometry
-    was never affected -- every mesh is unit-height and only the declared
-    scale lied, which is why the voxel gate, which normalises, stayed green.
+    was never affected: every mesh is unit-height and only the declared scale
+    lied, which is why the voxel gate, which normalises, stayed green.
     Cause in two places: `run_edit_test.py` called `usd_io.write_mesh` without
     a scale and took its default of 1.0, and `usd_convert.py` then found the
     file present and skipped it. That is rule 3, a silent skip reading as a
@@ -824,11 +824,11 @@ defmodule RFD2234 do
     known by construction rather than inferred.
 
     **Scheduled and not started**, parking with the pipeline: the try-on clip,
-    whose camera path is designed and measured -- a tour of the Hammersley
-    views dropping the worst step from 160 degrees to 29, six elevation bands
-    giving six shots of about one revolution each, roughly 1,970 frames and 66
-    seconds at 30 fps -- and the two render corpora, which still have no
-    parquet at all.
+    whose camera path is designed and measured. A tour of the Hammersley
+    views drops the worst step from 160 degrees to 29, and six elevation bands
+    give six shots of about one revolution each, roughly 1,970 frames and 66
+    seconds at 30 fps. Also the two render corpora, which still have no parquet
+    at all.
     """
 
     drafted_by :ai

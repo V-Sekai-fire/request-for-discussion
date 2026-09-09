@@ -309,8 +309,8 @@ defmodule RFD2239 do
     Operator, 2026-09-08, in three steps. First the cost: "this is too
     expensive ... we have to drop 4 (generate identity)". Then a reversal on
     being shown where the cost actually sat: "is there a way to make this
-    cheaper I dont want to cut identity trait" — the trait is CPU solves worth
-    8 to 14 hours, while the photo leg hanging off it was a 2.15 TB transfer.
+    cheaper I dont want to cut identity trait". The trait is CPU solves worth
+    8 to 14 hours; the photo leg hanging off it was a 2.15 TB transfer.
     Then the final ruling: "I think we should drop the 4 generate-identity",
     and separately "can you park dress on, and generate identity mixins. We
     need to ladder our work and currently the critical path is through fbd ->
@@ -318,8 +318,8 @@ defmodule RFD2239 do
 
     So: the `Identity` trait is dropped with its `sigs/identity/` allowlist and
     the silent-stills leg that existed to calibrate its head fit. `anny.sigs`
-    survives reduced to the four methods `DressOn` calls — the appendix-E
-    solve, `Anny.build`, `Measure.stature`, `Measure.mass` — so the ANNY line
+    survives reduced to the four methods `DressOn` calls: the appendix-E
+    solve, `Anny.build`, `Measure.stature` and `Measure.mass`. So the ANNY line
     server is still built. Items 1 and 2 park with their specifications intact;
     generate-pose is next off the ladder rather than cancelled, which is what
     "the critical path is through fbd -> generate pose" means.
@@ -349,8 +349,8 @@ defmodule RFD2239 do
     137,106 vertices against 95,482, 59 per cent of the dressed mesh's
     vertices more than 10 units-mm from the undressed decode's nearest vertex,
     and that far set spread through the leg and head bands rather than
-    concentrated in the torso boxes — 58 per cent of it falls inside a box,
-    and 72 per cent of the in-box set is far.
+    concentrated in the torso boxes. 58 per cent of it falls inside a box, and
+    72 per cent of the in-box set is far.
 
     The decode does not conserve the body. In one shared unit-height frame,
     `body.usda` measures 0.0388 cubic metres, about 38 kg at water density and
