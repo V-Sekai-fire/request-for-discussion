@@ -379,6 +379,49 @@ defmodule RFD2239 do
     body surface, which transfers to another body.
     """
 
+    details "The order of work, as a ladder", ~S"""
+    Each rung is finished and measured before the next starts, which is what
+    laddering buys: a defect costs one rung rather than a milestone. The
+    critical path is FBD, and generate-pose is what it runs to.
+
+    **Rung 0, land and park.** The corrected dress-on corpus published, the RFD
+    amendments and the logbook entry written, then a stop on items 1, 2 and the
+    audio leg. Done.
+
+    **Rung 1, the Elixir port and parity.** The order and the parity gate are in
+    RFD 2236. Nothing new is written until the teacher's Python is Elixir.
+
+    **Rung 2, the compiler's second half.** The codebooks, `Mutation.lean`, the
+    `const` and `codebook` declarations, multi-output declarations, typed
+    literal checks, the `ABS` block, and the compiler's `batch` mode, which
+    drops the per-row cost. Rung 1's first half already landed:
+    `export-tables` over 313 signatures in 13 tables, `--sigs`, `# index-only:`
+    and `# uncovered:`, with four controls green.
+
+    **Rung 3, distinctness at 5,000.** Today's duplicate rate reported on the
+    eight Python stages, then every numeric widened into a codebook for the six
+    carry-over families, and `distinct_rank1` equal to rows on every stage. The
+    holdout declaration and the cross-trait leak pass land here, before volume
+    rather than after it.
+
+    **Rung 4, the six FBD families at 10,000 rows.** About an hour each at the
+    measured rates, and the promotion control proves the seed-range allocator
+    appends rather than rewrites.
+
+    **Rung 5, promotion to 100,000**, cheapest first, each after its 500-row
+    smoke and the operator's go on the measured hours. Udon last, and only once
+    a served translator or a per-method cache brings it under 0.3 s per row from
+    the measured 0.653.
+
+    **Rung 6, the binary**, with the corpus re-scored on it per the 500-row
+    parity samples.
+
+    Then the ladder hands off to generate-pose: the `Body` and `Spring` traits
+    unpark with their specifications intact, followed by dress-on and the audio
+    leg of RFD 2241. Every rung ends the same way, with the citation check, the
+    payload gate, and a logbook line carrying what was measured.
+    """
+
     details "What this RFD does not decide", ~S"""
     The llama.cpp pairing with the canonical ggml; the godot-sandbox
     revision to advance to and who redoes the six conversion commits; where
