@@ -430,6 +430,66 @@ defmodule RFD2236 do
     `frames` first and made its deletion impossible at that position.
     """
 
+    details "Function colours, and the one place this language drops the token", ~S"""
+    Operator, 2026-09-09: study the debate under "Function Arguments Are Not
+    Function Colors" against this compiler. The argument there is whether an
+    effect is a property that propagates up a call stack, or an argument that
+    does not. The strongest position in the thread is that Haskell's IO is
+    honest precisely because its token is a real argument, threaded explicitly.
+
+    **This language already took that side, and the pins show it.** Checked
+    against rows in the published corpora rather than against the grammar.
+    A pure block produces a value and nothing else:
+
+        g = ADD(IN1=n, IN2=m, IN3=k, IN4=-2)
+        v = g.OUT
+
+    An effectful one produces a token, and a chain of them threads it:
+
+        n = CALL[Node.get_node](TARGET="/root/Fixture", path="Body")
+        s = CALL[Node3D.set_position](EN=n.ENO, TARGET=n.RET, position="...")
+        g = CALL[Node3D.get_position](EN=s.ENO, TARGET=n.RET)
+        done = g.ENO
+
+    So the colour is a wire. `.RET` carries the value and `.ENO` carries the
+    effect, on separate pins, which is stronger than a colour: `s` depends on
+    `n`'s **value** through `TARGET=n.RET` and on `n`'s **effect** through
+    `EN=n.ENO`, and those two dependencies are expressible apart. A colour
+    cannot say that. There is also no call stack to propagate up: a program is
+    one flat scan, so the half of the debate about intermediate functions
+    having to be rewritten does not arise here at all.
+
+    The `--sigs` allowlist is the other half. It bounds which tables a program
+    may call, which restricts **downward**, the direction the thread identifies
+    as sound (Rust's `const` discharges restrictions down the stack; `unsafe`
+    propagates up). Rung 2's `uses <trait>` declaration is that restriction
+    made explicit in the text.
+
+    **Where the language is weaker than the Haskell it resembles: the token is
+    optional.** `Netlist.build` reads `EN` as an `Option` and takes `none`
+    without complaint, and nothing consults the signature table to ask whether
+    a block is effectful. So an effectful `CALL` may be written with no `EN`,
+    and two effectful blocks may sit in one program with no chain between them.
+    Their order is then decided by `order`, which takes the first ready node in
+    the list it was given, so it falls back to **source position**.
+
+    That is deterministic, which is better than it could be, but it means the
+    text carries meaning the graph does not: two programs with identical
+    netlists and different line order can perform their effects in different
+    orders. It also puts a hole in the mutation search, which decides a
+    candidate is visible by simulating it: a mutation that reorders two
+    unchained effects changes behaviour without changing the graph the
+    simulator is asked about.
+
+    The fix is one of two, and it is a language change rather than a bug fix,
+    so it is recorded here and ruled on rather than taken: either require `EN`
+    on any block whose signature is declared effectful, which makes the token
+    mandatory as Haskell's is, or refuse a program that contains two unchained
+    effectful blocks and name them. The first is a stronger guarantee and
+    invalidates existing rows that omit `EN` on a first call; the second is
+    narrower and leaves single-effect programs alone.
+    """
+
     drafted_by :ai
   end
 end
