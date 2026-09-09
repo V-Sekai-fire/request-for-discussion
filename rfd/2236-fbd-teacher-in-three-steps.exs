@@ -101,6 +101,38 @@ defmodule RFD2236 do
     block.
     """
 
+    details "Step 1 as it stands: eight families at 5,000 rows", ~S"""
+    Every family keeps the shape above: one intent, three candidates, the three
+    controls asserted on every row before the emit, and three splits. Measured
+    on this desk with eight workers; the seconds per row are what a 100,000-row
+    run is projected from.
+
+    | family | published as | rows | train | test | evaluation | templates | s/row | compiler |
+    | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+    | fbd | `chibifire/taskweft-fbd-editscore-train` | 5,000 | 3,375 | 375 | 1,250 | 4 | 0.161 | `d3279ec` |
+    | react | `chibifire/taskweft-fbd-react-train` | 5,000 | 3,600 | 400 | 1,000 | 5 | 0.286 | `d3279ec` |
+    | harness | `chibifire/taskweft-fbd-harness-train` | 5,000 | 4,059 | 451 | 490 | 69 | 0.284 | `72c2603` |
+    | compose | `chibifire/taskweft-fbd-compose-train` | 5,000 | 3,600 | 400 | 1,000 | 5 | 0.152 | `ed1ac1d` |
+    | plan | `chibifire/taskweft-fbd-plan-train` | 5,000 | 4,050 | 450 | 500 | 10 | 0.286 | `d3279ec` |
+    | godot | `chibifire/taskweft-fbd-godot-train` | 5,000 | 3,897 | 433 | 670 | 15 | 0.286 | `7d34ff4` |
+    | trainer | `chibifire/taskweft-fbd-trainer-train` | 5,000 | 3,807 | 423 | 770 | 13 | 0.103 | `7d34ff4` |
+    | udon | `chibifire/taskweft-fbd-udon-train` | 5,000 | 3,681 | 409 | 910 | 11 | 0.569 | `7d34ff4` |
+
+    The Udon family's census: 3,681 training rows over 9 templates, 12 block
+    kinds present, 27 frames, 105.2 tokens on average and 140 at most, with
+    `udon_min_max` and the `LIMIT` block held out to evaluation and absent from
+    training. The godot, trainer and udon stages were regenerated under one
+    committed compiler and a recorded engine (`4.5.stable.official.876b29033`,
+    sha256 `7b77f373...`); the five before them carry the compiler sha their run
+    used. The manifest records the compiler and the engine by name and hash
+    only: an absolute path in a manifest names the desk and its user, and the
+    publisher refuses one.
+
+    Under RFD 2239 these become traits at 100,000 rows, react and compose
+    retiring into a Body trait, and `mix fbd.rfd_tables` writes this table from
+    the stage manifests rather than by hand.
+    """
+
     details "Steps 2 and 3, the gates", ~S"""
     Step 2 continues pretraining `google/gemma-4-E2B-it-qat-q4_0-unquantized`
     on rank1 rows on the desk's 4090, the grammar as a filter on anything that

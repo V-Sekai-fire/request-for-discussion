@@ -1680,3 +1680,150 @@ docs). ggml's Vulkan backend, which is what replaces WebGPU.
 
 **Substitute:** ggml Vulkan backend + Godot's native Vulkan
 renderer + MoltenVK on macOS.
+
+### CorridorKey keys a screen plate, and its licence is non-commercial share-alike
+
+**Asked, 2026-09-08.** The operator asked whether CorridorKey could replace
+the matting model that produces the dress-on garment alphas, noting the tool
+may be used for dataset generation but not resold as a hosted service. Two
+findings, and the first settles it without the second.
+
+**It is not the same task.** CorridorKey takes two inputs: a green or blue
+screen plate, and a coarse alpha hint that something else produced. What it
+does is unmix the screen colour out of edge pixels, so hair, motion blur and
+translucency come out with a straight-colour foreground and a linear alpha.
+Isolating a subject on an arbitrary background is a different job, and the
+tool does not do it. The garment photographs in the second-hand fashion set
+are studio and marketplace product shots on white, grey and room backgrounds;
+there is no screen colour to unmix. The repository makes the relationship
+plain: it ships a `BiRefNetModule` wrapper as one of its optional AlphaHint
+generators, so the matting model is upstream of it, not replaced by it. Its
+heavier hint options want about 80 GB of VRAM, which no desk here has.
+
+**The licence propagates.** CORRIDOR KEY LICENCE version 1.0 is the Creative
+Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
+plus additional terms that take precedence: no repackaging, redistribution,
+sublicensing or resale as a standalone or competing product; no paid API or
+inference service, directly or indirectly; and a separate written agreement
+required to incorporate the tool into a commercial software package or
+inference service. The operator's reading of the resale clause is correct.
+The workspace binds tighter than the licence does, in two rows that already
+exist. **CC-BY-SA** is refused above for share-alike exposure, and NC-SA is
+share-alike with a use restriction on top. **OpenRAIL-M as a generator** is
+refused because use restrictions propagate into anything trained on the
+output, with passthrough use exempt. A matte that ships inside a CC-BY-4.0
+corpus, on both the rank1 and rank3 arms of every dress-on row, is generator
+use rather than passthrough. The installer also drives `uv`, refused above
+for project environments.
+
+**What this row blocks.** CorridorKey and CorridorKeyBlue checkpoints as a
+source of any alpha, matte or mask that reaches a corpus, a published dataset
+or a shipped asset; the tool as a dependency of any pipeline in the manifest.
+
+**What the row does not cover.** Reading the repository to understand
+screen-colour unmixing. A passthrough pass over screen-plate footage whose
+derived mattes are never published or trained on, which the tool's own terms
+permit and this row leaves alone; no such footage is in the workspace today.
+The GVM and VideoMaMa weights it can optionally call, which carry their own
+licences and are out of scope here.
+
+**Substitute:** the matting model already in the dress-on pipeline, pinned to
+a revision sha, with the model name, that sha and the input photograph's sha
+recorded per matte. RFD 2239 carries the argument in full.
+
+### FFmpeg is blocklisted, and the single-binary export is why
+
+**The licence decides this, not the capability.** FFmpeg can encode CineForm;
+`libavcodec/cfhdenc.c` exists and this workspace's own `scripts/cfhd_probe.py`
+once drove it with `-c:v cfhd -quality film3+`. Capability was never the
+question. FFmpeg is LGPL-2.1-or-later, and what this workspace ships is one
+native binary per platform out of a Godot fork, with every module linked in.
+The LGPL asks that a user be able to relink the covered library with their own
+build. A single statically linked export cannot offer that, so taking FFmpeg
+into the shipping tree takes on an obligation we cannot meet.
+
+**The alternative is not a compromise.** The GoPro CineForm SDK is
+`Apache-2.0 OR MIT`, matching our own code, and it holds both an encoder and a
+decoder, so one dependency covers both directions. RFD 1123 made that choice
+and RFD 1137's pair does the work today: `transport-cineform-tui` sends a job,
+`interactor-cineform` encodes, `service-cineform` owns the bus and the runtime.
+Inside the engine the same codec is `modules/cineform`, a `MovieWriter` and a
+`VideoStream` on the fork.
+
+**Operator directive, 2026-09-08, on being asked:** "remember ffmpeg is still
+banned." This row was overdue; RFD 1175 had asserted the ban since it was
+written and no row carried it, which is exactly the drift
+`check_blocklist_detail.py` exists to catch in the other direction.
+
+**Measured on this desk the same day, correcting a claim made an hour
+earlier.** "FFmpeg is not on this desk" was wrong. It is not installed and not
+on `PATH`, and two runnable copies sit in package caches, reachable by absolute
+path: `imageio_ffmpeg`'s bundled build under the `uv` cache and a second under
+the rattler cache. The one that runs reports `ffmpeg version
+7.1-essentials_build`, configured `--enable-gpl --enable-version3`, and lists
+`VF...D cfhd  GoPro CineForm HD` among its encoders. So the cached build is
+**GPL**, not the LGPL the argument above is written against, which fails the
+test harder rather than softer.
+
+**Nothing in the workspace depends on it, and this row breaks no build.** Every
+`ffmpeg` line in `taskweft-nmm-personas`, `tropes-removal-model` and
+`voxhammer-upstream`'s lock files is an optional extra of `imageio`'s own
+metadata (`extra == 'ffmpeg'`), never a selected package; no `pixi.lock` here
+locks an ffmpeg package, and no `.pixi/envs` tree contains the binary. The
+caches are residue, not a dependency.
+
+**What this row blocks.** FFmpeg, libav\* and any wrapper over them
+(`imageio-ffmpeg`, `av`, `moviepy`) as a dependency of anything the workspace
+ships or of any pipeline in the manifest; `ffmpeg` or `ffprobe` invoked as a
+build-time or corpus-time tool, because a corpus tool that nobody else can run
+is not reproducible and the CineForm pair already runs here.
+
+**What the row does not cover.** Reading FFmpeg's source to understand a
+container or a codec. A measurement already recorded that used it, which stays
+in the record as a measurement rather than being retracted. A third party's
+own use of it outside anything we ship.
+
+**Substitute:** the CineForm SDK for the codec, `interactor-cineform` for
+batch encoding, `modules/cineform` for the engine's `--write-movie`, and
+Matroska as the container (RFD 1123 measured why, and RFD 2240 restates it).
+
+### Mitsuba 3's CPU variants are blocklisted, and the silent fallback is why
+
+**The number is the argument.** RFD 1137 measured the same 96 frames of a
+1024x1024 render two ways: 0.34 seconds a frame on the card, and 78 seconds a
+frame through `llvm_ad_rgb`. A factor of 230. The six-shot try-on list is 1,970
+frames, which is eleven minutes on the card and about forty-three hours on the
+processor. Those are not two settings of one thing; they are a render and a
+refusal to render, and only one of them finishes inside a working day.
+
+**What made it a rule rather than a preference is that nothing failed.**
+`render_hammersley.py` tried `cuda_ad_rgb`, then `llvm_ad_rgb`, then
+`scalar_rgb`, swallowing each exception and printing one line naming the
+winner. A desk under memory pressure, a driver hiccup, a card busy with
+something else: any of those and the sweep would have kept going on the
+processor, for days, producing frames indistinguishable from the fast ones and
+a corpus nobody could tell apart afterwards. That is rule 3 again, a silent
+skip reading exactly like a pass, and it is the same shape as the DirectML
+fallback the CPU row above already argues.
+
+Worse than the recorded numbers suggest: measured on this desk 2026-09-08, the
+LLVM backend does not initialise at all (`jitc_llvm_init(): LLVM API
+initialization failed`), so the old chain would not have landed on the 78-second
+path. It would have fallen through to `scalar_rgb`, which is slower still.
+
+**What this row blocks.** `llvm_ad_*` and `scalar_*` variants as the renderer
+for anything that produces a corpus, a published dataset, a shipped clip or a
+measurement the workspace reports; and any fallback that reaches them without
+saying so. A renderer that cannot get the card stops and names what it tried.
+
+**What the row does not cover.** Measuring the CPU path on purpose, which is
+where the 78-second figure came from and is how the factor of 230 is known.
+Running the renderer on a desk that has no card, deliberately and with the
+variant recorded, which is a different act from drifting onto it. Reading
+Mitsuba's source. Everything that is not a render: the interpreter, the mesh
+loading, the scene construction and the file writing run on the processor and
+always will, exactly as the CPU row above says of orchestration.
+
+**Substitute:** `cuda_ad_rgb` on an owned card, required rather than preferred,
+with the variant, the renderer version and the samples per pixel recorded in
+the render's own manifest so a corpus states which one made it.

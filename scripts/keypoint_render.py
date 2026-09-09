@@ -463,7 +463,7 @@ for tag, az in (("front", 0.0), ("three-quarter", 40.0), ("side", 90.0)):
     print("%-14s depth %.3f..%.3f m   body %d px   %d of %d joints unoccluded"
           % (tag, lo, hi, int(hit.sum()), nvis, N))
 
-nlay, lottie_err, dbytes = write_lottie(os.path.join(OUT, "anny-keypoints-multiview.json"),
+nlay, lottie_err, dbytes = write_lottie(os.path.join(OUT, "anny-keypoints-multiview.lot"),
                                 VIEWS, COLS, labels, parents)
 # A pixel is not a physical quantity, so the error is reported in both. At FOV 40 degrees and
 # the ~2.99 m the body sits at -- about forty-five soda cans -- 1024 px spans 2.18 m,
