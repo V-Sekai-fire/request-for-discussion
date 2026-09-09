@@ -472,6 +472,74 @@ defmodule RFD2239 do
     binary is built. An operator can leave the ladder alone from here to rung 4.
     """
 
+    details "The deferred rulings, asked in one sitting and answered", ~S"""
+    Operator, 2026-09-09: "please ask me all the open questions first". Seventeen were
+    put in four rounds rather than surfacing one per rung, which is what the batching
+    above was for. The answers follow, including the four that went against the
+    recommendation and the two that rejected the question.
+
+    **Two questions were refused as questions.** On sizing the codebooks: "you know you
+    can size the codebook yourself right?" So the levels are derived from the numeric
+    ranges the corpora already carry and from the distinctness rung 3 needs, and no
+    operator turn is spent on it. On `obs_dim` and `K_max`: "ladder up. be honest" and
+    "ladder up. I don't know what real vrms can use and they can abuse it". So neither
+    is padded to a doctrine figure. The width starts at what the environment actually
+    emits, with the manifest naming which slots are live, and grows when a term is
+    added. `K_max` starts at the 22 chains measured on the sample and an avatar
+    carrying more is **refused rather than silently truncated**, because truncation is
+    how an abusive input becomes a wrong reward instead of an error.
+
+    **The binary.** Stage A is accepted as an interim and as the parity oracle, and
+    the ggml dependencies are ported into a Godot engine C++ module rather than left
+    beside it. `llama.cpp` is not pinned at the old sync marker: `weftspun-consolidated`
+    rebases onto the September ggml, which brings the vision path and obliges
+    re-checking every consumer RFD 2188 consolidated. The teacher's 3.35 GB bundle is
+    fetched through the RFD 2214 channel rather than shipped. The ACP door folds in,
+    serving from the Godot binary over `modules/http3` and `modules/taskweft`, so the
+    planner shim must reach parity with the NIF before that lands. The engine builds at
+    **double** precision, which retires the single-precision assumption and means every
+    timing on this desk was taken at the wrong precision and is re-measured.
+
+    **A machine with only an integrated GPU runs on it** rather than refusing. That is
+    still Vulkan, so the CPU-execution row is not touched, but the thing that row exists
+    to prevent is a slow path nobody notices: the resolved device is printed at every
+    load and its throughput recorded, so an integrated run is visible rather than
+    silent.
+
+    **The sandbox pin advances to v0.58** and the six in-tree conversion commits are
+    redone against it, which is what unblocks the FBD guests, the export guests and the
+    RFD 2213 VRM ELF. `voxhammer.cpp` becomes a repository under `v-sekai-fabric` and
+    is placed in the manifest; it ships no licence file today and that is fixed before
+    it goes anywhere. The G1-to-VRM retarget goes through `skin-tokens-cpp`'s ABI once
+    its ggml pin is reconciled, which the rebase above already touches.
+
+    **ANNY is ported, not wrapped.** The recommendation was a thin Python server under
+    the runner rule; the ruling was "port the rig to elixir too. Find a nx accelerator
+    and not too slow." So the appendix-E solve and the mesh build become Nx with an
+    accelerated backend, and the acceptance is a measurement rather than a promise:
+    the ported solve matches the shipped tools within the tolerances DressOn already
+    asserts, and its wall time is recorded against the float64 CPU baseline.
+
+    **Everything fetched is a data source.** The recommendation was that weights,
+    tokenizers and constructed fixture inputs sit outside the ReBAC list; the ruling is
+    that they do not. So the constraint-twist sample, the sandbox's `udon` set, every
+    checkpoint and every tokenizer join the trusted list before anything reads them.
+
+    That ruling meets the next one, and the consequence is recorded rather than left
+    implicit: **`trust.exs` is the authority**, not Bao KV. The narrow
+    `relationships/*` read is not granted, so the KV tuples stop being the replica the
+    file derives from, and the anti-entropy pair between them is dropped rather than
+    reported as passing. RFD 2200's tuple shape stays as the record of how the list is
+    expressed elsewhere; here the file is what gates a fetch, and it is reviewed as a
+    diff like any other tracked list.
+
+    **Execution.** The nine remaining ports run to the end of rung 1 without stopping,
+    each closed by its own parity gate, with one report at the end. `DressEdit` stays a
+    GPU-budgeted anchor of 96 targets rather than a 100,000-row trait, and the
+    republished corpora are a new generation carrying `:rand` and `-v2` cards rather
+    than a Mersenne Twister port bought for byte parity.
+    """
+
     details "What this RFD does not decide", ~S"""
     The llama.cpp pairing with the canonical ggml; the godot-sandbox
     revision to advance to and who redoes the six conversion commits; where
