@@ -1786,3 +1786,44 @@ own use of it outside anything we ship.
 **Substitute:** the CineForm SDK for the codec, `interactor-cineform` for
 batch encoding, `modules/cineform` for the engine's `--write-movie`, and
 Matroska as the container (RFD 1123 measured why, and RFD 2240 restates it).
+
+### Mitsuba 3's CPU variants are blocklisted, and the silent fallback is why
+
+**The number is the argument.** RFD 1137 measured the same 96 frames of a
+1024x1024 render two ways: 0.34 seconds a frame on the card, and 78 seconds a
+frame through `llvm_ad_rgb`. A factor of 230. The six-shot try-on list is 1,970
+frames, which is eleven minutes on the card and about forty-three hours on the
+processor. Those are not two settings of one thing; they are a render and a
+refusal to render, and only one of them finishes inside a working day.
+
+**What made it a rule rather than a preference is that nothing failed.**
+`render_hammersley.py` tried `cuda_ad_rgb`, then `llvm_ad_rgb`, then
+`scalar_rgb`, swallowing each exception and printing one line naming the
+winner. A desk under memory pressure, a driver hiccup, a card busy with
+something else: any of those and the sweep would have kept going on the
+processor, for days, producing frames indistinguishable from the fast ones and
+a corpus nobody could tell apart afterwards. That is rule 3 again, a silent
+skip reading exactly like a pass, and it is the same shape as the DirectML
+fallback the CPU row above already argues.
+
+Worse than the recorded numbers suggest: measured on this desk 2026-09-08, the
+LLVM backend does not initialise at all (`jitc_llvm_init(): LLVM API
+initialization failed`), so the old chain would not have landed on the 78-second
+path. It would have fallen through to `scalar_rgb`, which is slower still.
+
+**What this row blocks.** `llvm_ad_*` and `scalar_*` variants as the renderer
+for anything that produces a corpus, a published dataset, a shipped clip or a
+measurement the workspace reports; and any fallback that reaches them without
+saying so. A renderer that cannot get the card stops and names what it tried.
+
+**What the row does not cover.** Measuring the CPU path on purpose, which is
+where the 78-second figure came from and is how the factor of 230 is known.
+Running the renderer on a desk that has no card, deliberately and with the
+variant recorded, which is a different act from drifting onto it. Reading
+Mitsuba's source. Everything that is not a render: the interpreter, the mesh
+loading, the scene construction and the file writing run on the processor and
+always will, exactly as the CPU row above says of orchestration.
+
+**Substitute:** `cuda_ad_rgb` on an owned card, required rather than preferred,
+with the variant, the renderer version and the samples per pixel recorded in
+the render's own manifest so a corpus states which one made it.

@@ -501,6 +501,7 @@ Sources excluded from corpora, with the reason:
 | **WebGPU** as a workspace render / compute target                           | on native, Vulkan has ~10 years of production QA vs WebGPU's ~2, is Godot 4's primary renderer, and skips a translation layer on Linux/Windows (MoltenVK's two hops on macOS are battle-tested vs Dawn's newer Metal backend) — see below                          |
 | **CorridorKey** as a matte generator                                        | green/blue screen unmixer needing an alpha hint the matting model already makes, and CC BY-NC-SA 4.0 plus terms, which is both the share-alike row and the generator row — see below                                                                               |
 | **FFmpeg** as a codec dependency                                            | LGPL-2.1-or-later, and a Godot export links into one binary, which is relinking the licence asks for and we cannot offer; the CineForm SDK is Apache-2.0 OR MIT and does both directions — see below                                                               |
+| **Mitsuba 3's CPU variants** as a render target                             | `llvm_ad_*` and `scalar_*`: measured at 78 s a frame against 0.34 s on the card, a factor of 230, and the fallback that reached them was silent; measurement and a card-less desk are exempt — see below                                                           |
 
 The cosplay photo library may be used for **validation only**, never training.
 
