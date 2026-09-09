@@ -178,6 +178,70 @@ defmodule RFD2229 do
     The RFD carries neutral vocabulary from here on.
     """
 
+    details "A caller is a part, and the missing one cost whole operator cycles", ~S"""
+    Operator, 2026-09-09: study how to improve the developer iteration cycle with
+    interchangeable parts, then twice narrowing what that meant, ending at "developer
+    cycle means operator cycles". The study is recorded in
+    `logbook-local-gates-before-ci.md`; the ruling it produced belongs here.
+
+    **The machine loops are not the bottleneck, which is the finding that redirected
+    the study.** Measured on the desk: the Elixir teacher recompiles in 1.0 s and runs
+    its 21 tests in 2.1 s; a no-op `lake build` on the compiler takes 1.3 s once warm,
+    against 55 s cold after a sync; prek over the assembly's 377 changed files takes
+    49 s; a compiler invocation costs 77 ms. Every inner loop is seconds, so tuning
+    them changes nothing the operator experiences.
+
+    **What the operator experiences is round trips, and a third of them were not
+    work.** Of 14 operator turns in the session, six carried new direction and five
+    were spent putting the work back on track: one question asked three times after
+    it had already been answered, one correction of a result reported as clean that
+    was not, and two corrections of what was being studied. One session, counted by
+    the agent that caused the corrections, so it bounds an order of magnitude rather
+    than a rate.
+
+    Three classes, each with a part that already existed and no caller.
+
+    **A sweep with no control reports an empty set as clean.** `repo forall` visits
+    zero projects on this desk and exits 0, so a workspace sweep reported 135 visited
+    and 0 dirty over nothing at all. The operator caught it. The part was already
+    written down: this workspace's own rule that every counter carries a planted
+    control, which `check_anti_entropy.py` implements. What was missing was applying
+    it to ad-hoc sweeps rather than only to committed gates. There is now one
+    enumerator, `Gate.projects/0`, parsed from the manifest and asserting a non-zero
+    visit before any result is believed.
+
+    **Defect classes were discovered one CI round trip at a time.** A push failed on
+    style after 77.8 minutes, of which 76.1 were queue and 1.7 were checking; the fix
+    pushed, and the next run failed on a moved header after 41.8 minutes. Two operator
+    turns bought one defect class each, and both were findable on the desk in under a
+    minute. So the gate runner runs every mechanism a project declares in one pass
+    rather than the operator learning them serially.
+
+    **The relocation class needs its own mechanism, because git reports it clean.**
+    Where upstream moves a header rather than editing it, no merge conflicts and the
+    break appears only at compile time. It bit this fork four times in one session:
+    `audio_stream_generator.h` and `audio_stream.h` moved to `scene/resources/audio/`,
+    and the speaker-mode and bus-type names moved from `AudioServer` to
+    `AudioServerEnums`. The check is that every engine-rooted include in a changed
+    source resolves to a file. On the assembly it runs clean over 377 files with no
+    false alarm, and it fails on the real defect naming the file and the include.
+
+    Its floor is stated rather than implied: generated `.gen.h` headers do not exist
+    until SCons writes them, and a module-relative include resolves through a CPPPATH
+    the check cannot see, so both are excluded and only engine-rooted, non-generated
+    includes are checked. A second control asserts the generated case is not flagged,
+    because a check that fires on every `.gen.h` is noise, and a noisy gate is
+    switched off rather than fixed.
+
+    **The ruling.** A part with no caller is not yet a part. Where the workspace holds
+    a mechanism on both sides of a slow boundary, as prek and the 46 committed
+    `.pre-commit-config.yaml` files did, the interchangeable-parts obligation is
+    discharged by writing the caller, not by writing another mechanism. And a caller
+    ships with controls in both directions like any gate: this one shipped without
+    them for one revision, passed a working tree carrying two known defects, and was
+    decoration until its own third control caught it.
+    """
+
     drafted_by :ai
   end
 end
