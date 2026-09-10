@@ -69,5 +69,11 @@ defmodule Escapes.Weftspun do
       guard: :run_checked,
       reported: "the branch has none of this, so the assembly introduced it",
       actual: "zsh read $b:editor as the :e history modifier, git show failed, and grep -c counted 0 on empty input"
+
+    escape "2026-09-10 git sync survey",
+      guard: :expect_fail,
+      reported: "34 projects out of sync with their remotes",
+      actual: "ls-remote --exit-code piped into cut, so the pipeline's status was cut's; a branch absent from the remote read as a mismatch, and manifest-pinned projects were compared against a moving main"
+
   end
 end
