@@ -198,6 +198,7 @@ defmodule Serials.VSekaiFabric do
       serial 2240, "citation-metadata-and-review-interchange"
       serial 2241, "audio-pose-from-speaking-faces", flight_level: :l2
       serial 2242, "ggml-consumers-as-native-godot-modules", flight_level: :l2
+      serial 2243, "assembly-one-cycle-blockers", flight_level: :l2
     end
 
     deleted do
