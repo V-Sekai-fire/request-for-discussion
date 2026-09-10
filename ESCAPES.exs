@@ -123,5 +123,11 @@ defmodule Escapes.Weftspun do
       reported: "a twenty-line correction",
       actual: "Path.read_text decodes CRLF as LF and write_text wrote LF, so the diff was 106 lines; --ignore-all-space would have hidden it and the raw stat is what showed it"
 
+
+    escape "2026-09-10 zsh did not word-split the loop variable",
+      guard: :expect_fail,
+      reported: "five branches deleted on the remote",
+      actual: "zsh leaves an unquoted $spec unsplit, so set -- passed the whole string as $1 and every lookup ran against a path that does not exist; git printed fatal and the branch read as absent"
+
   end
 end
