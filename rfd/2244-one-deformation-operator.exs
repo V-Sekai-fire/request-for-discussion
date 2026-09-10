@@ -6,7 +6,7 @@
 defmodule RFD2244 do
   use RFD.DSL
 
-  rfd 2244, "One deformation operator: identity, fit and props are the same thing applied to different corners" do
+  rfd 2244, "One deformation operator over corners, not one stage per category" do
     state :discussion
 
     flight_level :l2
@@ -15,7 +15,7 @@ defmodule RFD2244 do
 
     feature "one deform stage — blendshapes, correctives, driver bones — with no per-category branch"
 
-    scope "supersedes the dress and identity overlay stages; `3-interactor/anny`"
+    scope "supersedes the dress and identity overlay stages; `3-interactor/anny`. Displacement only: adding or removing corners is a CSG flow, parked"
 
     decision ~S"""
     A mesh is faces and corners. Everything done to one is a deformation of those
@@ -94,21 +94,37 @@ defmodule RFD2244 do
     yet, and the falsification below is what would have to run first.
     """
 
+    details "The boundary: displacement, not topology", ~S"""
+    The three terms move corners that already exist. None of them creates or
+    destroys one, so anything that changes the corner set is outside this operator
+    by construction rather than by omission.
+
+    Operator directive 2026-09-10: work that needs new corners is a CSG flow, and
+    that flow is parked. Naming it keeps the boundary honest in both directions — a
+    garment that must add geometry is not a counterexample to this RFD, it is a
+    different operator that has not been specified yet, and reaching for a
+    blendshape basis to fake it would be the error this RFD exists to prevent.
+
+    What remains inside: a garment whose surface can be reached by displacing the
+    body's corners, which is the case the dress stage was already built for, and
+    every identity part in the taxonomy.
+    """
+
     details "How this could be wrong", ~S"""
-    The claim is that no category needs a branch. It is falsified by exhibiting a
-    deformation the workshop needs that the three terms cannot express without one.
-    Two candidates are worth checking before committing:
+    The claim is that no category inside the boundary needs a branch. It is
+    falsified by exhibiting a displacement the workshop needs that the three terms
+    cannot express without one. Topology change is no longer such a candidate; it
+    is out of scope above. One remains worth checking before committing.
 
-    Topology change. A garment that adds corners rather than moving them is not a
-    deformation of the base mesh, and no blendshape basis expresses it. If dressing
-    requires new geometry rather than displaced geometry, fit is not the dual of
-    identity and this RFD is wrong at its root.
+    Pose-dependence of identity. The retracted RFDs claim identity is frozen per
+    character. If a face requires correctives driven by expression, identity is
+    pose-dependent after all — which does not break the collapse, and in fact
+    strengthens it, but does dissolve the "frozen per character" justification the
+    two stages were split on. The split would then have no stated basis at all.
 
-    Pose-dependence of identity. The RFDs claim identity is frozen. If a face
-    requires correctives driven by expression, identity is pose-dependent after all
-    — which does not break the collapse, but does break the "frozen per character"
-    justification the two stages were split on, and the split then has no stated
-    basis at all.
+    A cheaper check first: whether any shipped garment in the corpus needs corners
+    the body does not have. If one does, it belongs to the parked CSG flow, and the
+    partition between the two operators has to be drawn before either ships.
     """
 
     references ["RFD 1083", "RFD 2186", "RFD 2187"]
