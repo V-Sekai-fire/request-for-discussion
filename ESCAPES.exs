@@ -64,5 +64,10 @@ defmodule Escapes.Weftspun do
       guard: :require_literal,
       reported: "commit succeeded",
       actual: "backticks in a double-quoted -m were evaluated and a sentence vanished"
+
+    escape "2026-09-10 audio BusType branch comparison",
+      guard: :run_checked,
+      reported: "the branch has none of this, so the assembly introduced it",
+      actual: "zsh read $b:editor as the :e history modifier, git show failed, and grep -c counted 0 on empty input"
   end
 end
