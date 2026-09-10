@@ -75,5 +75,31 @@ defmodule Escapes.Weftspun do
       reported: "34 projects out of sync with their remotes",
       actual: "ls-remote --exit-code piped into cut, so the pipeline's status was cut's; a branch absent from the remote read as a mismatch, and manifest-pinned projects were compared against a moving main"
 
+
+    escape "2026-09-10 git sync swept only HEAD",
+      guard: :require_corpus,
+      reported: "nothing unpushed across 134 projects",
+      actual: "git branch -r --contains HEAD asks about one branch; five projects held other local branches on no remote"
+
+    escape "2026-09-10 repo forall cannot see the manifest",
+      guard: :require_corpus,
+      reported: "the workspace is synced",
+      actual: ".repo/manifests is not a manifest project, so three consecutive sweeps never opened the tree whose default.xml was modified and uncommitted"
+
+    escape "2026-09-10 some remote read as every remote",
+      guard: :require_precondition,
+      reported: "the branch is pushed",
+      actual: "containment by any one remote was accepted; eight projects carry a second remote and the question of which remotes are expected was never asked"
+
+    escape "2026-09-10 tags checked against the first remote",
+      guard: :require_corpus,
+      reported: "twenty release tags exist on no remote",
+      actual: "git remote returns sorted names and List.first picked opentelemetry-godot, a source remote that was never going to carry the engine's tags"
+
+    escape "2026-09-10 ignoring a remote hid an unpushed branch",
+      guard: :expect_fail,
+      reported: "clean, with the archived upstream excluded",
+      actual: "excluding every remote left nothing to be missing from, so a branch on no remote at all reported clean; caught by a planted control before the gate shipped"
+
   end
 end
