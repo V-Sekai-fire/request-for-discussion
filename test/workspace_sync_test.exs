@@ -126,6 +126,25 @@ defmodule RFD.WorkspaceSyncTest do
     refute Enum.any?(WorkspaceSync.audit(dir), &match?({:local_tag, _}, &1))
   end
 
+  test "a commit on a detached HEAD is caught", %{root: root} do
+    dir = repo(root, "detached")
+    remote(root, "origin", dir)
+    git(dir, ["checkout", "-q", "--detach", "HEAD"])
+    git(dir, ["commit", "-q", "--allow-empty", "-m", "work in a detached tree"])
+
+    # No branch points at it, so a walk of refs/heads reports nothing.
+    assert [] == Enum.filter(WorkspaceSync.audit(dir), &match?({:unpushed_branch, _, _}, &1))
+    assert Enum.any?(WorkspaceSync.audit(dir), &match?({:unpushed_head, _}, &1))
+  end
+
+  test "a detached HEAD that is on a remote is not reported", %{root: root} do
+    dir = repo(root, "detached-clean")
+    remote(root, "origin", dir)
+    git(dir, ["checkout", "-q", "--detach", "HEAD"])
+
+    assert [] == WorkspaceSync.audit(dir)
+  end
+
   test "a modified tracked file is caught", %{root: root} do
     dir = repo(root, "dirty")
     remote(root, "origin", dir)
