@@ -13,7 +13,7 @@ defmodule RFD2237 do
 
     feature "a Function Block Diagram run once per frame between the gamepad, the mocap trackers and motion-bricks.cpp: inputs in, a motion command and a chain mask out, the planner generating the sequences, a Lean reference the guest is measured against"
 
-    scope "`3-interactor/taskweft-fbd-compiler`, `3-interactor/taskweft-godot-sandbox`, `1-transport/transport-taskweft-acp`, `3-interactor/motion-bricks-cpp` as the actuator"
+    scope "`3-interactor/taskweft-fbd-compiler`, `3-interactor/taskweft-godot-sandbox`, `3-interactor/motion-bricks-cpp` as the actuator"
 
     decision ~S"""
     The body's reaction logic is a diagram with declared inputs and outputs,
