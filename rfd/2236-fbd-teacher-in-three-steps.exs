@@ -13,7 +13,7 @@ defmodule RFD2236 do
 
     feature "the model behind `/fbd` on the taskweft-acp door: a constructed EditScore-shaped corpus, continued pretraining of Gemma 4 E2B under QAT, then reinforcement training with the compiler and the sandbox as the hard half of the reward"
 
-    scope "`3-interactor/taskweft-fbd-teacher`, `3-interactor/taskweft-fbd-compiler`, the `/fbd` command of `1-transport/transport-taskweft-acp`"
+    scope "`3-interactor/taskweft-fbd-teacher`, `3-interactor/taskweft-fbd-compiler`"
 
     decision ~S"""
     The teacher's only output is an IEC 61131-3 Function Block Diagram in the

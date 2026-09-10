@@ -11,7 +11,7 @@ defmodule RFD2161 do
 
     feature "VN with location travel and prompt-driven talking-head\ninteractions, cleanroom-rebuilt on the RFD 1173 stack"
 
-    scope "taskweft, taskweft-godot-sandbox, weftspun-studio"
+    scope "taskweft, taskweft-godot-sandbox"
 
     decision ~S"""
     **Two-team cleanroom, role per model** (retracted from "one Qwen3-Omni
