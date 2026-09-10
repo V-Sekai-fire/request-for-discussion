@@ -40,6 +40,8 @@ defmodule RFD.Register do
                  @reg_rows
                )
       def __register__, do: @reg_doc
+
+      use RFD.Corpus, kind: :serials, via: :__register__, entries: :rows
     end
   end
 
