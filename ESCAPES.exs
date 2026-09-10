@@ -112,5 +112,16 @@ defmodule Escapes.Weftspun do
       reported: "the workspace is clean",
       actual: "a commit on a detached HEAD is held by no branch, and repo sync --detach leaves all 134 projects detached; found by planting the defect, not by reading the code"
 
+
+    escape "2026-09-10 lora fits reported as never written",
+      guard: :require_file,
+      reported: "no per-view recovery file was written for the LoRA arm, so it is not in this dataset",
+      actual: "it was written and then deleted with four images a week later; git show 4931850 has all six fits and the two that did not fit"
+
+    escape "2026-09-10 python rewrote every line ending",
+      guard: :expect_fail,
+      reported: "a twenty-line correction",
+      actual: "Path.read_text decodes CRLF as LF and write_text wrote LF, so the diff was 106 lines; --ignore-all-space would have hidden it and the raw stat is what showed it"
+
   end
 end
