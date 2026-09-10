@@ -13,6 +13,9 @@ defmodule RFD.WorkspaceSync do
       with a second remote reads as pushed after one of the two.
     * `repo forall` walks manifest projects, and `.repo/manifests` is not one,
       so the manifest tree itself was never examined by any of them.
+    * Walking `refs/heads` alone misses a detached HEAD, and `repo sync
+      --detach` leaves every project detached, so that gap covers the whole
+      workspace rather than a corner of it.
 
   Trees come from the filesystem rather than `repo list` for that last reason.
   A finding is a tuple naming what is unpushed, so a caller cannot mistake an
@@ -28,6 +31,7 @@ defmodule RFD.WorkspaceSync do
 
   @type finding ::
           {:unpushed_branch, String.t(), String.t()}
+          | {:unpushed_head, String.t()}
           | {:stash, non_neg_integer()}
           | {:local_tag, String.t()}
           | {:remote_missing, String.t()}
@@ -62,6 +66,7 @@ defmodule RFD.WorkspaceSync do
     expected = Enum.reject(remotes, &(&1 in ignore))
 
     Enum.concat([
+      unpushed_head(tree, remotes),
       unpushed_branches(tree, remotes, expected),
       stash(tree),
       local_tags(tree, remotes),
@@ -80,6 +85,20 @@ defmodule RFD.WorkspaceSync do
          trees
          |> Enum.map(&{&1, audit(&1, opts)})
          |> Enum.reject(fn {_, f} -> f == [] end)}
+    end
+  end
+
+  # A detached HEAD holds no branch to enumerate, and after `repo sync --detach`
+  # that is every project, so a commit made in one would be reported by nothing.
+  defp unpushed_head(_tree, []), do: []
+
+  defp unpushed_head(tree, _remotes) do
+    detached? = lines(tree, ["symbolic-ref", "--quiet", "HEAD"]) == []
+
+    if detached? and lines(tree, ["branch", "-r", "--contains", "HEAD"]) == [] do
+      [{:unpushed_head, sha(tree, "HEAD")}]
+    else
+      []
     end
   end
 

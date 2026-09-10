@@ -101,5 +101,27 @@ defmodule Escapes.Weftspun do
       reported: "clean, with the archived upstream excluded",
       actual: "excluding every remote left nothing to be missing from, so a branch on no remote at all reported clean; caught by a planted control before the gate shipped"
 
+
+    escape "2026-09-10 push reported from a local rev-parse",
+      guard: :run_checked,
+      reported: "pushed 9993c1f",
+      actual: "git push -q wrote nothing and the sha came from a local rev-parse in the next command; the remote branch stayed at 3247de6 until a later ls-remote caught it"
+
+    escape "2026-09-10 sweep walked refs/heads only",
+      guard: :require_corpus,
+      reported: "the workspace is clean",
+      actual: "a commit on a detached HEAD is held by no branch, and repo sync --detach leaves all 134 projects detached; found by planting the defect, not by reading the code"
+
+
+    escape "2026-09-10 lora fits reported as never written",
+      guard: :require_file,
+      reported: "no per-view recovery file was written for the LoRA arm, so it is not in this dataset",
+      actual: "it was written and then deleted with four images a week later; git show 4931850 has all six fits and the two that did not fit"
+
+    escape "2026-09-10 python rewrote every line ending",
+      guard: :expect_fail,
+      reported: "a twenty-line correction",
+      actual: "Path.read_text decodes CRLF as LF and write_text wrote LF, so the diff was 106 lines; --ignore-all-space would have hidden it and the raw stat is what showed it"
+
   end
 end
