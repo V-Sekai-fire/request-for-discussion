@@ -7,7 +7,7 @@ on:
   # orphan-branch gate has something new to look at. Every other job in
   # this file guards itself with an `if:` for the trigger it wants.
   push:
-    branches: [main]
+    branches: [main/main]
   schedule:
     # Nightly sweep for orphans, so a branch pushed to after its merge
     # gets caught the next day rather than at the next unrelated push.
