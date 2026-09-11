@@ -452,6 +452,26 @@ exempt list inline in the script.
     python scripts/check_project_readme_length.py
     python scripts/check_project_readme_length.py --self-test
 
+## How Responses Are Bounded
+
+Session budget is finite. A reply carries the answer or the code, not the walk
+that produced it — the reasoning is what an RFD, a logbook entry, or a commit
+message is for, and none of the three is a conversation reply. The bound is
+3 sentences or 60 words, whichever the answer fits (about 20 words a
+sentence, matching a comfortable spoken clause); a code change ships as the
+modified block, not a full-file rewrite.
+
+The bound holds against style pressure in both directions. A run that
+summarises what it did in the last five turns has spent budget the next five
+turns will need; a run that pads a one-line answer into a paragraph has done
+the same. Where a check or a measurement lives in a file, cite the file
+rather than restate what it says.
+
+This bound does not cover flagging — a suspicious edit, an unmet precondition,
+or a check that would pass on known-broken input is named and counted, never
+elided to fit the cap. Rule 3 in _How Work Is Verified_ settles that: a silent
+skip reads exactly like a pass.
+
 ## Blocklists
 
 Sources excluded from corpora, with the reason:
