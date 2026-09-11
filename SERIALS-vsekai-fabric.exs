@@ -200,6 +200,7 @@ defmodule Serials.VSekaiFabric do
       serial 2242, "ggml-consumers-as-native-godot-modules", flight_level: :l2
       serial 2243, "assembly-one-cycle-blockers", flight_level: :l2
       serial 2244, "one-deformation-operator"
+      serial 2245, "webgpu-allowed-inside-godot-engine"
     end
 
     deleted do

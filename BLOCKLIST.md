@@ -1676,7 +1676,13 @@ this row generalises to any WebGPU-first inference stack.
 **What the row does not cover.** Reading a WebGPU spec or example
 to understand a Vulkan concept. WebGPU code on a third-party
 site the workspace does not ship (tutorial pages, reference
-docs). ggml's Vulkan backend, which is what replaces WebGPU.
+docs). ggml's Vulkan backend, which is what replaces WebGPU. A
+Godot engine fork carrying a WebGPU RenderingDevice driver
+alongside Vulkan (RFD 2245, operator directive 2026-09-11) — the
+row blocks WebGPU as the *workspace deployment target*, not
+WebGPU code inside a Godot engine tree; the atelier binary still
+selects Vulkan at boot and the shipping surface stays
+`entities-godot-sandbox` with MoltenVK on macOS.
 
 **Substitute:** ggml Vulkan backend + Godot's native Vulkan
 renderer + MoltenVK on macOS.
