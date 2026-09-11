@@ -32,6 +32,17 @@ defmodule RFD2242 do
     """
 
     related ~S"""
+    RFD 2188 (one ggml across the workspace), the source consolidation this builds
+    on. RFD 2211 (the base tree). RFD 2229 (interchangeable parts), the policy this
+    lands one of. RFD 2230 (GDScript adapters), retracted by the decision above.
+    RFD 2212 (motion-bricks as a native module), reinstated as one leaf.
+    `DETAILS.md` carries what each contributes.
+    """
+
+    details_title "ggml consumers as native Godot modules stacked on modules/ggml"
+
+    details "What each related RFD contributes", ~S"""
+
     - RFD 2188 (one ggml across workspace), the source
       consolidation this RFD builds on. `modules/ggml/#thirdparty/`
       vendors `2-contract/ggml` at the workspace's canonical
@@ -61,8 +72,6 @@ defmodule RFD2242 do
       `#thirdparty/` + `env_thirdparty.add_source_files` +
       per-clone warning suppression.
     """
-
-    details_title "ggml consumers as native Godot modules stacked on modules/ggml"
 
     details "The arrangement", ~S"""
     Six modules in `entities-godot-sandbox/modules/`, layered:

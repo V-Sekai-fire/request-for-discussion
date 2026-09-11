@@ -124,11 +124,34 @@ def self_test():
     return 1 if bad else 0
 
 
+def default_base(root):
+    """The remote's own default branch, not a guess at its name.
+
+    This repository's default branch is `main/main`; a hardcoded `origin/main`
+    made the gate exit 128 rather than report anything.
+    """
+    def resolves(ref):
+        return subprocess.run(["git", "-C", root, "rev-parse", "--verify", "--quiet", ref],
+                              capture_output=True, text=True).returncode == 0
+
+    # A remote HEAD can outlive the branch it names, so it is checked, not trusted.
+    for ref in ("refs/remotes/origin/HEAD", "refs/remotes/v-sekai-fire/HEAD"):
+        r = subprocess.run(["git", "-C", root, "symbolic-ref", "--short", ref],
+                           capture_output=True, text=True)
+        cand = r.stdout.strip()
+        if r.returncode == 0 and cand and resolves(cand):
+            return cand
+    for cand in ("origin/main/main", "v-sekai-fire/main/main", "origin/main", "v-sekai-fire/main"):
+        if resolves(cand):
+            return cand
+    raise SystemExit("cannot resolve a base branch; pass --base explicitly")
+
+
 def main(argv):
     if "--self-test" in argv:
         return self_test()
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    base = argv[argv.index("--base") + 1] if "--base" in argv else "origin/main"
+    base = argv[argv.index("--base") + 1] if "--base" in argv else default_base(root)
     return run(root, base)
 
 
