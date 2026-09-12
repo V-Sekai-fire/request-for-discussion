@@ -96,6 +96,31 @@ defmodule RFD1029 do
     time, so the mesh that ships is not the mesh in the scene.
     """
 
+    details "The meshes are quad-derived, and what that is worth", ~S"""
+    Running the ported converter on real geometry, 2026-09-12: the Dress's
+    6,408 triangles pair into 3,204 quads with NOTHING left over, 100.0%
+    coverage. Dress_shoulder reaches 99.4% and Dress_Ribbon 95.3%.
+
+    A perfect pairing does not happen by luck. It means the mesh was authored
+    as quads and triangulated on export, so the original edge flow is intact
+    and recoverable. That is the same property RFD 2029 wants from a curvenet:
+    a bounded, inspectable graph rather than a soup.
+
+    **Recovering quads does not by itself save a triangle.** The platform counts
+    triangles and a quad is two of them, so 6,408 in is 6,408 out. The value is
+    that a quad mesh with intact flow supports removing a whole edge loop, which
+    halves resolution in one direction and preserves the flow, where quadric
+    decimation picks vertices by error and leaves flow to chance. On a garment,
+    whose silhouette IS its edge flow, that difference is the point.
+
+    The curvenet idea applies in this adapted form rather than directly. CASSIE
+    authors a curve network from strokes; it does not reverse-engineer one from
+    a dense mesh, and the capability inventory records its patch surface
+    creation as losing about 90%. For an existing mesh the practical form of the
+    same idea is field-guided retopology at a chosen budget, which Instant
+    Meshes already provides under BSD-3.
+    """
+
     details "What the blend shapes on this avatar actually look like", ~S"""
     Measured 2026-09-12 on Miroir-Re: 647 shapes across ten meshes. Two
     structural facts make this the easiest possible transfer case. Every
