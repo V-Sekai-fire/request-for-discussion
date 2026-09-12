@@ -1875,6 +1875,39 @@ truth can only ever answer "did it run". Two things replace it:
     of against "it produced something". That is a strictly better comparison
     than the giraffe ever was, and it is ours.
 
+### WSL is blocked as a way to run anything, and a real failure is why
+
+Operator directive, 2026-09-12. Not a licence row and not a quality judgement
+about WSL. It is blocked because using it hides the defect it is reached for.
+
+The occasion: `cloth-fit`'s published Windows binary would not run. Under WSL
+the Linux build ran the same retarget end to end in 81.5 seconds -- about as
+long as a microwave takes to reheat a mug of coffee -- and that success is
+precisely the problem. It answers "does the solver work", which was never in
+doubt, while leaving "does the shipped Windows binary work" untouched. Three
+separate Windows defects were sitting behind it:
+
+- the bridge imports `libc++.dll` and `libunwind.dll`, which are llvm-mingw
+  toolchain files rather than build outputs and so never reached the artifact;
+- the PolyFEM spec directory is compiled in as `D:/a/cloth-fit/cloth-fit/json-specs`,
+  the path on the GitHub runner that built it;
+- the polysolve specs likewise, under that runner's own CPM cache.
+
+Every one of them is invisible from a Linux run, and a fourth -- `-static-libstdc++`
+sending clang's mingw driver after a `libmsvcprt.a` that llvm-mingw does not
+ship -- was only found by linking on Windows with the real toolchain.
+
+**The rule.** A Windows binary that only runs under a Linux kernel is not a
+Windows binary. When the Windows path fails, fix the Windows path. The desk has
+llvm-mingw and MSVC installed and `pixi` declares the rest, so there is a local
+build for exactly this.
+
+**The narrow exemption, stated so it is not smuggled wider.** Reaching for a
+Linux run to CONFIRM a diagnosis -- to establish that the failure is packaging
+rather than the code, before spending a build on it -- is allowed, and that is
+what the 81.5 seconds bought here. Shipping it, testing against it, or reporting
+a WSL run as evidence the thing works is not.
+
 ### `jp.lilxyzw.ndmfmeshsimplifier` is blocked, and the reason is when it runs
 
 Operator directive, 2026-09-12. The package is MIT (lilxyzw, 2024) and vendors
