@@ -129,5 +129,35 @@ defmodule Escapes.Weftspun do
       reported: "five branches deleted on the remote",
       actual: "zsh leaves an unquoted $spec unsplit, so set -- passed the whole string as $1 and every lookup ran against a path that does not exist; git printed fatal and the branch read as absent"
 
+    escape "2026-09-11 RFD 2245 merged with the render red",
+      guard: :run_checked,
+      reported: "merged",
+      actual: "six of nine checks were FAILURE at merge; the README rendered to 55 lines against RFD 1000's 40 and the DSL validates on load, so all 318 sources stopped rendering"
+
+    escape "2026-09-11 the merge queue the documents describe",
+      guard: :require_file,
+      reported: "CLAUDE.md and PITFALLS.md both name ruleset 21131040 with merge_queue and ALLGREEN grouping",
+      actual: "the repository carries zero rulesets and no branch protection; the id 404s, so nothing required a green check and three later PRs merged with all nine still queued"
+
+    escape "2026-09-11 the anti-entropy check read a build artifact",
+      guard: :require_file,
+      reported: "nothing, because the script raised FileNotFoundError before its first check",
+      actual: "RFD 2232 made SERIALS.usda a mix rfd.render artifact; the gate opened it at import and certified nothing while reading as a gate in place"
+
+    escape "2026-09-11 allocated and deleted rows counted together",
+      guard: :require_corpus,
+      reported: "47 serials reach no document",
+      actual: "the deleted block spells a row with the same `serial N, \"slug\"` keyword as allocated, so 92 retired serials were read as live; the true count is 0"
+
+    escape "2026-09-11 two documents on one serial",
+      guard: :require_engaged,
+      reported: "every directory registered, every serial has a directory",
+      actual: "2184 and 2185 each named two sources; the counter keyed on the serial and never counted the documents holding it, so the defect could not be expressed"
+
+    escape "2026-09-11 branch probe ate its own stdin",
+      guard: :run_checked,
+      reported: "102 of 102 manifest revisions name a branch that does not exist",
+      actual: "git ls-remote consumed the while-loop's stdin and the attempted count moved between runs; the same command in the foreground resolved refs/heads/main/main"
+
   end
 end

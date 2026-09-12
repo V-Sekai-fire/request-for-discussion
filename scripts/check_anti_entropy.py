@@ -28,8 +28,27 @@ man = ET.parse(ROOT/".repo/manifests/default.xml").getroot()
 projects = [(p.get("name"), p.get("path")) for p in man.iter("project")]
 missing = [p for _, p in projects if not (ROOT/p).is_dir()]
 check("manifest paths exist on disk", not missing, f"{len(projects)} projects, missing: {missing or 'none'}")
-bad = [p for _, p in projects if "_" in p or " " in p]
-check("every path hyphen-only", not bad, f"offenders: {bad or 'none'}")
+# RFD 2064: a checkout directory keeps the name its build hardcodes, so only the segments
+# the workspace picks -- the side and the repo -- are ours to spell. Deeper segments sit
+# inside an upstream tree and are named and counted rather than dropped from the count.
+OURS = 2
+
+
+def _segments(path):
+    return [s for s in path.replace("\\", "/").split("/") if s]
+
+
+bad = [p for _, p in projects if any("_" in s or " " in s for s in _segments(p)[:OURS])]
+vendored = sorted({p for _, p in projects
+                   if any("_" in s or " " in s for s in _segments(p)[OURS:])})
+check("every path we pick is hyphen-only", not bad, f"offenders: {bad or 'none'}")
+check("  vendored segments named, not dropped", True,
+      f"{len(vendored)} path(s) exempt under RFD 2064: {vendored or 'none'}")
+check("  control: an underscore we picked is caught",
+      bool([x for x in ["3-interactor/bad_name"] if any("_" in s for s in _segments(x)[:OURS])])
+      and not [x for x in ["3-interactor/ok/third_party/eigen"]
+               if any("_" in s for s in _segments(x)[:OURS])],
+      "planted 3-interactor/bad_name caught, vendored third_party not")
 
 # --- B. serials, enumerated both directions -------------------------------------------
 # A text read, where check-rfd-serials.py reads the same rows through the USD API; two
@@ -144,7 +163,8 @@ EXPENSIVE = ["check_fourloops_plan", "check_fourloops_etnf", "check_rfd1122_plan
              ("check_comment_ladder", ("--self-test",)),
              ("check_pr_description", ("--self-test",)),
              ("check_rfd_canary", ("--self-test",)),
-             ("check_project_readme_length", ("--self-test",))]
+             ("check_project_readme_length", ("--self-test",)),
+             ("check_rulesets", ("--self-test",))]
 order = list(EXPENSIVE)
 secrets.SystemRandom().shuffle(order)
 out.append("")
