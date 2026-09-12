@@ -1,7 +1,13 @@
-#usda 1.0
-(
-    defaultPrim = "Rfd1122"
-    doc = """RFD 1122's work as a stage, so the plan is data rather than prose.
+# Copyright (c) 2026 K. S. Ernest (iFire) Lee
+# SPDX-License-Identifier: MIT
+#
+# `mix rfd.plan` renders rfd1122-plan.usda from this file; the layer is a
+# build artifact (RFD 2232, extended to the apparatus plans).
+defmodule Plan.Rfd1122Plan do
+  use RFD.Plan
+
+  plan "Rfd1122Plan" do
+    meta(metersPerUnit: 1, upAxis: "Z", defaultPrim: "Rfd1122", doc: "RFD 1122's work as a stage, so the plan is data rather than prose.
 
 WHY THIS EXISTS. The RFD states its order in sentences, and a sentence cannot be asked
 whether step 8 comes after the two steps it needs. Here the order is an `int order`, the
@@ -23,137 +29,102 @@ That argument is about taste and it loses to the validator: `UsdValidation` repo
 `does not specify an upAxis` and `does not specify its linear scale in metersPerUnit` as
 ERRORS, so the layer failed usdchecker's own rules while claiming to be a USD layer.
 
-They are here now, and they mean nothing. `upAxis = "Z"` matches what
+They are here now, and they mean nothing. `upAxis = \"Z\"` matches what
 `export_hm08_usd.py` writes for the body, so a consumer that does compose the two finds
 them agreeing rather than contradicting. `metersPerUnit = 1` is the default made
-explicit. The gate checks this, so the claim cannot rot."""
-    metersPerUnit = 1
-    upAxis = "Z"
-    customLayerData = {
-        string rfd = "1122"
-        string rfdState = "discussion"
-        string[] sources = [
-            "1122-the-wholebody-gap/README.md",
-            "1122-the-wholebody-gap/DETAILS.md",
-            "CLAUDE.md",
-        ]
-        string checker = ".logbook/scripts/check_rfd1122_plan.py"
-        string[] stateVocabulary = ["gate", "build", "measure", "exists"]
-        # SIZES RATHER THAN DAYS, AND THE SWAP IS AN ADMISSION. An earlier revision carried
-        # optimisticDays / mostLikelyDays / pessimisticDays, and printed a path total of "38.8
-        # engineering days". Not one of those numbers was measured: they were judgement, and a
-        # decimal point made them read as something else. A t-shirt size cannot be mistaken for
-        # a calendar, which is the whole reason to use one.
-        #
-        # The spread is kept, because it carried a real signal -- T08's pessimistic sat four
-        # times its optimistic, and that is a different fact from T08 merely being large.
-        #
-        # Points are FIBONACCI and RELATIVE. They order tasks against each other and convert to
-        # no duration whatsoever. Anything wanting a calendar has to measure one.
-        string[] sizeVocabulary = ["XS", "S", "M", "L", "XL"]
-        int[] sizePoints = [1, 2, 3, 5, 8]
-    }
-)
+explicit. The gate checks this, so the claim cannot rot.")
 
-def Scope "Rfd1122" (
-    doc = "The wholebody gap: a 104-point head, and the renderer that supplies its labels."
-)
-{
-    # ---------------------------------------------------------------------------------
-    # The counts the plan turns on. Each is checked against the RFD text, commas stripped,
-    # as a whole token. A count that lives only here is a count nobody reviewed.
-    # ---------------------------------------------------------------------------------
-    def Scope "Quantities"
-    {
-        custom int wholebodyKeypoints = 104
-        custom int cocoKeypoints = 17
-        custom int sharedKeypoints = 14
-        custom int renderOnlyKeypoints = 90
-        custom int blendshapeCoefficients = 52
-        custom int keypointAssetPoints = 23
-        custom int mocapClips = 810
-        custom int basemeshVertices = 19158
-        custom int bodyVertices = 13718
-        custom int basemeshQuads = 18486
-        custom int textureCoordinates = 21334
-        custom int holdoutImages = 523
-        custom float qwenDefaultStrength = 0.8
-    }
+    string("checker", ".logbook/scripts/check_rfd1122_plan.py")
+    string("rfd", "1122")
+    string("rfdState", "discussion")
+    int_list("sizePoints", [
+      1,
+      2,
+      3,
+      5,
+      8
+    ])
+    string_list("sizeVocabulary", [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ])
+    string_list("sources", [
+      "1122-the-wholebody-gap/README.md",
+      "1122-the-wholebody-gap/DETAILS.md",
+      "CLAUDE.md"
+    ])
+    string_list("stateVocabulary", [
+      "gate",
+      "build",
+      "measure",
+      "exists"
+    ])
 
-
-    # ---------------------------------------------------------------------------------
-    # THE DEVICES, BECAUSE A DURATION WITHOUT ONE IS NOT A DURATION.
-    #
-    # Every timing this plan inherited was taken on the 4090, and the 4090 is unplugged. The
-    # soft-renderer entry's Mitsuba figure -- 1.79 ms/image, 0.4 GPU-hours over 800k -- is the
-    # load-bearing one, and it is doubly inapplicable: `mi_bench.py` and `mi_bench2.py` both
-    # open with `mi.set_variant('cuda_ad_rgb')`, which is neither the shipping variant nor a
-    # variant this fleet can run outside that one card. RETRACTED as a corpus-render estimate.
-    # It remains correct about what it measured.
-    #
-    # `scripts/mi_bench_llvm.py` replaces it for the shipping pair. Peak rates below are DERIVED
-    # -- cores x lanes x 2 for the fused multiply-add x clock -- rather than quoted, and
-    # `check_rfd1122_plan.py` re-derives them, so a transcription error fails a command. Clocks
-    # are vendor boost figures and are marked `clockAssumed` where nothing on the desk confirmed
-    # them.
-    #
-    # A RANKING AND NOT A BUDGET, which is the convention
-    # `logbook-edge-npu-and-the-anny-forward.md` set for the Hailo part and which applies to
-    # every row here: peak rate predicts an ordering between devices and does not predict a
-    # wall-clock for any real graph.
-    # ---------------------------------------------------------------------------------
-    def Scope "Devices"
-    {
-        def "RTX3090" (
-            doc = """The card that is plugged in. Ampere, so bf16 is native and the tensor
+    scope("Rfd1122", [
+      doc("The wholebody gap: a 104-point head, and the renderer that supplies its labels."),
+      scope("Quantities", [
+        attr("wholebodyKeypoints", "int", 104),
+        attr("cocoKeypoints", "int", 17),
+        attr("sharedKeypoints", "int", 14),
+        attr("renderOnlyKeypoints", "int", 90),
+        attr("blendshapeCoefficients", "int", 52),
+        attr("keypointAssetPoints", "int", 23),
+        attr("mocapClips", "int", 810),
+        attr("basemeshVertices", "int", 19158),
+        attr("bodyVertices", "int", 13718),
+        attr("basemeshQuads", "int", 18486),
+        attr("textureCoordinates", "int", 21334),
+        attr("holdoutImages", "int", 523),
+        attr("qwenDefaultStrength", "float", 0.8)
+      ]),
+      scope("Devices", [
+        prim("RTX3090", [
+          doc("The card that is plugged in. Ampere, so bf16 is native and the tensor
 cores are real, which is what lets a generator run at its published precision -- condition 5
 forbids the quantised alternative for anything writing corpus data.
 
 2.3x below the 4090 on derived FP32 and 0.93x on bandwidth. Every estimate inherited from a
-4090 measurement moves by that factor before anything else is considered."""
-        )
-        {
-            custom uniform token kind = "gpu"
-            custom int computeUnits = 82
-            custom int lanesPerUnit = 128
-            custom float clockGhz = 1.695
-            custom float fp32Tflops = 35.6
-            custom float bandwidthGbs = 936
-            custom float memoryGib = 24
-            custom bool bf16Native = 1
-            custom bool tensorCores = 1
-            custom bool pluggedIn = 1
-            custom bool clockAssumed = 1
-        }
-
-        def "RTX4090" (
-            doc = """The baseline, and it is not a schedulable device. Every figure in the
+4090 measurement moves by that factor before anything else is considered."),
+          attr("kind", "token", "gpu", [uniform: true]),
+          attr("computeUnits", "int", 82),
+          attr("lanesPerUnit", "int", 128),
+          attr("clockGhz", "float", 1.695),
+          attr("fp32Tflops", "float", 35.6),
+          attr("bandwidthGbs", "float", 936.0),
+          attr("memoryGib", "float", 24.0),
+          attr("bf16Native", "bool", true),
+          attr("tensorCores", "bool", true),
+          attr("pluggedIn", "bool", true),
+          attr("clockAssumed", "bool", true)
+        ]),
+        prim("RTX4090", [
+          doc("The baseline, and it is not a schedulable device. Every figure in the
 logbook that carries a GPU carries this one, so it belongs in the table -- a number without a
 baseline is not a measurement -- with `pluggedIn = 0` so its absence is a value rather than a
 silence. Plugging it in is the cheapest available schedule compression and the plan should be
-able to price that rather than argue it."""
-        )
-        {
-            custom uniform token kind = "gpu"
-            custom int computeUnits = 128
-            custom int lanesPerUnit = 128
-            custom float clockGhz = 2.52
-            custom float fp32Tflops = 82.6
-            custom float bandwidthGbs = 1008
-            custom float memoryGib = 24
-            custom bool bf16Native = 1
-            custom bool tensorCores = 1
-            custom bool pluggedIn = 0
-            custom bool clockAssumed = 1
-        }
-
-        def "M2Pro" (
-            doc = """Mac mini, 19 GPU cores, 32 GiB unified. The largest single memory pool in
+able to price that rather than argue it."),
+          attr("kind", "token", "gpu", [uniform: true]),
+          attr("computeUnits", "int", 128),
+          attr("lanesPerUnit", "int", 128),
+          attr("clockGhz", "float", 2.52),
+          attr("fp32Tflops", "float", 82.6),
+          attr("bandwidthGbs", "float", 1008.0),
+          attr("memoryGib", "float", 24.0),
+          attr("bf16Native", "bool", true),
+          attr("tensorCores", "bool", true),
+          attr("pluggedIn", "bool", false),
+          attr("clockAssumed", "bool", true)
+        ]),
+        prim("M2Pro", [
+          doc("Mac mini, 19 GPU cores, 32 GiB unified. The largest single memory pool in
 the fleet and the smallest compute: 5.2x below the 3090 on derived FP32, no tensor cores, and
 NO NATIVE bf16 -- so running a generator at its published precision here is emulation, which is
 a correctness question before it is a speed one and is unmeasured either way.
 
-RETRACTED: "THAT IS NOT A WEAK NODE, IT IS THE CORPUS RENDERER." This entry read that the
+RETRACTED: \"THAT IS NOT A WEAK NODE, IT IS THE CORPUS RENDERER.\" This entry read that the
 shipping render was measured at 73.00 ms/image, 16.2 hours over 800k in one process and 2.2
 across eight, and concluded the renderer was cheap. The 73 ms was a DEPTH PASS -- an aov
 integrator, box filter, one sample -- and `render_view.py` renders the corpus with a path
@@ -179,64 +150,35 @@ That last figure explains a result elsewhere. `gate_onnx_device.py` was hardcode
 `CPUExecutionProvider`; run against CoreML it measures 1685.1 ms at 576 against the CPU's 476.4
 -- 0.28x, nearly four times SLOWER -- and 4.924e-03 against the port's 4.2e-03 bound, so it is
 slower AND outside tolerance. With only 2.6x available before transfer costs, a partitioned
-graph handed back and forth loses. The Neural Engine claim below is corrected on the same run."""
-        )
-        {
-            custom uniform token kind = "gpu"
-            custom int computeUnits = 19
-            custom int lanesPerUnit = 128
-            custom float clockGhz = 1.398
-            custom float fp32Tflops = 6.8
-            custom float bandwidthGbs = 200
-            custom float memoryGib = 32
-            custom bool bf16Native = 0
-            custom bool tensorCores = 0
-            custom bool pluggedIn = 1
-            custom bool clockAssumed = 1
-            custom int cpuPerformanceCores = 8
-            custom int cpuEfficiencyCores = 4
-            # Measured by `scripts/gpu_tops.py`, dense GEMM, best-of-8, synchronised.
-            custom float measuredFp32Tflops = 5.71
-            custom float measuredFp16Tflops = 6.20
-            custom float measuredBf16Tflops = 2.96
-            custom float measuredCpuFp32Tflops = 2.19
-            custom float measuredFractionOfDerived = 0.84
-            # ONNX Runtime's CoreML provider reaches the 15.8 TOPS Neural Engine, so this part
-            # is NOT unreachable outside PyTorch as an earlier revision of this scope claimed.
-            # It was reachable and untried. Tried now: slower than the CPU on this model, and
-            # outside the numeric bound. Reachable and unsuitable are different facts.
-            #
-            # RETRACTED, RFD 1142: THE 1685.1 ms WAS A PARTITIONER, NOT THIS DEVICE.
-            # onnxruntime's CoreML provider hands unsupported nodes back to the CPU, and that
-            # run recorded no placement, so its figure could not tell "ran on the Neural
-            # Engine slowly" from "barely reached it". Converted natively instead, the same
-            # device half places 373 of 373 operations on the Neural Engine and runs in
-            # 121.6 ms -- the ONNX figure was 31x pessimistic. The prose above reproduces at
-            # 3758.9 ms with --num-windows 1 and is retained because it is what that route
-            # measures.
-            #
-            # THE VERDICT SURVIVES ITS EVIDENCE. `neuralEngineUsefulForBackbone` stays 0, on
-            # PRECISION rather than on speed: at fp16 the native conversion agrees with
-            # PyTorch to 4.311e-02, ten times the port's own 4.2e-03 bound. Metal on the same
-            # machine runs the same graph in 62.0 ms at 3.524e-03 and passes. A right answer
-            # held for a wrong reason is corrected here because the wrong reason predicts
-            # wrongly elsewhere.
-            custom bool neuralEngineReachableViaOnnx = 1
-            custom bool neuralEngineUsefulForBackbone = 0
-            # Blocklisted as an execution target in CLAUDE.md: a 2 GiB weight ceiling at
-            # 2^31 bytes, against Metal holding 8176.2 MiB of the same graph. Scheduling
-            # against this part is what the row exists to stop.
-            custom bool neuralEngineBlocklisted = 1
-            # Measured by `request-for-discussion/scripts/gate_coreml_device.py`, native
-            # Core ML conversion of the RF-DETR device half at 576, num_windows 1, fp16.
-            custom float deviceHalfAneMs = 121.6
-            custom float deviceHalfGpuMs = 62.0
-            custom float deviceHalfGpuMaxAbsDiff = 0.003524
-            custom float aneWeightCeilingMib = 2048
-        }
-
-        def "Hailo10H" (
-            doc = """The ASUS USB part, and the target the plan is now sequenced around. 8 GiB,
+graph handed back and forth loses. The Neural Engine claim below is corrected on the same run."),
+          attr("kind", "token", "gpu", [uniform: true]),
+          attr("computeUnits", "int", 19),
+          attr("lanesPerUnit", "int", 128),
+          attr("clockGhz", "float", 1.398),
+          attr("fp32Tflops", "float", 6.8),
+          attr("bandwidthGbs", "float", 2.0e2),
+          attr("memoryGib", "float", 32.0),
+          attr("bf16Native", "bool", false),
+          attr("tensorCores", "bool", false),
+          attr("pluggedIn", "bool", true),
+          attr("clockAssumed", "bool", true),
+          attr("cpuPerformanceCores", "int", 8),
+          attr("cpuEfficiencyCores", "int", 4),
+          attr("measuredFp32Tflops", "float", 5.71),
+          attr("measuredFp16Tflops", "float", 6.2),
+          attr("measuredBf16Tflops", "float", 2.96),
+          attr("measuredCpuFp32Tflops", "float", 2.19),
+          attr("measuredFractionOfDerived", "float", 0.84),
+          attr("neuralEngineReachableViaOnnx", "bool", true),
+          attr("neuralEngineUsefulForBackbone", "bool", false),
+          attr("neuralEngineBlocklisted", "bool", true),
+          attr("deviceHalfAneMs", "float", 121.6),
+          attr("deviceHalfGpuMs", "float", 62.0),
+          attr("deviceHalfGpuMaxAbsDiff", "float", 0.003524),
+          attr("aneWeightCeilingMib", "float", 2048.0)
+        ]),
+        prim("Hailo10H", [
+          doc("The ASUS USB part, and the target the plan is now sequenced around. 8 GiB,
 20 TOPS INT8 and 40 INT4, reached through Dataflow Compiler 5.3.0.
 
 IT CANNOT WRITE CORPUS DATA AND THAT IS A RULE RATHER THAN A LIMIT. Condition 5 binds
@@ -249,11 +191,11 @@ Throughput divides by 40 TOPS INT4 at an ASSUMED 30% utilisation, which is the c
 `logbook-edge-npu-and-the-anny-forward.md` set and which it also flags: the DFC profiler was
 never run, so those figures rank and do not budget.
 
-THE PART TAKES 16 BITS AND THEY ARE INTEGER. The datasheet's NN core line reads "Precision
-configurability, support 4/8/16-bit precision for weights and activations", and the Dataflow
+THE PART TAKES 16 BITS AND THEY ARE INTEGER. The datasheet's NN core line reads \"Precision
+configurability, support 4/8/16-bit precision for weights and activations\", and the Dataflow
 Compiler spells the same widths as quantization modes -- `a8_w4`, `a16_w8`, `a16_w16` -- set
-with `quantization_param(layer, precision_mode=...)` and described there as "16-bit
-activations and weights to improve accuracy results".
+with `quantization_param(layer, precision_mode=...)` and described there as \"16-bit
+activations and weights to improve accuracy results\".
 
 `fp16Native` is 0, and the reason is written here so the next reader does not re-derive it
 wrongly. The datasheet holds no occurrence of fp16 across 83 pages, and the Dataflow Compiler
@@ -265,57 +207,40 @@ one was believed here until these two documents were opened. A quantised 16-bit 
 this device unchanged. It does not.
 
 `topsInt16` is absent rather than zero because Hailo publishes no rate for it. The 20 and 40
-above are the two the datasheet gives."""
-        )
-        {
-            custom uniform token kind = "npu"
-            custom float topsInt8 = 20
-            custom float topsInt4 = 40
-            custom float memoryGib = 8
-            custom float assumedUtilisation = 0.3
-            custom bool bf16Native = 0
-            custom bool fp16Native = 0
-            custom bool int16Native = 1
-            custom bool pluggedIn = 1
-            custom bool producesCorpusData = 0
-        }
-    }
-
-    # ---------------------------------------------------------------------------------
-    # Standing constraints. They sit beside the plan rather than inside it, because they
-    # hold at every step and belong to no one of them.
-    # ---------------------------------------------------------------------------------
-    def Scope "Constraints"
-    {
-        def "BlindedHoldout" (
-            doc = """`coco_person_commercial_val2017`, 523 licence-filtered COCO person
+above are the two the datasheet gives."),
+          attr("kind", "token", "npu", [uniform: true]),
+          attr("topsInt8", "float", 2.0e1),
+          attr("topsInt4", "float", 4.0e1),
+          attr("memoryGib", "float", 8.0),
+          attr("assumedUtilisation", "float", 0.3),
+          attr("bf16Native", "bool", false),
+          attr("fp16Native", "bool", false),
+          attr("int16Native", "bool", true),
+          attr("pluggedIn", "bool", true),
+          attr("producesCorpusData", "bool", false)
+        ])
+      ]),
+      scope("Constraints", [
+        prim("BlindedHoldout", [
+          doc("`coco_person_commercial_val2017`, 523 licence-filtered COCO person
 images, is blinded: not inspected while developing, not used to pick a checkpoint, a
 hyperparameter, a threshold or a stopping point. A holdout consulted repeatedly during
-development has been trained on by hand, just slowly."""
-        )
-        {
-            custom uniform token kind = "holdout"
-        }
-
-        def "NeverGenerateFromVal2017" (
-            doc = """If train2017 feeds a generation pipeline, val2017 must not. An image
-generated from a held-out photo carries that photo's content into training."""
-        )
-        {
-            custom uniform token kind = "holdout"
-        }
-
-        def "DerivedInheritsStatus" (
-            doc = """Anything derived from val2017 inherits its status. The COCO-OOD
+development has been trained on by hand, just slowly."),
+          attr("kind", "token", "holdout", [uniform: true])
+        ]),
+        prim("NeverGenerateFromVal2017", [
+          doc("If train2017 feeds a generation pipeline, val2017 must not. An image
+generated from a held-out photo carries that photo's content into training."),
+          attr("kind", "token", "holdout", [uniform: true])
+        ]),
+        prim("DerivedInheritsStatus", [
+          doc("Anything derived from val2017 inherits its status. The COCO-OOD
 stylized sets in `6-datasource/coco-ood-eval` are val2017 restyled, so they are
-evaluation-only twice over: derived from the holdout, and generated."""
-        )
-        {
-            custom uniform token kind = "holdout"
-        }
-
-        def "EncodeOnlyGroundTruth" (
-            doc = """Only ground-truth GLBs are encoded into latents.
+evaluation-only twice over: derived from the holdout, and generated."),
+          attr("kind", "token", "holdout", [uniform: true])
+        ]),
+        prim("EncodeOnlyGroundTruth", [
+          doc("Only ground-truth GLBs are encoded into latents.
 
 The latents rule in CLAUDE.md forbids `encode(decode(z))`, and the reading that
 matters is what makes that case bad rather than the syntax of it: a decoded mesh
@@ -352,27 +277,23 @@ targets before a single pose is retargeted, and the encoder can be supervised on
 them while the pose gate is still being built.
 
 TAKING THE REST POSE IS ITSELF AN INTERFACE, AND IT IS ON THE PITFALLS LIST.
-"Anatomically safe" is not the same as "easy to obtain": PITFALLS 8 records that
+\"Anatomically safe\" is not the same as \"easy to obtain\": PITFALLS 8 records that
 an identity's `pose_parameters` is NOT the rest pose, and PITFALLS 1 prices
 reading the wrong one at 55 mm on an adult -- about an adult wrist -- and 500 mm
 on a child, near seven and a half stacked soda cans. `rest_bone_heads` pairs with
 `rest_vertices` and never with `vertices`. So the carve-out is safe on the
 anatomy and needs the pairing checked, which is a different check from the range
-of motion one and not a substitute for it."""
-        )
-        {
-            custom uniform token kind = "latents"
-            custom bool restPoseNeedsRomGate = 0
-            custom bool posedNeedsRomGate = 1
-        }
-
-
-        def "EdgeCompileGatesTraining" (
-            doc = """THE HAILO PART IS BUILT FIRST, AND THAT REACHES BACKWARDS INTO THE
+of motion one and not a substitute for it."),
+          attr("kind", "token", "latents", [uniform: true]),
+          attr("restPoseNeedsRomGate", "bool", false),
+          attr("posedNeedsRomGate", "bool", true)
+        ]),
+        prim("EdgeCompileGatesTraining", [
+          doc("THE HAILO PART IS BUILT FIRST, AND THAT REACHES BACKWARDS INTO THE
 TRAINING RUN.
 
-RFD 1126 already decided it: "Compile the backbone with `num_windows=1`. Measured: it parses
-and `num_windows=2` does not. It costs 1.35x wall-clock and NEEDS RETRAINING." The measurement
+RFD 1126 already decided it: \"Compile the backbone with `num_windows=1`. Measured: it parses
+and `num_windows=2` does not. It costs 1.35x wall-clock and NEEDS RETRAINING.\" The measurement
 is in `logbook-edge-npu-and-the-anny-forward.md` -- 868 nodes REJECTED at two windows, 825
 PARSE OK at one, same model and same resolution.
 
@@ -387,8 +308,8 @@ from T09 back into T08 is a cycle, and the graph is checked for exactly that. Sp
 task out ahead of T08 says the schedule is waiting on work, and it is not -- 107e's decision is
 already made and the compile already measured. What is owed is that T08 HONOURS a decision
 taken elsewhere, which is what a standing constraint is for. The plan's own convention agrees:
-constraints "sit beside the plan rather than inside it, because they hold at every step and
-belong to no one of them."
+constraints \"sit beside the plan rather than inside it, because they hold at every step and
+belong to no one of them.\"
 
 ONE QUANTIZATION SCHEDULE, DERIVED ONCE, REUSED ACROSS THE FLEET. The per-layer INT8/INT4
 assignment and its calibration set come out of DFC 5.3.0 for the Hailo part, and the other
@@ -402,43 +323,23 @@ THIS IS NOT CONDITION 5, AND THE TWO GET CONFLATED. Condition 5 forbids a QUANTI
 from writing corpus data. The detector's quantisation is deployment: it reads frames somebody
 else rendered and emits keypoints, and nothing it produces enters a corpus. Only T05's
 generator path is bound by condition 5, and it is bound there regardless of what the edge part
-does."""
-        )
-        {
-            custom uniform token kind = "edge"
-            custom int numWindows = 1
-            custom int onnxNodesAtOneWindow = 825
-            custom int onnxNodesRejectedAtTwo = 868
-            custom float windowingWallClockCost = 1.35
-            custom bool scheduleSharedAcrossFleet = 1
-        }
-
-        def "QwenDomainsAreOneModel" (
-            doc = """Photoreal and colour sketch both come from Qwen-Image-Edit, so their
+does."),
+          attr("kind", "token", "edge", [uniform: true]),
+          attr("numWindows", "int", 1),
+          attr("onnxNodesAtOneWindow", "int", 825),
+          attr("onnxNodesRejectedAtTwo", "int", 868),
+          attr("windowingWallClockCost", "float", 1.35),
+          attr("scheduleSharedAcrossFleet", "bool", true)
+        ]),
+        prim("QwenDomainsAreOneModel", [
+          doc("Photoreal and colour sketch both come from Qwen-Image-Edit, so their
 errors correlate. Report the two together when scoring. An average over four domains
-where two share a model overstates the spread."""
-        )
-        {
-            custom uniform token kind = "scoring"
-        }
-    }
-
-    # ---------------------------------------------------------------------------------
-    # THE TRAINING SHAPE, AND THE BRAKE ON IT.
-    #
-    # This scope is CLOSED. Every component names the finding that motivated it through
-    # `justifiedBy`, and `check_rfd1122_plan.py` fails when a component points at a finding
-    # that does not exist. So a new head, tier or loss cannot be added by agreeing to it in
-    # conversation: it needs a Findings entry first, and the logbook rule is that a finding
-    # records a MEASUREMENT rather than an intention.
-    #
-    # The brake is written because the shape expanded five times in one session -- a 3D
-    # latent, an unsupervised tier, reinforcement learning, scene geometry, a consistency
-    # term -- and each addition was locally reasonable. Nothing was checking the rate. What
-    # this cannot stop is a bad measurement; what it stops is expansion with none at all.
-    # ---------------------------------------------------------------------------------
-    def Scope "TrainingShape" (
-        doc = """Two components: what kind of thing a body latent is, and where the heads
+where two share a model overstates the spread."),
+          attr("kind", "token", "scoring", [uniform: true])
+        ])
+      ]),
+      scope("TrainingShape", [
+        doc("Two components: what kind of thing a body latent is, and where the heads
 that predict it hang.
 
 RETRACTED 2026-08-23: DECODE-ONLY TRAINING. `L01_FrozenLatentSpace` recorded a decision
@@ -488,52 +389,32 @@ is what would have caught L04, and it is checked.
 
 The consistency term returns when somebody measures it -- on a held-out set of ANNY renders
 where the true latent IS known, so the term can be scored against a target rather than
-argued for."""
-    )
-    {
-        def "L02_BodyLatentIsParametric" (
-            doc = """The body latent is parametric and small; the scene latent is
+argued for."),
+        prim("L02_BodyLatentIsParametric", [
+          doc("The body latent is parametric and small; the scene latent is
 structured and large. They are not two instances of one thing, which is why one code for
 both fails on dimensionality before it fails on semantics. RF-DETR's instance query is 256
 wide, which is the right order for ANNY's phenotypes plus 104 bone rotations and the wrong
-order for free-form geometry."""
-        )
-        {
-            custom uniform token kind = "space"
-            custom int instanceQueryWidth = 256
-            rel justifiedBy = </Rfd1122/Findings/F10_BodyAndSceneAreTwoLatents>
-        }
-
-        def "L03_HeadsAreParallelOnOneQuery" (
-            doc = """Keypoints and latent are parallel heads on the same 256-wide instance
+order for free-form geometry."),
+          attr("kind", "token", "space", [uniform: true]),
+          attr("instanceQueryWidth", "int", 256),
+          rel("justifiedBy", "/Rfd1122/Findings/F10_BodyAndSceneAreTwoLatents")
+        ]),
+        prim("L03_HeadsAreParallelOnOneQuery", [
+          doc("Keypoints and latent are parallel heads on the same 256-wide instance
 query, not a cascade. A cascade through 104 two-dimensional points discards silhouette and
 body proportion, which is the half of a body latent that pose does not carry, and it
 compounds a bad joint into a bad latent with no recovery.
 
 Sharing the query is also what aligns them: one embedding produced both, so there is no
-correspondence to establish."""
-        )
-        {
-            custom uniform token kind = "head"
-            rel justifiedBy = </Rfd1122/Findings/F11_KeypointChannelsAreCarriedNotDiagnosed>
-        }
-
-    }
-
-    # ---------------------------------------------------------------------------------
-    # The list. `order` is the reading order; `dependsOn` is the real constraint, and the
-    # checker asserts every dependency has a strictly lower order. A graph that disagrees
-    # with its own numbering is the defect this representation exists to catch.
-    # ---------------------------------------------------------------------------------
-    # ---------------------------------------------------------------------------------
-    # What was measured rather than argued. Each finding names the run that produced it,
-    # so a reader can repeat it instead of believing it. Dated absolutely, because "last
-    # week" stops meaning anything the moment this file is read out of order.
-    # ---------------------------------------------------------------------------------
-    def Scope "Findings"
-    {
-        def "F01_RendererEmits23PointsNot104" (
-            doc = """The renderer that exists labels 23 points. The plan needs 104.
+correspondence to establish."),
+          attr("kind", "token", "head", [uniform: true]),
+          rel("justifiedBy", "/Rfd1122/Findings/F11_KeypointChannelsAreCarriedNotDiagnosed")
+        ])
+      ]),
+      scope("Findings", [
+        prim("F01_RendererEmits23PointsNot104", [
+          doc("The renderer that exists labels 23 points. The plan needs 104.
 
 `render_corpus.py --out <dir> --views 4 --stick` completed in 14 seconds on this desk and
 wrote, per view, a 16-bit depth PNG, `mesh_NN.npz`, `cam_NN.json`, `kp_NN.npz` and a stick
@@ -543,35 +424,32 @@ COCO-17 plus `left_big_toe`, `right_big_toe`, `left_small_toe`, `right_small_toe
 weight matrix exists for.
 
 So the 370 lines are correct as far as they reach, and they reach 23 of the 104. The other
-81 joints have no weight vector, which makes them the work rather than a wiring detail."""
-        )
-        {
-            custom uniform token subject = "T02_Renderer"
-            custom string date = "2026-08-22"
-            custom string evidence = "render_corpus.py --views 4 --stick, summary.json keypoints=23"
-            custom int keypointsEmitted = 23
-        }
-
-        def "F02_NoBlendshapeCoefficientsAndNoMasks" (
-            doc = """Two of the renderer's four required outputs are absent, not partial.
+81 joints have no weight vector, which makes them the work rather than a wiring detail."),
+          attr("subject", "token", "T02_Renderer", [uniform: true]),
+          attr("date", "string", "2026-08-22"),
+          attr("evidence", "string", "render_corpus.py --views 4 --stick, summary.json keypoints=23"),
+          attr("keypointsEmitted", "int", 23)
+        ]),
+        prim("F02_NoBlendshapeCoefficientsAndNoMasks", [
+          doc("Two of the renderer's four required outputs are absent, not partial.
 
 The plan's row asks for 104 joints, 52 blendshape coefficients, masks from hm08 groups, cameras,
 mesh and PBR. Searching `render_corpus.py` for `blendshape`, `facial_action`, `segmentation`,
 `hm08` and `group_id` returns one hit, and it is a comment about vertex order. No expression
 coefficient and no part mask is written by any path in the file.
 
-Recorded because "the renderer exists" and "the renderer emits what this corpus needs" are
-different claims, and the first was about to be read as the second."""
-        )
-        {
-            custom uniform token subject = "T02_Renderer"
-            custom string date = "2026-08-22"
-            custom string evidence = "grep -in 'blendshape|facial_action|segmentation|hm08|group_id' render_corpus.py -> 1 hit, a comment"
-            custom string[] absent = ["52 blendshape coefficients", "hm08 segmentation masks"]
-        }
-
-        def "F03_VisibilityIsAnInteriorZTest" (
-            doc = """Visibility is dominated by state 1, and the reason is semantic.
+Recorded because \"the renderer exists\" and \"the renderer emits what this corpus needs\" are
+different claims, and the first was about to be read as the second."),
+          attr("subject", "token", "T02_Renderer", [uniform: true]),
+          attr("date", "string", "2026-08-22"),
+          attr("evidence", "string", "grep -in 'blendshape|facial_action|segmentation|hm08|group_id' render_corpus.py -> 1 hit, a comment"),
+          attr("absent", "string[]", [
+            "52 blendshape coefficients",
+            "hm08 segmentation masks"
+          ])
+        ]),
+        prim("F03_VisibilityIsAnInteriorZTest", [
+          doc("Visibility is dominated by state 1, and the reason is semantic.
 
 Four views returned, as visible / occluded / out of frame: 8/15/0, 4/19/0, 8/15/0, 9/14/0.
 Zero out of frame in every view, and the occluded state carrying two thirds of the points.
@@ -592,26 +470,23 @@ side. Fewest visible from the front is backwards -- the front is where a viewer 
 body. What the test measures is how deep a joint centre sits beneath the surface along the view
 ray, which is largest for a torso seen face-on, so the count tracks body thickness rather than
 visibility. The constant is left alone: changing it would be choosing a number to make an
-output look right, and visibility decides a supervised label."""
-        )
-        {
-            custom uniform token subject = "T06_SchemaCompletion"
-            custom string date = "2026-08-22"
-            custom string evidence = "summary.json visibility_counts over 4 views: 8/15/0, 4/19/0, 8/15/0, 9/14/0"
-            custom bool decisionOutstanding = 1
-        }
-
-        def "F04_PackagedPixal3dReturnsNoLatent" (
-            doc = """The Pixal3D we packaged returns a decoded mesh, so the latent plan has
+output look right, and visibility decides a supervised label."),
+          attr("subject", "token", "T06_SchemaCompletion", [uniform: true]),
+          attr("date", "string", "2026-08-22"),
+          attr("evidence", "string", "summary.json visibility_counts over 4 views: 8/15/0, 4/19/0, 8/15/0, 9/14/0"),
+          attr("decisionOutstanding", "bool", true)
+        ]),
+        prim("F04_PackagedPixal3dReturnsNoLatent", [
+          doc("The Pixal3D we packaged returns a decoded mesh, so the latent plan has
 no interface to stand on yet.
 
 RFD 1028's `server.py` shells out to upstream's own entry point,
 `inference.py --image <in> --output <glb>`, and `predict` returns `{glb, layer}`: a GLB and
 a USD layer written from it. The SLAT never leaves upstream's process.
 
-RFD 1122's layer-extraction design masks in the latent -- "tokens, not meshes", with
-`a_splice` and VoxHammer operating there -- and it says Pixal3D "emits SLAT natively, so
-nothing is inverted". That is true of upstream and not of the packaged server. Reading the
+RFD 1122's layer-extraction design masks in the latent -- \"tokens, not meshes\", with
+`a_splice` and VoxHammer operating there -- and it says Pixal3D \"emits SLAT natively, so
+nothing is inverted\". That is true of upstream and not of the packaged server. Reading the
 GLB back would be `encode(decode(z))`, which the latents rule blocklists by name.
 
 CORRECTED THE SAME DAY, and the correction makes this much smaller. An earlier version of
@@ -623,18 +498,15 @@ both latents on the floor. There is no CLI flag to keep them; `--output` names t
 
 So the missing piece is a serialiser and an interface, not a reimplementation of three
 diffusion transformers. Call `pipeline.run` in process, keep the two SLATs, write them
-beside the mesh. The pinned commit is `cdbb2bb` on `TencentARC/Pixal3D`."""
-        )
-        {
-            custom uniform token subject = "pixal3d"
-            custom string date = "2026-08-22"
-            custom string evidence = "1028/server.py _run_upstream and predict; upstream inference.py:246 and pixal3d/pipelines/pixal3d_image_to_3d.py:609,173"
-            custom string upstreamCommit = "cdbb2bb"
-            custom bool wasCorrected = 1
-        }
-
-        def "F05_Pixal3dIsUnplaced" (
-            doc = """RFD 1122's Scope names `3-interactor/pixal3d-image-to-textured-mesh`
+beside the mesh. The pinned commit is `cdbb2bb` on `TencentARC/Pixal3D`."),
+          attr("subject", "token", "pixal3d", [uniform: true]),
+          attr("date", "string", "2026-08-22"),
+          attr("evidence", "string", "1028/server.py _run_upstream and predict; upstream inference.py:246 and pixal3d/pipelines/pixal3d_image_to_3d.py:609,173"),
+          attr("upstreamCommit", "string", "cdbb2bb"),
+          attr("wasCorrected", "bool", true)
+        ]),
+        prim("F05_Pixal3dIsUnplaced", [
+          doc("RFD 1122's Scope names `3-interactor/pixal3d-image-to-textured-mesh`
 and no such project is in the goal manifest.
 
 `repo list` has no Pixal3D entry and `default.xml` has no matching `<project>`. What exists
@@ -643,22 +515,19 @@ request-for-discussion checkout. An RFD describing a service is not the service 
 side, and the Sides rule says placement happens when a project is added rather than later.
 
 The same gap as the PBR bake's, which /Rfd1122/Plan/T03_PbrBake already records with
-`repositoryPlacedInManifest = 0`."""
-        )
-        {
-            custom uniform token subject = "sides"
-            custom string date = "2026-08-22"
-            custom string evidence = "repo list | grep -i pixal -> nothing; default.xml has no matching project"
-            custom bool repositoryPlacedInManifest = 0
-        }
-
-        def "F06_ProvenanceSidecarOmittedTwoRequiredFields" (
-            doc = """T04 claimed the sidecar met condition 1. Read against the code, it did
+`repositoryPlacedInManifest = 0`."),
+          attr("subject", "token", "sides", [uniform: true]),
+          attr("date", "string", "2026-08-22"),
+          attr("evidence", "string", "repo list | grep -i pixal -> nothing; default.xml has no matching project"),
+          attr("repositoryPlacedInManifest", "bool", false)
+        ]),
+        prim("F06_ProvenanceSidecarOmittedTwoRequiredFields", [
+          doc("T04 claimed the sidecar met condition 1. Read against the code, it did
 not: two of the fields it named were never written.
 
-This task's amendment read that `omnigen2_edit.py` "writes a provenance file beside every
+This task's amendment read that `omnigen2_edit.py` \"writes a provenance file beside every
 batch carrying the model id, the resolved revision, the prompt, the negative prompt, the
-seed, the step count and both guidance scales". The record it actually built held eleven
+seed, the step count and both guidance scales\". The record it actually built held eleven
 keys -- model, precision, corpus_eligible, steps, both guidance scales, seed, negative
 prompt, torch, weights_gib, outputs -- and neither `revision` nor the positive `prompt` was
 among them.
@@ -674,18 +543,15 @@ Both are fixed. The revision is taken from the snapshot directory of the files a
 downloaded rather than from a second hub API call, because an API call answers what the
 repository resolves to now and condition 1 asks what produced the data. A run that cannot
 resolve a commit now exits rather than rendering, since an unmet precondition is a FAIL and
-finding it out after the GPU time is spent is the expensive order."""
-        )
-        {
-            custom uniform token subject = "T04_QwenCheckpointHash"
-            custom string date = "2026-08-23"
-            custom string evidence = "omnigen2_edit.py record dict: no revision key, no prompt key"
-            custom int fieldsClaimed = 7
-            custom int fieldsMissing = 2
-        }
-
-        def "F16_TheOperatorTableAndItsGatesDisagreeAboutTwoOperators" (
-            doc = """The accelerator's operator table now exists as data, and reconciling it
+finding it out after the GPU time is spent is the expensive order."),
+          attr("subject", "token", "T04_QwenCheckpointHash", [uniform: true]),
+          attr("date", "string", "2026-08-23"),
+          attr("evidence", "string", "omnigen2_edit.py record dict: no revision key, no prompt key"),
+          attr("fieldsClaimed", "int", 7),
+          attr("fieldsMissing", "int", 2)
+        ]),
+        prim("F16_TheOperatorTableAndItsGatesDisagreeAboutTwoOperators", [
+          doc("The accelerator's operator table now exists as data, and reconciling it
 against its own gates leaves exactly two operators misfiled.
 
 WHAT THE TABLE IS. `scripts/hailo_ops.usda` in `rf-detr-cpp`: the vendor's supported-layer
@@ -711,8 +577,8 @@ RETRACTED, AND IT WAS MINE, WITHIN THE HOUR. I first read `Layers` and `Activati
 their union the documented set, got 57, and reported both that the prose saying 58 was off by
 one and that `Erf` was an operator nobody had filed. Both were wrong and the cause was the
 same: two lists are the convenient proxy for a set that is three relations wide, and reading
-them is wrong by six operators. `check_device_ops.py`'s own control -- "Erf is reachable
-through the gelu sequence, Erf therefore counts as documented" -- says so, and it was sitting
+them is wrong by six operators. `check_device_ops.py`'s own control -- \"Erf is reachable
+through the gelu sequence, Erf therefore counts as documented\" -- says so, and it was sitting
 in the self-test the whole time.
 
 THE TWO THAT SURVIVE THE CORRECTION:
@@ -747,24 +613,21 @@ somebody types them, so their silence reads exactly like a pass.
 AND THE MEASUREMENT DOC CANNOT BE REPRODUCED AS WRITTEN. It says to reproduce with
 `scripts/hailo_supported_ops.py --verify <dir-of-exports>` and names that file as holding the
 vendor tables. No such file is in the tree -- the tables moved into `hailo_ops.usda`. The doc
-records a measurement taken before the move and its instructions did not follow."""
-        )
-        {
-            custom uniform token subject = "T09_GgufAndHead"
-            custom string date = "2026-08-24"
-            custom string evidence = "hailo_ops.usda under usd-core 26.8: 58 documented, 82 Secondary, 38 Refused; check_rewrites_against_spec.py 12/82 agree 0 disagree 23 mutants caught; check_device_ops.py real run FAIL 9 unbacked"
-            custom int documentedOperators = 58
-            custom int onnxSpecOperators = 178
-            custom int rewriteRows = 82
-            custom int refusedRows = 38
-            custom int operatorsMisfiled = 2
-            custom int rewritesExecutedBySpecGate = 12
-            custom bool deviceOpsGatePassesHere = 0
-            custom bool gatesWiredToCi = 0
-        }
-
-        def "F15_AllFourIndexingBlockersHaveCompilerAcceptedRewrites" (
-            doc = """Every operator the accelerator refuses now has a rewrite the
+records a measurement taken before the move and its instructions did not follow."),
+          attr("subject", "token", "T09_GgufAndHead", [uniform: true]),
+          attr("date", "string", "2026-08-24"),
+          attr("evidence", "string", "hailo_ops.usda under usd-core 26.8: 58 documented, 82 Secondary, 38 Refused; check_rewrites_against_spec.py 12/82 agree 0 disagree 23 mutants caught; check_device_ops.py real run FAIL 9 unbacked"),
+          attr("documentedOperators", "int", 58),
+          attr("onnxSpecOperators", "int", 178),
+          attr("rewriteRows", "int", 82),
+          attr("refusedRows", "int", 38),
+          attr("operatorsMisfiled", "int", 2),
+          attr("rewritesExecutedBySpecGate", "int", 12),
+          attr("deviceOpsGatePassesHere", "bool", false),
+          attr("gatesWiredToCi", "bool", false)
+        ]),
+        prim("F15_AllFourIndexingBlockersHaveCompilerAcceptedRewrites", [
+          doc("Every operator the accelerator refuses now has a rewrite the
 compiler takes, and one tent kernel does all four.
 
 MEASURED FIRST, WHICH CHANGED THE PLAN. Every blocker's index was traced to see whether it
@@ -800,7 +663,7 @@ rather than sampled -- `weftspun/lean-deform-exact`, six theorems, zero admitted
 depending on propext, Classical.choice and Quot.sound alone.
 
 RETRACTED WITHIN THE HOUR: TOPK IS REWRITTEN TOO, AND THE CUT IS NOT NEEDED. This entry
-said TopK "should not be" rewritten -- that selection is inherently data-ordered, that
+said TopK \"should not be\" rewritten -- that selection is inherently data-ordered, that
 Hailo's own DETR cuts its graph at exactly that boundary with `parser.nodes` from Conv_195 to
 Add_3451, and that 50 of the zoo's 127 configs specify start and end nodes. All of that is
 true and none of it made the cut necessary.
@@ -857,23 +720,20 @@ parse.
 RETRACTED, AND IT WAS MINE: the claim that data-dependent addressing is architectural and
 therefore cannot run on a dataflow part. The addressing observation was right and the
 conclusion hung on it was not carried by any measurement. `KNOWN_BLOCKERS` says a GridSample
-decomposition "produces GatherElements", which is true of the naive decomposition and false
-of this one -- it produces no dynamic index at all."""
-        )
-        {
-            custom uniform token subject = "T09_GgufAndHead"
-            custom string date = "2026-08-23"
-            custom string evidence = "gate_dfc_ops.py hailo10h: DeformBounded OK, ScatterOneHot OK, GatherOneHot OK; index-origin trace 85/8/2 DATA, TopK K CONSTANT"
-            custom int blockersRewritten = 4
-            custom int blockersRemaining = 0
-            custom bool hostTransferRequired = 0
-            custom bool costMeasuredInLayers = 1
-            custom bool costMeasuredInCycles = 0
-            custom int rewriteLayersTotal = 1549
-        }
-
-        def "F14_TheKeypointModelClearsTheAcceleratorAtOneWindow" (
-            doc = """The keypoint device half is compatible with the UGen300, and the
+decomposition \"produces GatherElements\", which is true of the naive decomposition and false
+of this one -- it produces no dynamic index at all."),
+          attr("subject", "token", "T09_GgufAndHead", [uniform: true]),
+          attr("date", "string", "2026-08-23"),
+          attr("evidence", "string", "gate_dfc_ops.py hailo10h: DeformBounded OK, ScatterOneHot OK, GatherOneHot OK; index-origin trace 85/8/2 DATA, TopK K CONSTANT"),
+          attr("blockersRewritten", "int", 4),
+          attr("blockersRemaining", "int", 0),
+          attr("hostTransferRequired", "bool", false),
+          attr("costMeasuredInLayers", "bool", true),
+          attr("costMeasuredInCycles", "bool", false),
+          attr("rewriteLayersTotal", "int", 1549)
+        ]),
+        prim("F14_TheKeypointModelClearsTheAcceleratorAtOneWindow", [
+          doc("The keypoint device half is compatible with the UGen300, and the
 checkpoint's own default is the incompatible configuration.
 
 Measured with `scripts/gate_onnx_device.py` at 576, antialias resize folded, against the
@@ -888,11 +748,11 @@ the keypoint variant, which is the model that actually ships.
 
 `RFDETRKeypointPreviewConfig.num_windows` defaults to 2. So the model as constructed exports
 the graph DFC 5.3.0 refuses, and the single blocker is the Tile that replicates DINOv2's CLS
-token once per attention window: "Unsupported concat over axis batch". At one window there
+token once per attention window: \"Unsupported concat over axis batch\". At one window there
 is no per-window replication, the Tile does not exist rather than being folded, and every
 operator is inside the allowlist.
 
-THAT IS A NARROWER RESULT THAN "IT DEPLOYS", AND THE DIFFERENCE MATTERS. What clears is the
+THAT IS A NARROWER RESULT THAN \"IT DEPLOYS\", AND THE DIFFERENCE MATTERS. What clears is the
 DEVICE HALF -- backbone and projector, which the same logbook entry measures at 95.0% of
 wall. The decoder does not and is not expected to: GridSample is deformable attention, which
 Hailo state is unsupported with no plan to add it, and ScatterND is the keypoint-schema
@@ -912,27 +772,24 @@ export reached the write and died with a FileNotFoundError that reads like a mod
 in a traceback. A go/no-go about hardware has to run on the desk the work happens on.
 
 `num_windows` is now a gate argument rather than a default nobody reads, with
-`device-gate-nw1` as its task."""
-        )
-        {
-            custom uniform token subject = "T09_GgufAndHead"
-            custom string date = "2026-08-23"
-            custom string evidence = "gate_onnx_device.py 576: nw=2 868 nodes Tile x1 outside DEVICE_OPS; nw=1 825 nodes, none outside, PASS"
-            custom int nodesRejectedConfig = 868
-            custom int nodesAcceptedConfig = 825
-            custom int checkpointDefaultWindows = 2
-            custom bool deviceHalfClears = 1
-            custom bool decoderClears = 0
-        }
-
-        def "F13_IdentitiesWereSampledOverSixOfElevenPhenotypes" (
-            doc = """Bypassing the shared model builder cost the corpus its ancestry
+`device-gate-nw1` as its task."),
+          attr("subject", "token", "T09_GgufAndHead", [uniform: true]),
+          attr("date", "string", "2026-08-23"),
+          attr("evidence", "string", "gate_onnx_device.py 576: nw=2 868 nodes Tile x1 outside DEVICE_OPS; nw=1 825 nodes, none outside, PASS"),
+          attr("nodesRejectedConfig", "int", 868),
+          attr("nodesAcceptedConfig", "int", 825),
+          attr("checkpointDefaultWindows", "int", 2),
+          attr("deviceHalfClears", "bool", true),
+          attr("decoderClears", "bool", false)
+        ]),
+        prim("F13_IdentitiesWereSampledOverSixOfElevenPhenotypes", [
+          doc("Bypassing the shared model builder cost the corpus its ancestry
 variation, and nothing reported it.
 
 `anny_rig.CORPUS_CONFIG` is the pinned configuration whose own comment says changing a field
 invalidates already-rendered shards and is a schema change. `sample_identities.py` did not
-use it. It built `anny.Anny(local_changes="default", facial_actions="all")` directly, which
-omits `phenotypes="all"`, and the two models differ:
+use it. It built `anny.Anny(local_changes=\"default\", facial_actions=\"all\")` directly, which
+omits `phenotypes=\"all\"`, and the two models differ:
 
     sample_identities.py   6 phenotypes   gender age muscle weight height proportions
     CORPUS_CONFIG         11 phenotypes   + cupsize firmness african asian caucasian
@@ -940,7 +797,7 @@ omits `phenotypes="all"`, and the two models differ:
 So identities were drawn over six dimensions and rendered by a model carrying eleven, with
 the other five left at their defaults. Every identity in a corpus built that way carries
 DEFAULT ANCESTRY -- roughly 23k of them, in a workspace that blocklists AddBiomechanics as
-an identity source for a "narrow and inequitable population". This is narrower than the
+an identity source for a \"narrow and inequitable population\". This is narrower than the
 thing that rule excludes.
 
 Identities sampled by the old line are invalid rather than merely incomplete: they were
@@ -948,8 +805,8 @@ drawn from a distribution the renderer does not share, so resampling is required
 optional.
 
 THE FLAW WAS THE MECHANISM, NOT THE AUTHOR. Two prose guards already existed -- CORPUS_CONFIG's
-own comment, and `interface_audit.py`'s "Audit the model the corpus ACTUALLY SHIPS, not a
-bare anny.Anny." Both were correct and neither could fail a command, so every new entry
+own comment, and `interface_audit.py`'s \"Audit the model the corpus ACTUALLY SHIPS, not a
+bare anny.Anny.\" Both were correct and neither could fail a command, so every new entry
 point was a fresh chance to disagree with the pinned configuration. Three did: this one, a
 deliberate exception in `render_corpus.py`, and `check_facial_actions.py`, which produced
 the wrong reading recorded and retracted in F12.
@@ -967,20 +824,17 @@ basemesh topology that `coco.pth` is indexed against, which is deliberately not 
 model's 13,718-vertex body submodel.
 
 The gate is textual, so it runs with no anny, no torch and no GPU. A gate that needs a
-CUDA stack to answer is a gate that does not run in CI."""
-        )
-        {
-            custom uniform token subject = "T06_SchemaCompletion"
-            custom string date = "2026-08-23"
-            custom string evidence = "anny_rig.build_corpus_model() 11 phenotype_labels vs sample_identities.py's 6; check_corpus_model.py enumerates 28 files"
-            custom int phenotypesSampled = 6
-            custom int phenotypesRendered = 11
-            custom int bypassSitesFound = 3
-            custom bool identitiesRequireResampling = 1
-        }
-
-        def "F12_AnnysFacialActionsAreThe52Exactly" (
-            doc = """ANNY's facial actions ARE the standard 52, matched by name with nothing left
+CUDA stack to answer is a gate that does not run in CI."),
+          attr("subject", "token", "T06_SchemaCompletion", [uniform: true]),
+          attr("date", "string", "2026-08-23"),
+          attr("evidence", "string", "anny_rig.build_corpus_model() 11 phenotype_labels vs sample_identities.py's 6; check_corpus_model.py enumerates 28 files"),
+          attr("phenotypesSampled", "int", 6),
+          attr("phenotypesRendered", "int", 11),
+          attr("bypassSitesFound", "int", 3),
+          attr("identitiesRequireResampling", "bool", true)
+        ]),
+        prim("F12_AnnysFacialActionsAreThe52Exactly", [
+          doc("ANNY's facial actions ARE the standard 52, matched by name with nothing left
 over on either side.
 
     shared names   52 of 52
@@ -1001,12 +855,12 @@ whatever filled the gap would need building from muscles.
 
 Every part of that was wrong, and the cause is one line of the constructor:
 
-    Anny.__init__(..., local_changes: LocalChanges = "none",
-                       facial_actions: FacialActions = "none", ...)
+    Anny.__init__(..., local_changes: LocalChanges = \"none\",
+                       facial_actions: FacialActions = \"none\", ...)
 
 FACIAL ACTIONS ARE OPT-IN AND DEFAULT TO OFF. The first run built `anny.Anny()` with
 defaults, read the zero, and reported a property of the CONSTRUCTOR CALL as a property of
-the MODEL. `FacialActions` accepts "none", "all", or a sequence of names; at "all" the count
+the MODEL. `FacialActions` accepts \"none\", \"all\", or a sequence of names; at \"all\" the count
 is 52. `local_changes` defaults the same way, which is why that count read 0 against the
 schema's note of roughly 1184.
 
@@ -1020,7 +874,7 @@ WHAT SURVIVES. `interface_audit.py`'s check is still a count rather than a corre
 and it would still report FAIL on a default-constructed model for the reason above -- so
 the interface wants the constructor pinned as well as the comparison widened. And the
 semantic caution stands untouched: a shared name is not a shared meaning. ICT-FaceKit ships
-`mouthShrugUpper` labelled "upper lip raiser", so identical names have been wrong before in
+`mouthShrugUpper` labelled \"upper lip raiser\", so identical names have been wrong before in
 exactly this set. What is established here is name-level identity, which is strictly more
 than was known and strictly less than agreement.
 
@@ -1028,19 +882,16 @@ THE INDEPENDENCE HAZARD IS UNAFFECTED, because it is a property of the blendshap
 than of ANNY's adoption of it. mouthShrugUpper is contingent on mouthShrugLower and applies
 only when the lips touch or are about to; a single gaze coefficient is not a gaze direction.
 A renderer sampling 52 coefficients independently emits faces that cannot occur and labels
-them true by construction, which is F08's shape on the face."""
-        )
-        {
-            custom uniform token subject = "T02_Renderer"
-            custom string date = "2026-08-23"
-            custom string evidence = "anny 0.6.0 Anny(facial_actions='all'): 52 labels, set-difference against ARFaceAnchor.BlendShapeLocation is 0 both ways"
-            custom int annyFacialActions = 52
-            custom int sharedNames = 52
-            custom bool semanticsVerified = 0
-        }
-
-        def "F11_KeypointChannelsAreCarriedNotDiagnosed" (
-            doc = """DECIDED, NOT MEASURED. Five of the keypoint head's eight channels are
+them true by construction, which is F08's shape on the face."),
+          attr("subject", "token", "T02_Renderer", [uniform: true]),
+          attr("date", "string", "2026-08-23"),
+          attr("evidence", "string", "anny 0.6.0 Anny(facial_actions='all'): 52 labels, set-difference against ARFaceAnchor.BlendShapeLocation is 0 both ways"),
+          attr("annyFacialActions", "int", 52),
+          attr("sharedNames", "int", 52),
+          attr("semanticsVerified", "bool", false)
+        ]),
+        prim("F11_KeypointChannelsAreCarriedNotDiagnosed", [
+          doc("DECIDED, NOT MEASURED. Five of the keypoint head's eight channels are
 carried through the 17-to-104 change without anybody knowing what they are.
 
 The head is one 3-layer MLP emitting 8 values per keypoint per query. Channels 0 and 1
@@ -1073,25 +924,22 @@ A SECOND AXIS, WITH A RECORDED PRIOR FAILURE. `pred_keypoints` is
 (8, num_keypoint_classes * num_kp, num_queries, 1), and the middle axis is class-padded --
 a no-op at the current num_keypoint_classes of 1, which is what makes it dangerous. The
 reference script records having put real keypoint values at the wrong padding offset once
-already. Going to 104 touches both axes and only one of them has ever been wrong."""
-        )
-        {
-            custom uniform token subject = "T09_GgufAndHead"
-            custom string date = "2026-08-23"
-            custom string evidence = "keypoints.cpp: delta[0:2]->xy, delta[2:8] passthrough, slot 7 -> class boost; loss.cpp box/class only; no oks outside third_party"
-            custom int keypointChannels = 8
-            custom int channelsExplained = 3
-            custom bool decidedNotMeasured = 1
-        }
-
-        def "F10_BodyAndSceneAreTwoLatents" (
-            doc = """The fork was whether a body and the scene around it share one
+already. Going to 104 touches both axes and only one of them has ever been wrong."),
+          attr("subject", "token", "T09_GgufAndHead", [uniform: true]),
+          attr("date", "string", "2026-08-23"),
+          attr("evidence", "string", "keypoints.cpp: delta[0:2]->xy, delta[2:8] passthrough, slot 7 -> class boost; loss.cpp box/class only; no oks outside third_party"),
+          attr("keypointChannels", "int", 8),
+          attr("channelsExplained", "int", 3),
+          attr("decidedNotMeasured", "bool", true)
+        ]),
+        prim("F10_BodyAndSceneAreTwoLatents", [
+          doc("The fork was whether a body and the scene around it share one
 latent code. Answered two, on outside evidence rather than on argument.
 
-Meta's public announcement describes SAM 3D as "a suite of open source models,
-code, and data for 3D objects and human reconstruction from a single image", and
-splits it in two: "another for object and scene reconstruction and another for
-human pose and shape estimation". An organisation with no shortage of compute
+Meta's public announcement describes SAM 3D as \"a suite of open source models,
+code, and data for 3D objects and human reconstruction from a single image\", and
+splits it in two: \"another for object and scene reconstruction and another for
+human pose and shape estimation\". An organisation with no shortage of compute
 built the body model separately from the scene model, which is the cheapest
 evidence available that one code for both is the wrong shape.
 
@@ -1121,24 +969,21 @@ latents does not remove the need for scene GEOMETRY. The environment still has t
 be a mesh rather than an HDRI, because occlusion truth depends on there being
 something to occlude with -- which is what /Rfd1122/Findings/F03 needs and cannot
 get from a painted backdrop. The body latent encodes the body; the scene mesh
-earns its place by casting shadows and hiding joints."""
-        )
-        {
-            custom uniform token subject = "T06_SchemaCompletion"
-            custom string date = "2026-08-23"
-            custom string evidence = "ai.meta.com/blog/segment-anything-model-3/: SAM 3D split into object/scene and human pose+shape; facebook/sam-3d-body -> HTTP 401"
-            custom int latentSpaces = 2
-            custom bool sourceEstablishesTwoCorpora = 0
-            custom bool weightsUsableHere = 0
-        }
-
-        def "F09_ThirtyFivePercentOfTheCommercialSetIsShareAlike" (
-            doc = """A directory named `commercial` is 34.9% share-alike, and
+earns its place by casting shadows and hiding joints."),
+          attr("subject", "token", "T06_SchemaCompletion", [uniform: true]),
+          attr("date", "string", "2026-08-23"),
+          attr("evidence", "string", "ai.meta.com/blog/segment-anything-model-3/: SAM 3D split into object/scene and human pose+shape; facebook/sam-3d-body -> HTTP 401"),
+          attr("latentSpaces", "int", 2),
+          attr("sourceEstablishesTwoCorpora", "bool", false),
+          attr("weightsUsableHere", "bool", false)
+        ]),
+        prim("F09_ThirtyFivePercentOfTheCommercialSetIsShareAlike", [
+          doc("A directory named `commercial` is 34.9% share-alike, and
 CLAUDE.md blocklists share-alike.
 
 `filter_coco_licenses.py` keeps `Attribution-ShareAlike License`, records
 `share_alike` in the licenses relation, and says in its own docstring that
-downstream can "join-and-exclude if the org wants zero SA exposure". That
+downstream can \"join-and-exclude if the org wants zero SA exposure\". That
 deferral was never taken up, and the blocklist table has an unqualified CC-BY-SA
 row, so the two have been disagreeing in place. `filter_texverse.py`, written
 later, drops SA outright per the 2026-08-14 directive; the COCO filter predates it.
@@ -1160,19 +1005,16 @@ bites, and that is the side that now drops them.
 
 Stated rather than left implicit, because the two numbers are about to look
 inconsistent to the next reader: 523 stays whole for evaluation while the train
-set loses 35% for training, and that is the licence working as written."""
-        )
-        {
-            custom uniform token subject = "T10_Evaluate"
-            custom string date = "2026-08-23"
-            custom string evidence = "join images.parquet to licenses.parquet: train SA 4400/12620, val SA 156/523"
-            custom int trainShareAlike = 4400
-            custom int trainFetchable = 8220
-            custom bool holdoutCountChanged = 0
-        }
-
-        def "F08_NothingRefusesAnInvertedKnee" (
-            doc = """The pose half of a GLB is unvalidated, and it is measured next door.
+set loses 35% for training, and that is the licence working as written."),
+          attr("subject", "token", "T10_Evaluate", [uniform: true]),
+          attr("date", "string", "2026-08-23"),
+          attr("evidence", "string", "join images.parquet to licenses.parquet: train SA 4400/12620, val SA 156/523"),
+          attr("trainShareAlike", "int", 4400),
+          attr("trainFetchable", "int", 8220),
+          attr("holdoutCountChanged", "bool", false)
+        ]),
+        prim("F08_NothingRefusesAnInvertedKnee", [
+          doc("The pose half of a GLB is unvalidated, and it is measured next door.
 
 `humanoid-rom`'s `HumanoidRom/core/SimulatorLimits.lean` reads the SOMA humanoid
 the pretrained trackers were trained against:
@@ -1188,9 +1030,9 @@ weights -- so this is a property the corpus inherits rather than a bug somebody
 is about to fix.
 
 THE SAME FAILURE IS ALREADY IN THE T01 ENTRY, ONE LEVEL DOWN. Comparing the four
-fit routes, it records that a fit "can put every constrained joint within a
+fit routes, it records that a fit \"can put every constrained joint within a
 penny's thickness and still fold an elbow the wrong way, because eighty-three of
-the 104 are unconstrained, and the residual cannot see that". A joint residual is
+the 104 are unconstrained, and the residual cannot see that\". A joint residual is
 the convenient proxy; anatomical validity is the quantity, and PITFALLS 4 is the
 general form.
 
@@ -1206,19 +1048,16 @@ tasks and every finding for `valid`, `range of motion`, `kusudama` and
 workspace do the work -- `4-entities/humanoid-rom` and
 `2-contract/swing-twist-kusudama`, which carries `JointRom.lean`, `KusGuards.lean`
 and `Adversarial.lean` -- and no task depends on either. A gate that exists and
-that nothing calls is the silent skip of PITFALLS 3, one repository wide."""
-        )
-        {
-            custom uniform token subject = "T02_Renderer"
-            custom string date = "2026-08-23"
-            custom string evidence = "HumanoidRom/core/SimulatorLimits.lean: 66 limited hinges, min/median/max span 360.0 deg"
-            custom int limitedHinges = 66
-            custom float minHingeSpanDegrees = 360.0
-            custom bool poseValidityGated = 0
-        }
-
-        def "F07_SchemaWasNotRunnableFromAnyDeclaredEnvironment" (
-            doc = """`anny_render_schema.py` imports pyarrow, and no pixi environment in
+that nothing calls is the silent skip of PITFALLS 3, one repository wide."),
+          attr("subject", "token", "T02_Renderer", [uniform: true]),
+          attr("date", "string", "2026-08-23"),
+          attr("evidence", "string", "HumanoidRom/core/SimulatorLimits.lean: 66 limited hinges, min/median/max span 360.0 deg"),
+          attr("limitedHinges", "int", 66),
+          attr("minHingeSpanDegrees", "float", 3.6e2),
+          attr("poseValidityGated", "bool", false)
+        ]),
+        prim("F07_SchemaWasNotRunnableFromAnyDeclaredEnvironment", [
+          doc("`anny_render_schema.py` imports pyarrow, and no pixi environment in
 `anny-render-corpus` declared it. Nor pandas, which `test_preflight.py` imports.
 
 So the ETNF schema -- the relations, the foreign-key graph, `validate()`, and the __main__
@@ -1242,69 +1081,58 @@ tagged claims still cannot be verified from any declared environment: they impor
 and `torch`, and no pixi feature declares either. `bvh_clip_count` reads a Google Drive path
 and measures 0 against a stated 810 on a desk where the drive is not mounted. So the claim
 gate reports 9 failures for reasons that are about the environment rather than about the
-README, and that is a separate piece of work from this one."""
-        )
-        {
-            custom uniform token subject = "T06_SchemaCompletion"
-            custom string date = "2026-08-23"
-            custom string evidence = "grep pyarrow pixi.toml -> nothing; pixi run -e corpus schema -> 24 relations, 22 foreign keys"
-            custom int readmeClaimedRelations = 19
-            custom int actualRelationsBefore = 20
-            custom int claimsStillUnverifiable = 9
-        }
-    }
-
-    def Scope "Vocabularies"
-    {
-        def "RetractionCause"
-        {
-            custom uniform token[] allowed = ["proxyRead", "prediction", "staleSource", "upstreamGap"]
-        }
-    }
-
-    def Scope "Retractions"
-    {
-        def "R01_OperatorTableReadFromTwoLists"
-        {
-            rel retracts = </Rfd1122/Findings/F16_TheOperatorTableAndItsGatesDisagreeAboutTwoOperators>
-            custom uniform token cause = "proxyRead"
-            custom string claim = "the documented operator set is 57, the prose saying 58 is off by one, and Erf is unfiled"
-            custom string supersededBy = "the set is three relations wide; reading Layers and Activations alone is wrong by six operators"
-            custom string date = "2026-08-23"
-        }
-
-        def "R02_ScatterNdWouldFoldLikeTile"
-        {
-            rel retracts = </Rfd1122/Findings/F15_AllFourIndexingBlockersHaveCompilerAcceptedRewrites>
-            custom uniform token cause = "prediction"
-            custom string claim = "ScatterND is the constant class-padding of the keypoint schema, so the Tile constant fold clears it"
-            custom string supersededBy = "ScatterND indexes DATA in all 85 occurrences; the fold applies to none of the first three blockers"
-            custom string date = "2026-08-23"
-        }
-
-        def "R03_AnnyShipsNoFacialActions"
-        {
-            rel retracts = </Rfd1122/Findings/F12_AnnysFacialActionsAreThe52Exactly>
-            custom uniform token cause = "upstreamGap"
-            custom string claim = "facial_action_labels has length 0, so the model carries no expression and F02's missing 52 are an upstream gap"
-            custom string supersededBy = "Anny(facial_actions='all') returns 52 labels, set-difference against ARFaceAnchor.BlendShapeLocation is 0 both ways"
-            custom string date = "2026-08-23"
-        }
-
-        def "R04_PbrBakeBlockedOnMissingUvs"
-        {
-            rel retracts = </Rfd1122/Plan/T03_PbrBake>
-            custom uniform token cause = "staleSource"
-            custom string claim = "the bake is blocked because the mesh carries no UVs"
-            custom string supersededBy = "texture_coordinates is (21334, 2) under topology=anny"
-            custom string date = "2026-08-23"
-        }
-    }
-
-    def Scope "Plan"
-    {
-        def "T01_PoseLibraryPlausibility" (
-            doc = """Draw twenty stick figures and look at them.
+README, and that is a separate piece of work from this one."),
+          attr("subject", "token", "T06_SchemaCompletion", [uniform: true]),
+          attr("date", "string", "2026-08-23"),
+          attr("evidence", "string", "grep pyarrow pixi.toml -> nothing; pixi run -e corpus schema -> 24 relations, 22 foreign keys"),
+          attr("readmeClaimedRelations", "int", 19),
+          attr("actualRelationsBefore", "int", 20),
+          attr("claimsStillUnverifiable", "int", 9)
+        ])
+      ]),
+      scope("Vocabularies", [
+        prim("RetractionCause", [
+          attr("allowed", "token[]", [
+            "proxyRead",
+            "prediction",
+            "staleSource",
+            "upstreamGap"
+          ], [uniform: true])
+        ])
+      ]),
+      scope("Retractions", [
+        prim("R01_OperatorTableReadFromTwoLists", [
+          attr("cause", "token", "proxyRead", [uniform: true]),
+          attr("claim", "string", "the documented operator set is 57, the prose saying 58 is off by one, and Erf is unfiled"),
+          attr("supersededBy", "string", "the set is three relations wide; reading Layers and Activations alone is wrong by six operators"),
+          attr("date", "string", "2026-08-23"),
+          rel("retracts", "/Rfd1122/Findings/F16_TheOperatorTableAndItsGatesDisagreeAboutTwoOperators")
+        ]),
+        prim("R02_ScatterNdWouldFoldLikeTile", [
+          attr("cause", "token", "prediction", [uniform: true]),
+          attr("claim", "string", "ScatterND is the constant class-padding of the keypoint schema, so the Tile constant fold clears it"),
+          attr("supersededBy", "string", "ScatterND indexes DATA in all 85 occurrences; the fold applies to none of the first three blockers"),
+          attr("date", "string", "2026-08-23"),
+          rel("retracts", "/Rfd1122/Findings/F15_AllFourIndexingBlockersHaveCompilerAcceptedRewrites")
+        ]),
+        prim("R03_AnnyShipsNoFacialActions", [
+          attr("cause", "token", "upstreamGap", [uniform: true]),
+          attr("claim", "string", "facial_action_labels has length 0, so the model carries no expression and F02's missing 52 are an upstream gap"),
+          attr("supersededBy", "string", "Anny(facial_actions='all') returns 52 labels, set-difference against ARFaceAnchor.BlendShapeLocation is 0 both ways"),
+          attr("date", "string", "2026-08-23"),
+          rel("retracts", "/Rfd1122/Findings/F12_AnnysFacialActionsAreThe52Exactly")
+        ]),
+        prim("R04_PbrBakeBlockedOnMissingUvs", [
+          attr("cause", "token", "staleSource", [uniform: true]),
+          attr("claim", "string", "the bake is blocked because the mesh carries no UVs"),
+          attr("supersededBy", "string", "texture_coordinates is (21334, 2) under topology=anny"),
+          attr("date", "string", "2026-08-23"),
+          rel("retracts", "/Rfd1122/Plan/T03_PbrBake")
+        ])
+      ]),
+      scope("Plan", [
+        prim("T01_PoseLibraryPlausibility", [
+          doc("Draw twenty stick figures and look at them.
 
 All 810 licence-clean clips are locomotion: walking, running, turning, standing still.
 Character drawings are rarely mid-stride, so walk cycles teach a keypoint detector little
@@ -1343,7 +1171,7 @@ hashes are not recorded here because walking that mount is slow enough to time o
 number nobody waited for is not a measurement.
 
 Two consequences worth keeping in view. The drive is present on one desk and absent on the
-next exactly as an untracked directory would be, so "we have the clips" is a statement about
+next exactly as an untracked directory would be, so \"we have the clips\" is a statement about
 this machine. And the folder can change with no diff anywhere, which is what the hashes would
 catch.
 
@@ -1367,19 +1195,19 @@ STILL OWED: the fit itself, by ANNY's vertex-fitting procedure rather than the c
 alignment first attempted, which missed by about a soda can's width where a same-rig fit has
 reached a thousandth of a penny's thickness.
 
-None of this blocks projecting twenty poses and looking at them."""
-        )
-        {
-            # Complete. Ran 2026-08-23; carried at zero so the reranked path measures what is left rather than what is done.
-            custom bool completed = 1
-            custom bool gpuBound = 0
-            custom int order = 1
-            custom uniform token state = "gate"
-            custom string title = "Check the pose library is worth rendering"
-            custom string measurement = "of twenty projected poses, how many a character artist would draw"
-            custom bool redirectsThePlan = 1
-            custom string[] apparatus = ["extract_poses.py", "camera arithmetic"]
-            custom string cff = """
+None of this blocks projecting twenty poses and looking at them."),
+          attr("completed", "bool", true),
+          attr("gpuBound", "bool", false),
+          attr("order", "int", 1),
+          attr("state", "token", "gate", [uniform: true]),
+          attr("title", "string", "Check the pose library is worth rendering"),
+          attr("measurement", "string", "of twenty projected poses, how many a character artist would draw"),
+          attr("redirectsThePlan", "bool", true),
+          attr("apparatus", "string[]", [
+            "extract_poses.py",
+            "camera arithmetic"
+          ]),
+          attr("cff", "string", "
 - type: software
   title: extract_poses.py
   authors:
@@ -1392,16 +1220,17 @@ None of this blocks projecting twenty poses and looking at them."""
   - name: weftspun
   repository-code: https://github.com/weftspun/logbook
   notes: 318 lines, scripts/. Projects the joints and draws them coloured by See-Through layer, hollow when occluded. This is the apparatus the check asks for.
-"""
-            rel dependsOn = []
-        }
-
-        def "T02_Renderer" (
-            doc = """Build the renderer. The one thing nothing else supplies: image,
+"),
+          rel("dependsOn", [
+            
+          ])
+        ]),
+        prim("T02_Renderer", [
+          doc("Build the renderer. The one thing nothing else supplies: image,
 keypoints, masks, camera parameters, depth, mesh and PBR out of a posed ANNY body.
 
 Two things to get right at the start. The `coco.pth` weight vectors are 19,158 wide, which
-is the basemesh space, while `topology="anny"` returns the 13,718-vertex body submodel and
+is the basemesh space, while `topology=\"anny\"` returns the 13,718-vertex body submodel and
 would fail to multiply; the map between the two is measured rather than assumed
 (`body_index = searchsorted(ref, basemesh_index)`, maximum positional difference 0.0
 exactly). And the nose and both ears have no bone, so they need fixed mesh vertices, which
@@ -1409,38 +1238,32 @@ is why `topology_id` is a foreign key rather than a label.
 
 THE STATE SAYS BUILD AND THE POINTERS BELOW DISAGREE. `render_corpus.py` is 370 lines
 already emitting image, keypoints and mesh from a posed ANNY, and `render_image.py` writes
-the depth pass from the same camera. RFD 1122's table says "Nothing turns a posed mesh into
-a labelled frame", which was true when it was written; the work landed since, under RFD
+the depth pass from the same camera. RFD 1122's table says \"Nothing turns a posed mesh into
+a labelled frame\", which was true when it was written; the work landed since, under RFD
 0122's rung 1.
 
 The state stays `build` rather than being flipped on the strength of a file existing. What
 nobody has checked is whether that renderer emits everything this corpus needs -- the 52
 blendshape coefficients, the hm08 masks and the camera parameters, per frame, in the schema
-below. Reading the two against each other is the next thing to do here, and it is cheap."""
-        )
-        {
-            # RESIZED FROM S/M/L, AND THE REASON IS A RETRACTED MEASUREMENT. This note read
-            # "engineering, not compute -- the render itself is measured at 2.2 hours over 800k
-            # across eight processes, so the outstanding work is the blendshape coefficients, the hm08
-            # masks and the parquet writer rather than throughput." That was the DEPTH PASS. On
-            # `render_view.py`'s actual film the same variant is 32,592 ms/image, 447x more, and
-            # 800k frames is roughly a month of wall-clock with every core busy. Throughput is
-            # the work, alongside the engineering, so the pessimistic case grows the most.
-            custom uniform token optimisticSize = "M"
-            custom uniform token mostLikelySize = "L"
-            custom uniform token pessimisticSize = "XL"
-            custom bool gpuBound = 0
-            custom int order = 2
-            custom uniform token state = "build"
-            custom string title = "Render the labels rather than annotate them"
-            custom string measurement = "a posed mesh in, a labelled frame out, labels exact by projection"
-            custom string[] emits = ["keypoints_2d", "segmentation", "depth_map", "meshes"]
-            custom string[] apparatus = ["2-contract/hm08-partition/export_hm08_usd.py"]
-            # Not `T03_PbrBake`. The renderer is built and unit-tested against a flat
-            # material; what needs the bake is a frame anybody keeps, which is why that
-            # edge lands on T07 rather than here. The first version of this file put it
-            # here and made the numbering disagree with its own graph.
-            custom string cff = """
+below. Reading the two against each other is the next thing to do here, and it is cheap."),
+          attr("optimisticSize", "token", "M", [uniform: true]),
+          attr("mostLikelySize", "token", "L", [uniform: true]),
+          attr("pessimisticSize", "token", "XL", [uniform: true]),
+          attr("gpuBound", "bool", false),
+          attr("order", "int", 2),
+          attr("state", "token", "build", [uniform: true]),
+          attr("title", "string", "Render the labels rather than annotate them"),
+          attr("measurement", "string", "a posed mesh in, a labelled frame out, labels exact by projection"),
+          attr("emits", "string[]", [
+            "keypoints_2d",
+            "segmentation",
+            "depth_map",
+            "meshes"
+          ]),
+          attr("apparatus", "string[]", [
+            "2-contract/hm08-partition/export_hm08_usd.py"
+          ]),
+          attr("cff", "string", "
 - type: software
   title: render_corpus.py
   authors:
@@ -1459,15 +1282,14 @@ below. Reading the two against each other is the next thing to do here, and it i
   - name: weftspun
   repository-code: https://github.com/weftspun/hm08-partition
   notes: 437 lines. The topology and its groups as a validated USD partition, which is where the renderer gets its part semantics.
-"""
-            rel dependsOn = [</Rfd1122/Plan/T01_PoseLibraryPlausibility>]
-        }
+"),
+          rel("dependsOn", "/Rfd1122/Plan/T01_PoseLibraryPlausibility")
+        ]),
+        prim("T03_PbrBake", [
+          doc("Bake the skin material to a flat texture set. Not in Blender.
 
-        def "T03_PbrBake" (
-            doc = """Bake the skin material to a flat texture set. Not in Blender.
-
-THE METHOD THIS TASK NAMED IS BLOCKLISTED. It read "do the bake in Blender, with MPFB2,
-because that is the tool the material was authored for". Blender is on the blocklist as of
+THE METHOD THIS TASK NAMED IS BLOCKLISTED. It read \"do the bake in Blender, with MPFB2,
+because that is the tool the material was authored for\". Blender is on the blocklist as of
 2026-08-22, for reproducibility: headless output moves with the version and the build flags,
 so the same scene on two desks is two corpora with one name, and the version here (5.2.0
 LTS) is pinned by nothing.
@@ -1484,7 +1306,7 @@ node group once over the hm08 UV layout and write albedo, roughness and normal. 
 a constant zero and needs no map. Bake once and reuse it in every render.
 
 The bake needs UVs and they exist: `texture_coordinates` is (21334, 2) under
-`topology="anny"`. An earlier version of the RFD called this blocked, and the retraction
+`topology=\"anny\"`. An earlier version of the RFD called this blocked, and the retraction
 stays beside what replaces it.
 
 THIS ONE IS ITS OWN PUBLIC REPOSITORY, under `https://github.com/chibifire-stages`. Not
@@ -1503,7 +1325,7 @@ duration unknown -- the reason the critical-path table names it as the branch wi
 The corpus repository has since built the replacement the blocklist entry asked for.
 
 What the entry demanded of any candidate was that it install from a lockfile, render the same
-bytes twice on two machines, and ship the check for that. `mitsuba = "==3.9.1"` is pinned in
+bytes twice on two machines, and ship the check for that. `mitsuba = \"==3.9.1\"` is pinned in
 `anny-render-corpus`'s pixi.toml, and the determinism is measured rather than asserted:
 llvm_ad_rgb at one thread is byte-identical over two runs by sha256, while the default thread
 count drifts by up to 1/255 on a handful of pixels through film accumulation order. Fixing the
@@ -1513,32 +1335,28 @@ thread count is therefore part of the method, not a detail.
 the apparatus for a bake pass is the same apparatus, pointed at the hm08 UV layout: albedo,
 roughness and normal, with metallic a constant zero.
 
-This does not make the task done. What it removes is the reason it had no estimate."""
-        )
-        {
-            # Bakes once and is reused by every render, so corpus size does not enter. The method exists now -- Mitsuba pinned in pixi.toml -- and what is left is the repository, the UV pass and the determinism check.
-            custom uniform token optimisticSize = "XS"
-            custom uniform token mostLikelySize = "S"
-            custom uniform token pessimisticSize = "M"
-            custom bool gpuBound = 0
-            custom int order = 3
-            custom uniform token state = "build"
-            custom string title = "Bake albedo, roughness and normal over the hm08 UVs"
-            custom string measurement = "one texture set, reused across every render"
-            custom string repositoryOrg = "https://github.com/chibifire-stages"
-            custom uniform token repositoryVisibility = "public"
-            custom bool repositoryPlacedInManifest = 0
-            custom string cff = """
+This does not make the task done. What it removes is the reason it had no estimate."),
+          attr("optimisticSize", "token", "XS", [uniform: true]),
+          attr("mostLikelySize", "token", "S", [uniform: true]),
+          attr("pessimisticSize", "token", "M", [uniform: true]),
+          attr("gpuBound", "bool", false),
+          attr("order", "int", 3),
+          attr("state", "token", "build", [uniform: true]),
+          attr("title", "string", "Bake albedo, roughness and normal over the hm08 UVs"),
+          attr("measurement", "string", "one texture set, reused across every render"),
+          attr("repositoryOrg", "string", "https://github.com/chibifire-stages"),
+          attr("repositoryVisibility", "token", "public", [uniform: true]),
+          attr("repositoryPlacedInManifest", "bool", false),
+          attr("cff", "string", "
 # Nothing points here yet, and the absence is the entry.
 # The material this bakes ships inside the `anny` package as
 # node_trees/enhanced_skin.json with sss.png beside it, which is a
 # dependency rather than a repository on a side.
-"""
-            rel dependsOn = [</Rfd1122/Plan/T01_PoseLibraryPlausibility>]
-        }
-
-        def "T04_QwenCheckpointHash" (
-            doc = """Make `qwen-image-edit`'s `server.py` return `checkpoint_sha256` and
+"),
+          rel("dependsOn", "/Rfd1122/Plan/T01_PoseLibraryPlausibility")
+        ]),
+        prim("T04_QwenCheckpointHash", [
+          doc("Make `qwen-image-edit`'s `server.py` return `checkpoint_sha256` and
 echo the instruction. It returns `{image, seed, stub}` today.
 
 This is a change to the server, not a note. Condition 1 of the generated-synthetic rule
@@ -1553,9 +1371,9 @@ not produce corpus data. OmniGen2 takes the two appearances instead: 7.8B, Apach
 weights and code, 17.3 GiB at bf16, clean output on the same render.
 
 THAT CLAIM WAS TOO STRONG, AND THE CODE SAYS SO. This paragraph read that the condition
-"is met rather than owed" because `omnigen2_edit.py` writes a provenance file "carrying the
+\"is met rather than owed\" because `omnigen2_edit.py` writes a provenance file \"carrying the
 model id, the resolved revision, the prompt, the negative prompt, the seed, the step count
-and both guidance scales". Two of those seven were never written: the record held no
+and both guidance scales\". Two of those seven were never written: the record held no
 `revision` and no positive `prompt`. /Rfd1122/Findings/F06 has the reading. So condition 1
 was unmet in the sidecar as well as in the rows, and the task was recorded as further along
 than it was.
@@ -1590,35 +1408,36 @@ WHAT IS STILL OWED, AND IT IS BLOCKED RATHER THAN SKIPPED. Nothing writes `edite
 rows yet, because a row needs a `render_id` to join to and the renderer emits npz, json and
 png rather than parquet. That is T02's output format, not this task's, so the writer lands
 when the renderer does. The sidecar says so in its own completion message rather than
-implying the record is in the corpus."""
-        )
-        {
-            # Structural half landed 2026-08-23 with six negative controls. What remains is the edited_renders writer, which waits on T02's output format rather than on a card.
-            custom uniform token optimisticSize = "XS"
-            custom uniform token mostLikelySize = "XS"
-            custom uniform token pessimisticSize = "S"
-            custom bool gpuBound = 0
-            custom int order = 4
-            custom uniform token state = "build"
-            custom bool provenanceSchemaLanded = 1
-            custom bool provenanceRowsWritten = 0
-            custom int negativeControls = 6
-            custom string title = "Condition 1 on the editor path"
-            custom string measurement = "every returned frame carries its model, revision and instruction"
-            custom string[] blocks = ["photoreal appearance", "colour sketch appearance"]
-            custom string cff = """
+implying the record is in the corpus."),
+          attr("optimisticSize", "token", "XS", [uniform: true]),
+          attr("mostLikelySize", "token", "XS", [uniform: true]),
+          attr("pessimisticSize", "token", "S", [uniform: true]),
+          attr("gpuBound", "bool", false),
+          attr("order", "int", 4),
+          attr("state", "token", "build", [uniform: true]),
+          attr("provenanceSchemaLanded", "bool", true),
+          attr("provenanceRowsWritten", "bool", false),
+          attr("negativeControls", "int", 6),
+          attr("title", "string", "Condition 1 on the editor path"),
+          attr("measurement", "string", "every returned frame carries its model, revision and instruction"),
+          attr("blocks", "string[]", [
+            "photoreal appearance",
+            "colour sketch appearance"
+          ]),
+          attr("cff", "string", "
 - type: software
   title: server.py
   authors:
   - name: weftspun
   repository-code: https://github.com/weftspun/cyclegan-style-transfer
   notes: 158 lines. Returns checkpoint_sha256 per result, which is the pattern the Qwen path owes. The reference implementation, not the thing to change.
-"""
-            rel dependsOn = []
-        }
-
-        def "T05_StrengthWindow" (
-            doc = """Measure the usable `strength` window before scaling.
+"),
+          rel("dependsOn", [
+            
+          ])
+        ]),
+        prim("T05_StrengthWindow", [
+          doc("Measure the usable `strength` window before scaling.
 
 The packaged Qwen-Image-Edit interface takes `image`, `instruction`, `strength`, `steps`
 and `seed`. There is no depth control, so geometry preservation rests on `strength` alone.
@@ -1629,27 +1448,22 @@ may be empty, and an empty window is the signal to reconsider rather than a tuni
 The default is 0.8, which is high for this purpose. Do not inherit it. FastCUT is the
 recorded fallback, at the cost of a training run. Full CUT stays excluded for any labelled
 corpus: enlarging objects to match target statistics is its advertised advantage, and it
-moves every joint."""
-        )
-        {
-            # A sweep over the negative prompt and both guidance scales, at bf16 on the 3090 because condition 5 forbids the quantised alternative. The window may be empty, which is why the pessimistic figure is more than four times the optimistic one.
-            custom uniform token optimisticSize = "XS"
-            custom uniform token mostLikelySize = "S"
-            custom uniform token pessimisticSize = "L"
-            custom bool gpuBound = 1
-            custom int order = 5
-            custom uniform token state = "measure"
-            custom string title = "Find the conditioning that keeps the pose and still restyles"
-            custom string measurement = "joint drift against the source render, swept over strength"
-            custom bool mayBeEmpty = 1
-            custom string cff = """
+moves every joint."),
+          attr("optimisticSize", "token", "XS", [uniform: true]),
+          attr("mostLikelySize", "token", "S", [uniform: true]),
+          attr("pessimisticSize", "token", "L", [uniform: true]),
+          attr("gpuBound", "bool", true),
+          attr("order", "int", 5),
+          attr("state", "token", "measure", [uniform: true]),
+          attr("title", "string", "Find the conditioning that keeps the pose and still restyles"),
+          attr("measurement", "string", "joint drift against the source render, swept over strength"),
+          attr("mayBeEmpty", "bool", true),
+          attr("cff", "string", "
 # No code. The sweep does not exist, and the interface it would drive
 # (image, instruction, strength, steps, seed) belongs to a server that is
 # not a project in this goal manifest.
-"""
-            rel dependsOn = [</Rfd1122/Plan/T04_QwenCheckpointHash>]
-
-            custom string amended = """AMENDED: `strength` IS NOT THE KNOB, AND THE KNOB WAS FOUND BY GETTING IT WRONG.
+"),
+          attr("amended", "string", "AMENDED: `strength` IS NOT THE KNOB, AND THE KNOB WAS FOUND BY GETTING IT WRONG.
 
 OmniGen2 replaces Qwen-Image-Edit and exposes no `strength` at all: it takes a text guidance
 scale, an image guidance scale and a negative prompt. The window this task asks for is over
@@ -1663,11 +1477,11 @@ scores 0.825 and bf16 0.776, so the prompt moved the result and precision did no
 move it.
 
 That makes the negative prompt the first axis of the window, ahead of either guidance scale,
-and it makes the sweep worth running as a sweep rather than as a pair."""
-        }
-
-        def "T06_SchemaCompletion" (
-            doc = """Finish the corpus schema. `KEYPOINTS_2D`, `SEGMENTATION` and `RENDERS`
+and it makes the sweep worth running as a sweep rather than as a pair."),
+          rel("dependsOn", "/Rfd1122/Plan/T04_QwenCheckpointHash")
+        ]),
+        prim("T06_SchemaCompletion", [
+          doc("Finish the corpus schema. `KEYPOINTS_2D`, `SEGMENTATION` and `RENDERS`
 are defined; `visibility` as int8 and `topology_id` are pending.
 
 `visibility` carries three states and a boolean cannot: 2 visible, 1 projects inside the
@@ -1682,35 +1496,14 @@ absent: it follows from `constraints` and the chain, so a column for it would be
 SMALLER THAN IT READS. `anny_render_schema.py` is 384 lines and already defines the
 relations, sized for roughly 800k images across 23k identities. What is outstanding is two
 attributes, `visibility` as int8 and `topology_id`, not a schema that does not exist. Check
-the file before treating this as more than that."""
-        )
-        {
-            # Two attributes on a 384-line schema that already exists. Pure CPU and parquet, eligible on every desk in the fleet, and the tightest estimate here because the file can be read before starting.
-            custom bool gpuBound = 0
-            # COMPLETE 2026-08-24. Both attributes this task named now exist, so it carries
-            # `completed` and no sizes -- the same shape T01 takes. `visibility` was already
-            # int8 with its three states documented; `topology_id` landed in
-            # `anny-render-corpus#6` and turned out to be larger than a column.
-            #
-            # KEYPOINTS_2D KEYED ON bone_id, WHICH ASSERTS EVERY KEYPOINT FOLLOWS A BONE. The
-            # nose and both ears do not -- they have no bone and are fixed mesh vertices -- so
-            # three of the 104 points were not merely unvalidated, they were INEXPRESSIBLE.
-            # Nothing errored, because a schema that cannot say a thing does not complain about
-            # not saying it. Anchoring now lives in two satellite relations rather than nullable
-            # columns, `topologies` interns the vocabulary, and four red tests fire against a
-            # green fixture.
-            #
-            # WHAT COMPLETING THIS DOES NOT MEAN. Nothing writes these relations yet: the
-            # renderer emits npz, json and png rather than parquet. That is T02's output format,
-            # the same boundary T04 already records for `edited_renders`. The schema is finished
-            # and the corpus still cannot be written to it, which is a fact about T02 and not a
-            # reason to leave this open.
-            custom bool completed = 1
-            custom int order = 6
-            custom uniform token state = "build"
-            custom string title = "visibility int8, and topology_id as a foreign key"
-            custom string measurement = "no NULLs and no derivable columns, ETNF holds"
-            custom string cff = """
+the file before treating this as more than that."),
+          attr("gpuBound", "bool", false),
+          attr("completed", "bool", true),
+          attr("order", "int", 6),
+          attr("state", "token", "build", [uniform: true]),
+          attr("title", "string", "visibility int8, and topology_id as a foreign key"),
+          attr("measurement", "string", "no NULLs and no derivable columns, ETNF holds"),
+          attr("cff", "string", "
 - type: software
   title: anny_render_schema.py
   authors:
@@ -1723,12 +1516,11 @@ the file before treating this as more than that."""
   - name: weftspun
   repository-code: https://github.com/weftspun/dataflow-coco-gemx
   notes: 178 lines. Real COCO into the same normal form, so the two sources meet as one schema.
-"""
-            rel dependsOn = [</Rfd1122/Plan/T01_PoseLibraryPlausibility>]
-        }
-
-        def "T07_VerificationLoop" (
-            doc = """Wire verification into the frame loop: every restyled frame checked
+"),
+          rel("dependsOn", "/Rfd1122/Plan/T01_PoseLibraryPlausibility")
+        ]),
+        prim("T07_VerificationLoop", [
+          doc("Wire verification into the frame loop: every restyled frame checked
 against the render it came from, failures discarded rather than fixed.
 
 Restyling moves things and a moved arm makes the label a lie. `silhouette.py`,
@@ -1751,20 +1543,21 @@ is good only from that angle. The cameras are already deterministic from an inde
 
 AND A REJECTED FRAME NEED NOT BE DISCARDED. VoxHammer edits the latent directly, so a frame this
 loop rejects can be corrected in 3D and re-decoded, with the same instrument scoring the result.
-That makes the discard rule this task states a floor rather than the only option."""
-        )
-        {
-            # Per-frame silhouette, depth and referee terms plus the finger-chain gate. Queues behind T05 and T08 on the one card.
-            custom uniform token optimisticSize = "S"
-            custom uniform token mostLikelySize = "M"
-            custom uniform token pessimisticSize = "L"
-            custom bool gpuBound = 1
-            custom int order = 7
-            custom uniform token state = "build"
-            custom string title = "Verify before training, not after"
-            custom string measurement = "frames passed and frames discarded, both counted and both reported"
-            custom string[] apparatus = ["silhouette.py", "depth_term.py", "soma_referee.py"]
-            custom string cff = """
+That makes the discard rule this task states a floor rather than the only option."),
+          attr("optimisticSize", "token", "S", [uniform: true]),
+          attr("mostLikelySize", "token", "M", [uniform: true]),
+          attr("pessimisticSize", "token", "L", [uniform: true]),
+          attr("gpuBound", "bool", true),
+          attr("order", "int", 7),
+          attr("state", "token", "build", [uniform: true]),
+          attr("title", "string", "Verify before training, not after"),
+          attr("measurement", "string", "frames passed and frames discarded, both counted and both reported"),
+          attr("apparatus", "string[]", [
+            "silhouette.py",
+            "depth_term.py",
+            "soma_referee.py"
+          ]),
+          attr("cff", "string", "
 - type: software
   title: silhouette.py
   authors:
@@ -1789,34 +1582,30 @@ That makes the discard rule this task states a floor rather than the only option
   - name: weftspun
   repository-code: https://github.com/weftspun/dataflow-coco-gemx
   notes: 179 lines. What a discard rate gets reported against.
-"""
-            rel dependsOn = [
-                </Rfd1122/Plan/T02_Renderer>,
-                </Rfd1122/Plan/T03_PbrBake>,
-                </Rfd1122/Plan/T05_StrengthWindow>,
-            ]
-        }
-
-        def "T08_MaskedTraining" (
-            doc = """Run the masked-loss training. The head outputs 104 points. On a real
+"),
+          rel("dependsOn", [
+            "/Rfd1122/Plan/T02_Renderer",
+            "/Rfd1122/Plan/T03_PbrBake",
+            "/Rfd1122/Plan/T05_StrengthWindow"
+          ])
+        ]),
+        prim("T08_MaskedTraining", [
+          doc("Run the masked-loss training. The head outputs 104 points. On a real
 licence-filtered COCO photo only the 14 shared points score; on our render all 104 do, and
 the renders teach the other 90.
 
 Upstream RF-DETR is Apache-2.0 and the masked-loss run does not exist. The corpus may not
 include `weftspun/rf-detr-keypoint-data`: it holds all 523 holdout images, split across its
-own train and test, and 78% of it is licence-dirty."""
-        )
-        {
-            # The single largest item in the plan and the one bound hardest to the scarce resource. Trains at numWindows=1 per EdgeCompileGatesTraining, or is paid for twice.
-            custom uniform token optimisticSize = "L"
-            custom uniform token mostLikelySize = "XL"
-            custom uniform token pessimisticSize = "XL"
-            custom bool gpuBound = 1
-            custom int order = 8
-            custom uniform token state = "build"
-            custom string title = "One head on heterogeneous annotation"
-            custom string measurement = "loss masked per source, and which points each source scored"
-            custom string cff = """
+own train and test, and 78% of it is licence-dirty."),
+          attr("optimisticSize", "token", "L", [uniform: true]),
+          attr("mostLikelySize", "token", "XL", [uniform: true]),
+          attr("pessimisticSize", "token", "XL", [uniform: true]),
+          attr("gpuBound", "bool", true),
+          attr("order", "int", 8),
+          attr("state", "token", "build", [uniform: true]),
+          attr("title", "string", "One head on heterogeneous annotation"),
+          attr("measurement", "string", "loss masked per source, and which points each source scored"),
+          attr("cff", "string", "
 - type: software
   title: gen_coco_dataset.py
   authors:
@@ -1835,69 +1624,66 @@ own train and test, and 78% of it is licence-dirty."""
   - name: weftspun
   repository-code: https://github.com/weftspun/rf-detr-cpp
   notes: 85 lines, gen_reference/. The reference loss a masked run has to reproduce before it is believed.
-"""
-            rel dependsOn = [
-                </Rfd1122/Plan/T06_SchemaCompletion>,
-                </Rfd1122/Plan/T07_VerificationLoop>,
-            ]
-        }
-
-        def "T09_GgufAndHead" (
-            doc = """Convert and port. `convert_keypoints_to_gguf.py` exists and the
+"),
+          rel("dependsOn", [
+            "/Rfd1122/Plan/T06_SchemaCompletion",
+            "/Rfd1122/Plan/T07_VerificationLoop"
+          ])
+        ]),
+        prim("T09_GgufAndHead", [
+          doc("Convert and port. `convert_keypoints_to_gguf.py` exists and the
 `rf-detr-cpp` inference port works, but its head is COCO-17, so the head goes from 17 to
-104."""
-        )
-        {
-            # Conversion and the head from 17 to 104, against a quantization schedule already fixed on the Hailo part rather than invented here.
-            custom uniform token optimisticSize = "S"
-            custom uniform token mostLikelySize = "M"
-            custom uniform token pessimisticSize = "L"
-            custom bool gpuBound = 0
-            custom int order = 9
-            custom uniform token state = "build"
-            custom string title = "GGUF, and the head from 17 to 104"
-            custom string measurement = "port output against the trained head, per keypoint"
-            custom string[] apparatus = ["scripts/convert_keypoints_to_gguf.py"]
-            custom string cff = """
+104."),
+          attr("optimisticSize", "token", "S", [uniform: true]),
+          attr("mostLikelySize", "token", "M", [uniform: true]),
+          attr("pessimisticSize", "token", "L", [uniform: true]),
+          attr("gpuBound", "bool", false),
+          attr("order", "int", 9),
+          attr("state", "token", "build", [uniform: true]),
+          attr("title", "string", "GGUF, and the head from 17 to 104"),
+          attr("measurement", "string", "port output against the trained head, per keypoint"),
+          attr("apparatus", "string[]", [
+            "scripts/convert_keypoints_to_gguf.py"
+          ]),
+          attr("cff", "string", "
 - type: software
   title: convert_keypoints_to_gguf.py
   authors:
   - name: weftspun
   repository-code: https://github.com/weftspun/rf-detr-cpp
   notes: 97 lines, scripts/. Written against a COCO-17 head, so the 104-point head is what it has to be re-pointed at.
-"""
-            rel dependsOn = [</Rfd1122/Plan/T08_MaskedTraining>]
-        }
-
-        def "T10_Evaluate" (
-            doc = """Evaluate where the labels are real: the blinded holdout, real
+"),
+          rel("dependsOn", "/Rfd1122/Plan/T08_MaskedTraining")
+        ]),
+        prim("T10_Evaluate", [
+          doc("Evaluate where the labels are real: the blinded holdout, real
 photographs only, 523 images. Score the 14 shared points apart from the 90 render-only
 ones, and report the two Qwen-derived domains together rather than as two columns.
 
 A model measured on its own generation distribution has not been measured. Real
 photographs validate the pose pipeline and not the layer-decomposition task; a photograph
 has no ground-truth front-hair / back-hair split, so See-Through still needs held-out
-illustrations and this set does not supply them."""
-        )
-        {
-            # 523 held-out photographs, inference only. Small, and last.
-            custom uniform token optimisticSize = "XS"
-            custom uniform token mostLikelySize = "XS"
-            custom uniform token pessimisticSize = "XS"
-            custom bool gpuBound = 0
-            custom int order = 10
-            custom uniform token state = "build"
-            custom string title = "Score on real photographs, shared points apart from render-only"
-            custom string measurement = "the 14 shared points, reported beside the floor, on 523 held-out images"
-            custom string cff = """
+illustrations and this set does not supply them."),
+          attr("optimisticSize", "token", "XS", [uniform: true]),
+          attr("mostLikelySize", "token", "XS", [uniform: true]),
+          attr("pessimisticSize", "token", "XS", [uniform: true]),
+          attr("gpuBound", "bool", false),
+          attr("order", "int", 10),
+          attr("state", "token", "build", [uniform: true]),
+          attr("title", "string", "Score on real photographs, shared points apart from render-only"),
+          attr("measurement", "string", "the 14 shared points, reported beside the floor, on 523 held-out images"),
+          attr("cff", "string", "
 - type: software
   title: filter_coco_licenses.py
   authors:
   - name: weftspun
   repository-code: https://github.com/weftspun/dataflow-coco-gemx
   notes: 119 lines. The filter that defines the blinded holdout, so it decides which images this may be scored on.
-"""
-            rel dependsOn = [</Rfd1122/Plan/T09_GgufAndHead>]
-        }
-    }
-}
+"),
+          rel("dependsOn", "/Rfd1122/Plan/T09_GgufAndHead")
+        ])
+      ])
+    ])
+
+  end
+end
