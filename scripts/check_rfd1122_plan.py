@@ -26,7 +26,7 @@ import re
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
-DEFAULT_STAGE = HERE.parent / "rfd" / "1122-the-wholebody-gap" / "rfd1122-plan.usda"
+DEFAULT_STAGE = HERE.parent / "apparatus" / "1122-the-wholebody-gap" / "rfd1122-plan.usda"
 REPO = HERE.parent
 
 
@@ -72,18 +72,18 @@ def rfd_dir():
 
         for project in ET.parse(manifest).getroot().iter("project"):
             if project.get("name") == "request-for-discussion":
-                return root / project.get("path") / "rfd" / "1122-the-wholebody-gap"
+                return root / project.get("path") / "apparatus" / "1122-the-wholebody-gap"
     # No manifest to read: one level of search rather than a walk of the whole tree.
     for name in ("manuals-weftspun", "weftspun-manuals", "request-for-discussion",
                  "request_for_discussion"):
         for cand in (root / name, *root.glob(f"*/{name}")):
             if cand.is_dir():
-                return cand / "rfd" / "1122-the-wholebody-gap"
+                return cand / "apparatus" / "1122-the-wholebody-gap"
     return None
 
 
 ROOT = workspace_root()
-RFD_DIR = rfd_dir() or (REPO / ".request_for_discussion" / "rfd" / "1122-the-wholebody-gap")
+RFD_DIR = rfd_dir() or (REPO / ".request_for_discussion" / "apparatus" / "1122-the-wholebody-gap")
 # The working agreements are a source too, and not as a convenience. The holdout is 523
 # images, and that count is stated in CLAUDE.md rather than in RFD 1122 -- the RFD relies
 # on it without restating it. Searching only the RFD reported the count as drifted when
@@ -92,7 +92,14 @@ RFD_DIR = rfd_dir() or (REPO / ".request_for_discussion" / "rfd" / "1122-the-who
 # CLAUDE.md is read from this repository rather than from the workspace root. The root copy
 # is a `linkfile` pointing back here, so the two are the same bytes when the workspace
 # exists, and only this one is there when the logbook is checked out on its own.
-SOURCES = (RFD_DIR / "README.md", RFD_DIR / "DETAILS.md", REPO / "CLAUDE.md")
+# RFD 1122 is deleted (serial 1122 sits in SERIALS.exs's deleted block), but its plan's
+# numbers are still cited by live documents. Those citers are the source now.
+SOURCES = (REPO / "BLOCKLIST.md", REPO / "CLAUDE.md",
+           REPO / "rfd" / "1142-the-mac-against-the-ugen300" / "README.md",
+           REPO / "rfd" / "1142-the-mac-against-the-ugen300" / "DETAILS.md",
+           REPO / "logbook" / "logbook-rfd1122-hailo-first-rerank.md",
+           REPO / "logbook" / "logbook-rfd1142-neural-engine-against-the-ugen300.md",
+           REPO / "logbook" / "logbook-rfd1122-plan-apparatus-survives-the-rfd.md")
 PLAN = "/Rfd1122/Plan"
 QUANTITIES = "/Rfd1122/Quantities"
 STATES = ("gate", "build", "measure", "exists")
