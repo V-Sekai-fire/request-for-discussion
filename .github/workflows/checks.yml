@@ -240,3 +240,22 @@ jobs:
       - uses: ./.github/actions/render-rfds
       - run: python scripts/check_rfd_canary.py --self-test
       - run: python scripts/check_rfd_canary.py --base origin/${{ github.event.pull_request.base.ref || 'main' }}
+
+  # THE RULESETS THE DOCUMENTS DESCRIBE ARE THE RULESETS THE REPOSITORY HAS. CLAUDE.md and
+  # PITFALLS.md both name a ruleset by id and state the merge policy it enforces. A ruleset
+  # that is deleted or never created leaves both documents asserting a policy nothing
+  # applies, and the file describing the gate reads as evidence the gate is there. RFD 2245
+  # merged with six of nine checks red because of exactly that gap.
+  rulesets:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python scripts/check_rulesets.py --self-test
+      - run: python scripts/check_rulesets.py --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -465,6 +465,29 @@ or a check that would pass on known-broken input is named and counted, never
 elided to fit the cap. Rule 3 in _How Work Is Verified_ settles that: a silent
 skip reads exactly like a pass.
 
+## How the Merge Policy Is Checked
+
+A gate that is red at merge time stops nothing. RFD 2245 merged with six of
+nine checks failing; its README rendered to 55 lines against RFD 1000's 40,
+the DSL validates on module load, and all 318 RFD sources stopped rendering
+until it was trimmed. Three later pull requests merged with all nine checks
+still queued. The gates were correct throughout and none of them was
+consulted.
+
+The section above describes ruleset 21131040 and `PITFALLS.md` states what
+it enforces. `scripts/check_rulesets.py` reads the ids out of both documents
+and asks the repository whether it carries them, so a ruleset that is
+deleted or never created fails a command instead of leaving two documents
+asserting a merge policy nothing applies. Reading the claim out of the
+document rather than restating it is the same shape as
+`check-rfd-structure.py` reading its line limit out of RFD 1000.
+
+An unreadable API is a FAIL, never a skip; six controls carry both
+directions.
+
+    python scripts/check_rulesets.py --self-test
+    python scripts/check_rulesets.py --repo <owner>/<name>
+
 ## Blocklists
 
 Sources excluded from corpora, with the reason:
