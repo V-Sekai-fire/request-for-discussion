@@ -132,8 +132,8 @@ defmodule RFD1029 do
     mesh's 113 move 0.91%, which on 440 vertices is four vertices. Ear and
     Tail are the exception at 100%, being whole-mesh squashes.
 
-    The strategy that suggests -- protect the vertices a shape touches,
-    decimate the rest -- does not survive the union:
+    That suggests a strategy: protect the vertices a shape touches and
+    decimate the rest. It does not survive the union.
 
     | mesh        | verts | shapes | moved by ANY shape | free  |
     | ----------- | ----- | ------ | ------------------ | ----- |
@@ -154,9 +154,9 @@ defmodule RFD1029 do
     Cardigan and Dress_frill carry one shape each and are 97.8% and 88.1%
     untouched, which makes them decimatable as if they were shape-free.
     Adding them to the seven genuinely shape-free meshes gives 31,834
-    triangles to work with against a deficit of 8,154 -- a 25.6%
-    reduction, where the shape-free meshes alone needed 47.2%. Hair adds
-    another 8,944 at 45.6% free if that is not enough.
+    triangles to work with against a deficit of 8,154, a 25.6% reduction,
+    where the shape-free meshes alone needed 47.2%. Hair adds another
+    8,944 at 45.6% free if that is not enough.
 
     So the meshes whose shapes cover them can be left alone. Those are the
     face tracking meshes, where a shape moving four vertices is exactly
