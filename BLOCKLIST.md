@@ -250,6 +250,30 @@ of what the pass has to produce; it is not the way to produce it any more.
 
 RFD 1122's PBR bake said to do the bake in Blender because MPFB2 is a Blender
 addon and the material was authored there. That method is gone with this entry.
+
+**One exemption, added 2026-09-12 by operator directive: a quad round-trip for
+blendshaped meshes.** The avatar is 78,154 triangles against a 70,000 limit, and
+57,666 of those sit in eight meshes carrying 530 blendshapes between them. Those
+are unreachable without a retopology that carries the shapes, and the build-time
+decimator that would otherwise do it is itself blocked
+([[jp.lilxyzw.ndmfmeshsimplifier]] above).
+
+The exemption is narrow and it is conditional, because the original objection is
+about reproducibility and nothing about a mesh operation makes that objection go
+away on its own:
+
+  * **Geometry only.** No renders, no depth passes, no bakes. The entry above
+    stands in full for anything that produces an image.
+  * **Version pinned in a file the next desk can rebuild.** `blender` comes from
+    a `pixi.toml`, not from whatever the desk's package manager last offered.
+    That is what turns "5.2.0 LTS, pinned by nothing" into a re-runnable step,
+    and it is the difference between an exemption and a waiver.
+  * **The result is an asset, not a step.** The round-trip runs once and its
+    output is committed, so the shipping mesh is the mesh on disk -- the same
+    requirement that blocks the build-time decimator.
+  * **Verified by motion simulation, not by eye.** A retopology changes how a
+    mesh deforms, and a rest-pose comparison cannot see it
+    ([[openusd-intermediate-and-quad-recovery]]).
 The bake still has to happen -- albedo, roughness and normal over the hm08 UV
 layout, metallic a constant zero -- and it now needs a renderer that a
 `pixi.toml` can pin.
@@ -1874,3 +1898,36 @@ truth can only ever answer "did it run". Two things replace it:
     weights, so a predicted rig can be scored against the right answer instead
     of against "it produced something". That is a strictly better comparison
     than the giraffe ever was, and it is ours.
+
+### `jp.lilxyzw.ndmfmeshsimplifier` is blocked, and the reason is when it runs
+
+Operator directive, 2026-09-12. The package is MIT (lilxyzw, 2024) and vendors
+UnityMeshSimplifier, also MIT (Mattias Edlund, 2017-2020), so this is not a
+licence row. It is blocked on where it sits in the pipeline.
+
+It is an NDMF plugin: `InPhase(BuildPhase.Optimizing).Run("Simplify meshes")`,
+driven by a `NDMFMeshSimplifier` MonoBehaviour carrying a quality slider. The
+mesh that ships is therefore not the mesh in the scene, and the polygon count
+cannot be read from the avatar -- only from a build.
+
+That is exactly the property removed from this avatar on the same day. Sixteen
+feature components were resolved only at build time, so every count was of the
+authored scene rather than of what uploads; baking them out is what made the
+performance categories directly measurable. Adding a build-time decimator puts
+the largest remaining category back behind a build step.
+
+**The technique is not what is blocked.** Quadric error decimation with
+blendshape and skin-weight carry-over is a reasonable algorithm for a mesh with
+448 shapes. What is required is that the decimation happens once and its output
+is written out as an asset, so the shipping mesh is the mesh on disk. A
+version-pinned Blender quad round-trip is the sanctioned way to do that here,
+exempted under the Blender entry on 2026-09-12; transferring 530 shapes through
+a retopology is the hard part of it, not a detail.
+
+**Consequence for the polygon budget.** The avatar is 78,154 triangles against a
+70,000 limit. 57,666 of those live in eight meshes carrying 530 blendshapes
+between them, and 17,282 in seven meshes carrying none. Cutting only the
+blendshape-free meshes needs a 47.2% reduction of them, which is a lot to ask of
+garment silhouettes; deleting the two inactive meshes first (3,206 triangles)
+drops that to 28.6%. The blendshaped meshes stay reachable only through an
+edit-time decimator that preserves shapes.
