@@ -250,30 +250,6 @@ of what the pass has to produce; it is not the way to produce it any more.
 
 RFD 1122's PBR bake said to do the bake in Blender because MPFB2 is a Blender
 addon and the material was authored there. That method is gone with this entry.
-
-**One exemption, added 2026-09-12 by operator directive: a quad round-trip for
-blendshaped meshes.** The avatar is 78,154 triangles against a 70,000 limit, and
-57,666 of those sit in eight meshes carrying 530 blendshapes between them. Those
-are unreachable without a retopology that carries the shapes, and the build-time
-decimator that would otherwise do it is itself blocked
-([[jp.lilxyzw.ndmfmeshsimplifier]] above).
-
-The exemption is narrow and it is conditional, because the original objection is
-about reproducibility and nothing about a mesh operation makes that objection go
-away on its own:
-
-  * **Geometry only.** No renders, no depth passes, no bakes. The entry above
-    stands in full for anything that produces an image.
-  * **Version pinned in a file the next desk can rebuild.** `blender` comes from
-    a `pixi.toml`, not from whatever the desk's package manager last offered.
-    That is what turns "5.2.0 LTS, pinned by nothing" into a re-runnable step,
-    and it is the difference between an exemption and a waiver.
-  * **The result is an asset, not a step.** The round-trip runs once and its
-    output is committed, so the shipping mesh is the mesh on disk -- the same
-    requirement that blocks the build-time decimator.
-  * **Verified by motion simulation, not by eye.** A retopology changes how a
-    mesh deforms, and a rest-pose comparison cannot see it
-    ([[openusd-intermediate-and-quad-recovery]]).
 The bake still has to happen -- albedo, roughness and normal over the hm08 UV
 layout, metallic a constant zero -- and it now needs a renderer that a
 `pixi.toml` can pin.
@@ -1919,10 +1895,23 @@ the largest remaining category back behind a build step.
 **The technique is not what is blocked.** Quadric error decimation with
 blendshape and skin-weight carry-over is a reasonable algorithm for a mesh with
 448 shapes. What is required is that the decimation happens once and its output
-is written out as an asset, so the shipping mesh is the mesh on disk. A
-version-pinned Blender quad round-trip is the sanctioned way to do that here,
-exempted under the Blender entry on 2026-09-12; transferring 530 shapes through
-a retopology is the hard part of it, not a detail.
+is written out as an asset, so the shipping mesh is the mesh on disk.
+
+**The sanctioned path is Mitsuba plus MuJoCo. Blender stays blocked with no
+exemption** -- a carve-out for it was recorded and withdrawn the same day,
+2026-09-12. The substitution is better on the argument the Blender entry was
+written on rather than merely different: `mitsuba == 3.9.1` with
+`drjit == 1.5.0`, and `mujoco`, are pinned in `pixi.toml` files the next desk
+rebuilds, and `3-interactor/motion-bricks-cpp/mujoco/pixi.toml` carries both in
+one environment. "Pinned by nothing" was the objection; these are pinned.
+
+The two cover the two things a retopology has to preserve. Mitsuba scores the
+SHAPE differentiably, so a candidate mesh is driven towards the original instead
+of being eyeballed -- and its CPU variants are themselves blocked, so this runs
+`cuda_ad_rgb`. MuJoCo scores the MOTION, the half a still frame cannot show: a
+mesh that matches at rest can still deform wrongly once the bones move
+([[openusd-intermediate-and-quad-recovery]]). Blendshape transfer is the hard
+part and neither tool does it for free.
 
 **Consequence for the polygon budget.** The avatar is 78,154 triangles against a
 70,000 limit. 57,666 of those live in eight meshes carrying 530 blendshapes
