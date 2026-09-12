@@ -32,41 +32,48 @@ bad = [p for _, p in projects if "_" in p or " " in p]
 check("every path hyphen-only", not bad, f"offenders: {bad or 'none'}")
 
 # --- B. serials, enumerated both directions -------------------------------------------
-# PARSED INDEPENDENTLY, ON PURPOSE. check-rfd-serials.py reads this register through the
-# USD API; this reads the text. Two implementations that disagree is the finding, and
-# sharing one reader would retire the check while appearing to keep it.
-#
-# ROW FORM. The register was parallel `int[] serial` and `string[] slug`, and is now one
-# prim per row with the serial in the prim name. The old shape could hold a duplicate key
-# -- `[1, 1, 2]` parses -- and could lose a slug without the count changing anywhere a
-# reader looked. USD refuses two siblings of one name, so the first is now impossible to
-# author rather than merely checked for.
-s = (RFD/"SERIALS.usda").read_text()
+# A text read, where check-rfd-serials.py reads the same rows through the USD API; two
+# implementations disagreeing is the finding. The .exs source is tracked, the .usda is not.
+REGISTERS = ["SERIALS.exs", "SERIALS-vsekai-fabric.exs"]
+absent = [f for f in REGISTERS if not (RFD/f).is_file()]
+check("every serial register present", not absent, f"{len(REGISTERS)} registers, absent: {absent or 'none'}")
+s = "\n".join((RFD/f).read_text(encoding="utf-8") for f in REGISTERS if (RFD/f).is_file())
 
-def _section(name):
-    i = s.find(f'def Scope "{name}"')
-    if i < 0:
-        return ""
-    j = min([x for x in (s.find('def Scope "Unused"', i + 1),
-                         s.find('def Scope "Deleted"', i + 1),
-                         len(s)) if x > i] or [len(s)])
-    return s[i:j]
+rows = [(int(n), sl) for n, sl in re.findall(r'^\s*serial (\d+), "([^"]*)"', s, re.M)]
+live = [n for n, _ in rows]
+slugs = [sl for _, sl in rows]
+declared = len(re.findall(r"^\s*serial \d+", s, re.M))
+dead = [int(x) for x in re.findall(r"^\s*retired (\d+),", s, re.M)]
 
-_alloc = _section("Allocated")
-live = [int(x) for x in re.findall(r'def "S(\d+)"', _alloc)]
-slugs = re.findall(r'custom string slug = "([^"]*)"', _alloc)
-dead = [int(x) for x in re.findall(r'def "S(\d+)"', _section("Deleted"))]
-dirs = sorted(d for d in os.listdir(RFD / "rfd") if re.match(r"^1\d{3}-", d))
+# Both sites register here, but 39 of site 2's documents live in `manuals-vsk`, so a sweep
+# scoped to this checkout returns a true count and answers the wrong question.
+docs = {}
+for tree in sorted({ROOT/p/"rfd" for _, p in projects} | {RFD/"rfd"}):
+    if not tree.is_dir():
+        continue
+    for entry in sorted(os.listdir(tree)):
+        name = entry[:-4] if entry.endswith(".exs") else entry
+        m = re.match(r"^(\d{4})-", name)
+        if m:
+            # A name, not a path: 1144 is both an .exs source and a linked directory.
+            docs.setdefault(int(m.group(1)), set()).add(name)
 
-check("every allocated row carries a slug", len(live)==len(slugs), f"{len(live)} rows / {len(slugs)} slugs")
-check("no duplicate serials", len(live)==len(set(live)), f"{len(live)} rows, {len(set(live))} distinct")
+check("every allocated row carries a slug", declared == len(rows), f"{declared} rows / {len(rows)} slugs")
+check("no duplicate serials", len(live) == len(set(live)), f"{len(live)} rows, {len(set(live))} distinct")
 check("  control: a planted duplicate row is seen",
-      len([int(x) for x in re.findall(r'def "S(\d+)"', _alloc + '\n                def "S1000"\n')]) == len(live)+1)
-check("no retired serial reused", not (set(live)&set(dead)), f"retired: {dead}")
-check("every directory registered", all(int(d[:4]) in live for d in dirs), f"{len(dirs)} dirs")
-check("every serial has a directory", all(any(d.startswith(f"{n}-") for d in dirs) for n in live))
-check("slug matches directory name", all(f"{n}-{sl}" in dirs for n,sl in zip(live,slugs)),
-      f"mismatches: {[f'{n}-{sl}' for n,sl in zip(live,slugs) if f'{n}-{sl}' not in dirs] or 'none'}")
+      len(re.findall(r'^\s*serial (\d+), "([^"]*)"', s + '\n      serial 1000, "conventions"\n', re.M)) == len(rows)+1)
+check("no retired serial reused", not (set(live) & set(dead)), f"retired: {dead}")
+unregistered = sorted(n for n in docs if n not in set(live))
+check("every document registered", not unregistered, f"{len(docs)} documents, unregistered: {unregistered or 'none'}")
+orphans = sorted(n for n in live if n not in docs)
+check("every serial resolves to a document", not orphans,
+      f"{len(live)} serials, no document: {len(orphans)}{' ' + str(orphans[:8]) if orphans else ''}")
+forked = {n: v for n, v in docs.items() if len(v) > 1}
+check("one document per serial", not forked, f"forked: {({n: sorted(v) for n, v in forked.items()}) or 'none'}")
+check("  control: a planted second document is seen",
+      len(docs.get(1000, set()) | {"1000-planted"}) == len(docs.get(1000, set())) + 1)
+mismatch = [f"{n}-{sl}" for n, sl in rows if n in docs and f"{n}-{sl}" not in docs[n]]
+check("slug matches document name", not mismatch, f"mismatches: {mismatch or 'none'}")
 
 # --- C. blocklist rows vs sections, enumerated ----------------------------------------
 cl = (RFD/"CLAUDE.md").read_text(); bl = (RFD/"BLOCKLIST.md").read_text()
@@ -84,10 +91,17 @@ broken = [d for src, d, pp in links if not (ROOT/d).exists()]
 check("every linkfile resolves", not broken, f"{len(links)} links, broken: {broken or 'none'}")
 
 # --- E. README line bound, enumerated over all RFDs ------------------------------------
+# The READMEs are build artifacts (RFD 2232). Rule 3: an unbuilt checkout is an unmet
+# precondition and fails, rather than measuring zero of them and reporting no offenders.
 limit = 40
-over = [d for d in dirs if (RFD/"rfd"/d/"README.md").is_file()
-        and len((RFD/"rfd"/d/"README.md").read_text().splitlines()) > limit]
-check(f"every README <= {limit} lines", not over, f"{len(dirs)} READMEs, over: {over or 'none'}")
+sources = sorted((RFD/"rfd").glob("*.exs"))
+rendered = sorted((RFD/"rfd").glob("*/README.md"))
+check("READMEs rendered to measure", bool(rendered),
+      f"{len(rendered)} rendered / {len(sources)} sources"
+      + ("" if rendered else "; run `mix rfd.render`"))
+over = [p.parent.name for p in rendered
+        if len(p.read_text(encoding="utf-8").splitlines()) > limit]
+check(f"every README <= {limit} lines", not over, f"{len(rendered)} READMEs, over: {over or 'none'}")
 
 # --- F. shuffled full pass over the expensive checks -----------------------------------
 # A SHUFFLE RATHER THAN A DRAW, AND THE DIFFERENCE IS COVERAGE. The first version of this
