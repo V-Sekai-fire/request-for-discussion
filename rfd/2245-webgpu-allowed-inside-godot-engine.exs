@@ -15,53 +15,40 @@ defmodule RFD2245 do
 
     decision ~S"""
     WebGPU is allowed as a RenderingDevice driver inside a Godot
-    engine fork. The row still blocks WebGPU as a *workspace
-    render / compute target* — the atelier shipping surface stays
-    Vulkan / MoltenVK per RFD 2210 — but porting davnotdev's
-    WebGPU driver into a Godot fork is in-scope.
-
-    A Godot engine that carries both drivers keeps the workspace's
-    Vulkan pick for the shipping surface and gives an in-tree
-    WebGPU path if it is ever wanted upstream. The atelier binary
-    still selects `RenderingDevice`'s Vulkan backend at boot.
+    engine fork. The row still blocks WebGPU as a workspace render
+    or compute target, so the atelier shipping surface stays Vulkan
+    and MoltenVK per RFD 2210, and the atelier binary selects
+    `RenderingDevice`'s Vulkan backend at boot. An engine carrying
+    both drivers keeps that pick and gives an in-tree WebGPU path if
+    upstream ever wants one.
     """
 
     problem ~S"""
-    The WebGPU blocklist row lists "Godot forks whose sole purpose
-    is a WebGPU renderer" as blocked. Read literally, that reaches
-    the entities-webgpu fork one session over — where davnotdev's
-    WebGPU driver is being ported on top of feat/ci-ar-response-file.
-    The row's intent was to keep the workspace deployment target on
-    Vulkan, not to ban WebGPU code inside an engine fork. Operator
-    directive 2026-09-11: WebGPU is now allowed in the Godot engine.
-    """
-
-    section "Details", ~S"""
-    The BLOCKLIST.md WebGPU section's "What the row does not cover"
-    gains a Godot-engine-fork carve-out. The row's summary in
-    CLAUDE.md ("WebGPU as a workspace render / compute target")
-    already scopes narrowly; no edit there.
-
-    See DETAILS.md for the amendment text and the manifest entry.
+    The WebGPU row blocks "Godot forks whose sole purpose is a
+    WebGPU renderer". Read literally that reaches the entities-webgpu
+    fork, where davnotdev's driver is being ported. The row's intent
+    was to keep the deployment target on Vulkan, not to ban WebGPU
+    code inside an engine tree. Operator directive 2026-09-11.
     """
 
     related ~S"""
-    - [RFD 2210](../2210-atelier-godot-web-shipping-surface/), L3
-      strategic bet — atelier ships Godot's Vulkan renderer, which
-      the carve-out does not touch.
-    - [RFD 2211](../2211-base-tree-entities-godot-sandbox/), base
-      tree pick — entities-godot-sandbox stays the atelier substrate.
-    - [RFD 2216](../2216-threejs-blocklist/), the sibling row that
-      names WebGPU as separately blocklisted; that row's argument
-      is unchanged.
-    - The WebGPU blocklist row in `BLOCKLIST.md` and CLAUDE.md,
-      whose "What the row does not cover" this RFD amends.
+    - [RFD 2210](../2210-atelier-godot-web-shipping-surface/): the
+      atelier ships Godot's Vulkan renderer, untouched here.
+    - [RFD 2211](../2211-base-tree-entities-godot-sandbox/):
+      entities-godot-sandbox stays the atelier substrate.
+    - [RFD 2216](../2216-threejs-blocklist/): the sibling row naming
+      WebGPU as blocklisted, its argument unchanged.
     """
 
     details_title "webgpu allowed inside godot engine"
 
-    details "Amendment text for BLOCKLIST.md", ~S"""
-    The WebGPU section's "What the row does not cover" adds:
+    details "What changes, and where", ~S"""
+    The WebGPU section of `BLOCKLIST.md` gains a Godot-engine-fork
+    carve-out under "What the row does not cover". The row's summary
+    cell in `CLAUDE.md` already scopes narrowly to "a workspace
+    render / compute target", so it needs no edit.
+
+    The amendment reads:
 
     > A Godot engine fork carrying a WebGPU RenderingDevice driver
     > alongside Vulkan is in-scope. The row blocks WebGPU as the
