@@ -41,6 +41,16 @@ defmodule RFD1033 do
     | instant_meshes_retopology | Mesh retopology | BSD-3   |
     | xatlas_uv_unwrapping      | UV unwrapping   | MIT     |
     | colmap_3dgs_reconstruct   | Photos to splat | BSD-3   |
+    | pmp_decimate              | Mesh decimation | MIT*    |
+    | geogram_decimate          | Mesh decimation | BSD-3   |
+
+    `MIT*` is MIT with an employer disclaimer. Decimation is listed apart
+    from retopology because the two answer different questions: retopology
+    rebuilds the edge flow, decimation removes elements from the flow that
+    is there, and an avatar losing triangles without losing its silhouette
+    wants the second. PMP and Geogram are vendored in `entities-godot` on
+    `feat/cassie`; RFD 1029 records the licenses as read from those copies
+    and why blend shape transfer, not triangle removal, is the hard half.
 
     Each one is packaged as its own model image, per RFD 1036.
     """

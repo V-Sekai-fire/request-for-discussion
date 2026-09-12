@@ -19,13 +19,12 @@ defmodule RFD2247 do
     decision ~S"""
     A test asserts an invariant over generated input, not an outcome for one
     hand-chosen input. Every language the workspace builds in uses its
-    property-testing library: Elixir StreamData, Python Hypothesis, C++
-    RapidCheck, Rust proptest, Go rapid. On top of that, every property ships
-    its falsification: the generated input that SHOULD violate the property,
-    with the test failing if the violation goes undetected. A suite of
-    happy-path examples establishes that the code ran, not that the property
-    holds; a property without a negative control establishes that the assertion
-    is reachable, not that it discriminates.
+    property-testing library. On top of that, every property ships its
+    falsification: the input that SHOULD violate it, with the test failing if
+    the violation goes undetected.
+
+    See `DETAILS.md` for the property shapes, the harness bug that motivated
+    this, determinism, and what the rule does not ask for.
     """
 
     problem ~S"""
@@ -33,31 +32,8 @@ defmodule RFD2247 do
     already believe work, so the suite encodes the author's assumptions rather
     than testing them, and it goes green over a harness that measures nothing.
 
-    This is not hypothetical here. The springbone/MuJoCo chain-reduction harness
-    (RFD 2234 follow-on) reported a tidy set of numbers: 61 spring-bone components
-    reduced to 19, collision checks 1233 to 512. Twelve example-based tests
-    passed. Two negative controls -- a frozen chain that must NOT register
-    motion, and a stiff chain that must deflect less than a soft one -- failed
-    with the same number, 0.2017 m, for every parameter setting. The harness was
-    measuring the carrier translating the chains rigidly, never their
-    articulation: `qpos` written each step teleports the carrier and imparts no
-    velocity, so nothing swung. The component result survived (it is pure
-    combinatorics on parameter identity, no simulation involved); the collision
-    result did not, and it was biased toward over-pruning, because a chain that
-    never swings never approaches a collider it would really have hit.
-
-    The falsification cases caught it. The twelve examples did not. But a
-    generator would have caught it faster and smaller: `deflection is monotone
-    in pull` is one property over generated parameters, and it shrinks to a
-    minimal counterexample instead of needing a human to guess which two
-    settings to compare. That is the argument for both halves of this rule.
-
-    The workspace already believes half of it. RFD 2234's gates each read "every
-    gate ships with its negative control" -- a row with `brand` in
-    `conditioning_views` is refused, a staged file with `C:/` in it is refused,
-    swapping rank1's asset for rank5's must make the emit exit non-zero. That
-    discipline is written down for data gates and practised nowhere else. This
-    RFD generalises it to code, and adds the generator.
+    A property without a negative control is barely better: it establishes that
+    the assertion is reachable, not that it discriminates.
     """
 
     details_title "Properties worth stating, and how falsification pairs with them"
@@ -96,6 +72,35 @@ defmodule RFD2247 do
     Pin regressions as explicit examples on top of the generator (Hypothesis
     `@example`, proptest's `.regressions` file). The generator finds the class;
     the pinned case proves the specific bug stays dead.
+    """
+
+    details "The harness bug that motivated this", ~S"""
+    The springbone chain-reduction harness reported a tidy set of numbers: 61
+    spring-bone components reduced to 19, collision checks 1233 to 512. Twelve
+    example-based tests passed.
+
+    Two negative controls -- a frozen chain that must NOT register motion, and a
+    stiff chain that must deflect less than a soft one -- failed with the same
+    number, 0.2017 m, for every parameter setting. The harness was measuring the
+    carrier translating the chains rigidly, never their articulation: `qpos`
+    written each step teleports the carrier and imparts no velocity, so nothing
+    swung.
+
+    The component result survived, being pure combinatorics on parameter
+    identity with no simulation involved. The collision result did not, and it
+    was biased toward over-pruning, because a chain that never swings never
+    approaches a collider it would really have hit.
+
+    The falsification cases caught it and the twelve examples did not. A
+    generator would have caught it faster and smaller: "deflection is monotone
+    in pull" is one property over generated parameters, and it shrinks to a
+    minimal counterexample instead of needing a human to guess which two
+    settings to compare. That is the argument for both halves of this rule.
+
+    The workspace already believes half of it. RFD 2234's gates each read
+    "every gate ships with its negative control". That discipline was written
+    down for data gates and practised nowhere else; this RFD generalises it to
+    code and adds the generator.
     """
 
     details "Determinism", ~S"""
