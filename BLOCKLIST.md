@@ -1833,3 +1833,44 @@ always will, exactly as the CPU row above says of orchestration.
 **Substitute:** `cuda_ad_rgb` on an owned card, required rather than preferred,
 with the variant, the renderer version and the samples per pixel recorded in
 the render's own manifest so a corpus states which one made it.
+
+### `giraffe.glb` is blocked because nothing states where it came from
+
+`3-interactor/skintokens-upstream/examples/giraffe.glb` is the auto-rigger's
+demo mesh, and it is what first light was measured on -- 51 joints, a
+(14807, 51) skin. It is blocked as a **corpus and comparison asset**, not as a
+thing to look at.
+
+The repository's `LICENSE` is MIT, "Copyright (c) 2025 VAST-AI-Research". That
+is a licence over the code. It is not an assertion that the maintainers hold
+rights in a 6.3 MB art asset sitting in `examples/`, and example meshes in
+model repos are routinely somebody else's work carried along.
+
+The file itself says nothing. Its glTF asset block is
+`{"generator": "Khronos glTF Blender I/O v4.3.47", "version": "2.0"}` -- no
+author, no copyright, no licence, no source URL, and an empty `extras`. A
+Blender exporter string records the tool, not the provenance.
+
+This is the same standard already applied to the seethrough checkpoints, which
+are blocked on "no licence stated" rather than on anything known to be wrong
+with them. Absence of a stated licence is the finding; no claim is made that the
+asset is encumbered.
+
+**What it costs us is small, which is why this is cheap to honour.** The giraffe
+was a smoke test: does the rigger return a skeleton and a skin of the right
+shape for a non-humanoid mesh. Nothing downstream depends on that particular
+animal, and the numbers taken from it were never a result, only a sign of life.
+
+**The replacement has to be better than a swap.** A demo asset with no ground
+truth can only ever answer "did it run". Two things replace it:
+
+  * the Khronos glTF sample assets (`RiggedSimple`, `RiggedFigure`) for the
+    same smoke test -- that repository exists to be redistributable test data
+    and states a licence per model, which is the property the giraffe lacks;
+    check the specific model's stated licence before adding it, since they are
+    not uniform.
+  * a **procedurally generated tube** for anything that is supposed to be a
+    measurement. A tube around a known bone chain has analytic ground-truth
+    weights, so a predicted rig can be scored against the right answer instead
+    of against "it produced something". That is a strictly better comparison
+    than the giraffe ever was, and it is ours.
