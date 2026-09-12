@@ -201,6 +201,7 @@ defmodule Serials.VSekaiFabric do
       serial 2243, "assembly-one-cycle-blockers", flight_level: :l2
       serial 2244, "one-deformation-operator"
       serial 2245, "webgpu-allowed-inside-godot-engine"
+      serial 2246, "editscore-omnigen-bootstrap-for-unmapped-parts"
     end
 
     deleted do

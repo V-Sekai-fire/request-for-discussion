@@ -39,11 +39,33 @@ absent = [f for f in REGISTERS if not (RFD/f).is_file()]
 check("every serial register present", not absent, f"{len(REGISTERS)} registers, absent: {absent or 'none'}")
 s = "\n".join((RFD/f).read_text(encoding="utf-8") for f in REGISTERS if (RFD/f).is_file())
 
-rows = [(int(n), sl) for n, sl in re.findall(r'^\s*serial (\d+), "([^"]*)"', s, re.M)]
+# `allocated` and `deleted` both spell a row `serial N, "slug"`, so reading the whole file
+# counts a retired serial as live and then reports it as a serial that reaches no document.
+BLOCKS = re.compile(r"^\s*(allocated|unused|deleted)\b[^\n]*\n(.*?)^\s{4}end$", re.M | re.S)
+blocks = {}
+for _name, _body in BLOCKS.findall(s):
+    blocks.setdefault(_name, []).append(_body)
+
+
+def _rows_in(body):
+    return [(int(n), sl) for n, sl in re.findall(r'^\s*serial (\d+), "([^"]*)"', body, re.M)]
+
+
+def _rows(name):
+    return _rows_in("\n".join(blocks.get(name, [])))
+
+
+rows = _rows("allocated")
 live = [n for n, _ in rows]
 slugs = [sl for _, sl in rows]
-declared = len(re.findall(r"^\s*serial \d+", s, re.M))
-dead = [int(x) for x in re.findall(r"^\s*retired (\d+),", s, re.M)]
+declared = len(re.findall(r"^\s*serial \d+", "\n".join(blocks.get("allocated", [])), re.M))
+dead = sorted({n for n, _ in _rows("deleted")}
+              | {int(x) for x in re.findall(r"^\s*retired (\d+),", s, re.M)})
+check("every register block is parsed",
+      "allocated" in blocks and set(blocks) <= {"allocated", "unused", "deleted"},
+      f"blocks: {sorted(blocks)}")
+check("  control: a deleted row is not counted live",
+      2000 in set(dead) and 2000 not in set(live), "2000 sits in deleted, not allocated")
 
 # Both sites register here, but 39 of site 2's documents live in `manuals-vsk`, so a sweep
 # scoped to this checkout returns a true count and answers the wrong question.
@@ -61,13 +83,16 @@ for tree in sorted({ROOT/p/"rfd" for _, p in projects} | {RFD/"rfd"}):
 check("every allocated row carries a slug", declared == len(rows), f"{declared} rows / {len(rows)} slugs")
 check("no duplicate serials", len(live) == len(set(live)), f"{len(live)} rows, {len(set(live))} distinct")
 check("  control: a planted duplicate row is seen",
-      len(re.findall(r'^\s*serial (\d+), "([^"]*)"', s + '\n      serial 1000, "conventions"\n', re.M)) == len(rows)+1)
-check("no retired serial reused", not (set(live) & set(dead)), f"retired: {dead}")
-unregistered = sorted(n for n in docs if n not in set(live))
+      len(_rows_in("\n".join(blocks["allocated"]) + '\n      serial 1000, "conventions"\n')) == len(rows)+1)
+check("no retired serial reused", not (set(live) & set(dead)), f"{len(dead)} retired")
+# A deleted serial keeps its row and its document: the document moved to another checkout,
+# and the row is what stops the number being handed out again. Registered means either block.
+registered = set(live) | set(dead)
+unregistered = sorted(n for n in docs if n not in registered)
 check("every document registered", not unregistered, f"{len(docs)} documents, unregistered: {unregistered or 'none'}")
 orphans = sorted(n for n in live if n not in docs)
-check("every serial resolves to a document", not orphans,
-      f"{len(live)} serials, no document: {len(orphans)}{' ' + str(orphans[:8]) if orphans else ''}")
+check("every allocated serial resolves to a document", not orphans,
+      f"{len(live)} allocated, no document: {len(orphans)}{' ' + str(orphans[:8]) if orphans else ''}")
 forked = {n: v for n, v in docs.items() if len(v) > 1}
 check("one document per serial", not forked, f"forked: {({n: sorted(v) for n, v in forked.items()}) or 'none'}")
 check("  control: a planted second document is seen",
