@@ -22,13 +22,6 @@ Standing constraints follow. Each carries a cost behind it; the incident sits
 alongside this file (`KEYPOINTS.md` for the narrative, `PITFALLS.md` for the
 recurring failure modes and the guards that catch them).
 
-## Critical Context Limit
-
-We have a strict usage cap. You must minimize tokens. Provide only the direct 
-answer or final code. Do not explain your logic. Do not summarize previous 
-steps. Keep responses to a maximum of 3 sentences or 150 words. If writing 
-code, output only the modified block, never the full file.
-
 ## Hard Constraints
 
 **Compute.** GPUs the operator owns are the only compute — the local desktop
