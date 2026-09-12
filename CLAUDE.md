@@ -229,24 +229,36 @@ control (six subject controls, four URL-classification controls).
 ## How Session-Bundle Work Is Landed
 
 Coordinator-authored session-bundle work lands as **one PR**, not
-as N parallel branches. The merge queue on this repo batches up
-to 5 ALLGREEN PRs at a time (ruleset 21131040, `MERGE` method,
-`grouping_strategy: ALLGREEN`), so multiple in-flight PRs on
-unrelated subjects merge together fine; what this rule prevents
-is splitting a single coordinated session's work across parallel
-branches that then race each other into rebase-conflict cascades.
+as N parallel branches. What this rule prevents is splitting a
+single coordinated session's work across parallel branches that
+then race each other into rebase-conflict cascades. Unrelated
+in-flight PRs on separate subjects are fine.
 
 Operator directive 2026-09-05, verbatim: _"can you bundle the
-merges together and allow admin merging"_. The bundle half is
-this rule; the admin half is the bypass added to ruleset 21131040
-(`RepositoryRole 5`, `bypass_mode: always`) that lets an admin
-run `gh pr merge <n> --admin --merge` past a failing required
-check or the merge queue when the situation warrants — a
-convenience, not the default. Prefer letting the merge queue run
-its ALLGREEN batch; reach for `--admin` when a required check is
-wrong (a prettier re-run that's already trivially fixed and the
-gate is now spinning against a stale snapshot) or when the
-session bundle's atomicity matters more than one gate's opinion.
+merges together and allow admin merging"_. This rule is the
+bundle half.
+
+**This repository has no ruleset and no branch protection.**
+Earlier text here described a merge queue under ruleset 21131040
+with `MERGE` method and `ALLGREEN` grouping, and an admin bypass
+at `RepositoryRole 5`. The repository carries zero rulesets and
+that id returns 404, so nothing required a green check and
+nothing was bypassed. Retracted 2026-09-12, measured with
+`scripts/check_rulesets.py`, which now fails when a document
+names a ruleset the repository does not carry.
+
+Merging is therefore unguarded, and the cost is recorded rather
+than implied: RFD 2245 landed with six of nine checks red and
+stopped `mix rfd.render` for all 318 RFD sources until it was
+trimmed. Read the checks before merging, because nothing else
+will.
+
+A queue is not the fix while the checks themselves do not run.
+Every pull request on 2026-09-11 and 2026-09-12 sat `queued` on
+GitHub-hosted runners, several for over half an hour, and an
+ALLGREEN queue waits on exactly those checks. Enabling one now
+would stop every merge rather than gate it. Runner capacity
+comes first; PITFALLS 11 carries the rest of the argument.
 
 A session bundle is a set of changes that carry each other's
 reasoning: three RFDs whose bodies cite each other, a blocklist
@@ -474,15 +486,19 @@ until it was trimmed. Three later pull requests merged with all nine checks
 still queued. The gates were correct throughout and none of them was
 consulted.
 
-The section above describes ruleset 21131040 and `PITFALLS.md` states what
-it enforces. `scripts/check_rulesets.py` reads the ids out of both documents
-and asks the repository whether it carries them, so a ruleset that is
-deleted or never created fails a command instead of leaving two documents
-asserting a merge policy nothing applies. Reading the claim out of the
-document rather than restating it is the same shape as
+`scripts/check_rulesets.py` reads every ruleset id named in this file and
+in `PITFALLS.md` and asks the repository whether it carries them, so a
+ruleset that is deleted or never created fails a command instead of leaving
+two documents asserting a merge policy nothing applies. Reading the claim
+out of the document rather than restating it is the same shape as
 `check-rfd-structure.py` reading its line limit out of RFD 1000.
 
-An unreadable API is a FAIL, never a skip; six controls carry both
+A retraction is not a claim. An id in a paragraph that retracts it stays
+readable in place, per _How Retracted RFD Topics Are Deleted_, and the gate
+passes over it. Recreating that ruleset means deleting the retraction, which
+is what makes the claim live again.
+
+An unreadable API is a FAIL, never a skip; nine controls carry both
 directions.
 
     python scripts/check_rulesets.py --self-test
