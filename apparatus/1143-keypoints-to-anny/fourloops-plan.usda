@@ -12,7 +12,6 @@
             "6-datasource/anny-render-corpus/gen_posed_from_reference.py",
             "6-datasource/anny-render-corpus/render_view.py",
             "3-interactor/pose-consensus/python/soma_referee.py",
-            "1-transport/rf-detr-mcp/server.py",
             "3-interactor/voxhammer-image-mesh-editing/server.py",
             "3-interactor/pixal3d-image-to-textured-mesh/server.py",
             "CLAUDE.md",
@@ -60,7 +59,7 @@ def Scope "FourLoops"
             custom uniform token state = "blocked"
             custom uniform token blocker = "environment"
             custom string[] blockedOn = ["rfdetr"]
-            custom string entry = "1-transport/rf-detr-mcp/server.py:analyze_pose"
+            custom string entry = "3-interactor/rf-detr-cpp, reached through Godot once Godot is exposed to MCP"
             custom string outputs = "17 joints, pixels and confidence"
         }
 
