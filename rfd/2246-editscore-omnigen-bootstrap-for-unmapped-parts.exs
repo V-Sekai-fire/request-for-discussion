@@ -1,12 +1,12 @@
 # Copyright (c) 2026 K. S. Ernest (iFire) Lee
 # SPDX-License-Identifier: MIT
 #
-# RFD 2184. `mix rfd.render` renders rfd/2184-editscore-omnigen-bootstrap-for-unmapped-parts/README.md and
+# RFD 2246. `mix rfd.render` renders rfd/2246-editscore-omnigen-bootstrap-for-unmapped-parts/README.md and
 # DETAILS.md from this file; the Markdown is a build artifact (RFD 2232).
-defmodule RFD2184 do
+defmodule RFD2246 do
   use RFD.DSL
 
-  rfd 2184, "EditScore-guided OmniGen bootstrap for unmapped parts" do
+  rfd 2246, "EditScore-guided OmniGen bootstrap for unmapped parts" do
     state :discussion
 
     feature "train OmniGen2 on V3 parts ANNY joints do not cover"
