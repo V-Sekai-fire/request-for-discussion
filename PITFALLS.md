@@ -207,17 +207,25 @@ minutes; a human eventually admin-merges to break the loop.
 **Recovery:** `gh pr merge <N> --repo <r> --admin --merge` bypasses the up-to-date
 requirement for one stuck PR.
 
-**Guard:** GitHub's merge queue. `weftspun/request-for-discussion` main ruleset (id 21131040) enables `merge_queue` with `MERGE` method, `ALLGREEN` grouping,
-`min_entries_to_merge_wait_minutes: 0`, 60-min check timeout. The queue serialises PRs
-into a merge_group event, runs checks on a temporary branch that already has main's tip
-merged in, and merges in order. `.github/workflows/checks.yml` must declare
-`merge_group:` as a trigger; this repo already does.
+**Guard:** GitHub's merge queue, which serialises PRs into a merge_group event, runs
+checks on a temporary branch that already has main's tip merged in, and merges in order.
+`.github/workflows/checks.yml` declares `merge_group:` as a trigger, so the workflow side
+is ready. `gh pr merge --auto --merge` adds to a queue rather than firing immediately.
 
-`gh pr merge --auto --merge` still works — it just adds to the queue instead of firing
-immediately.
+**No such queue is configured here, and this entry said otherwise.** It described
+`weftspun/request-for-discussion` main ruleset id 21131040 with `MERGE` method, `ALLGREEN`
+grouping, `min_entries_to_merge_wait_minutes: 0` and a 60-minute check timeout. The
+repository carries zero rulesets and no branch protection; the id returns 404. Retracted
+2026-09-12. `scripts/check_rulesets.py` reads the ids named in `CLAUDE.md` and this file
+and fails when the repository does not carry them, so the claim cannot go stale again in
+silence.
 
-**When not to enable:** a repo with a single committer and rarely-concurrent PRs. The
-queue adds serialisation overhead where there is no contention to serialise.
+**When not to enable.** Two conditions, and both hold here today. A repo with a single
+committer and rarely-concurrent PRs gains serialisation overhead with no contention to
+serialise. And a queue waits on the checks: every pull request on 2026-09-11 and
+2026-09-12 sat `queued` on GitHub-hosted runners, several beyond half an hour, so an
+ALLGREEN queue would convert a slow check into a blocked merge. Fix runner capacity
+first.
 
 ## 12. A timeout is not a state
 

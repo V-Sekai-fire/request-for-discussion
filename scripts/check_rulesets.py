@@ -18,13 +18,22 @@ ROOT = Path(__file__).resolve().parent.parent
 DOCS = ("CLAUDE.md", "PITFALLS.md")
 
 CLAIM = re.compile(r"ruleset\s*\(?\s*(?:id\s*)?(\d{5,})", re.I)
+RETRACTED = re.compile(r"\bretract(?:ed|s|ion)?\b", re.I)
+
+
+def paragraphs(text):
+    return re.split(r"\n\s*\n", text)
 
 
 def claimed_ids(texts):
+    """Live ids only. An id inside a paragraph that retracts it is not a claim."""
     found = {}
     for name, text in texts.items():
-        for m in CLAIM.finditer(text):
-            found.setdefault(int(m.group(1)), []).append(name)
+        for para in paragraphs(text):
+            if RETRACTED.search(para):
+                continue
+            for m in CLAIM.finditer(para):
+                found.setdefault(int(m.group(1)), []).append(name)
     return found
 
 
@@ -64,6 +73,19 @@ def self_test():
 
     controls.append(("prose naming no ruleset yields no claim",
                      claimed_ids({"CLAUDE.md": "the merge queue batches ALLGREEN PRs"}) == {}))
+
+    retraction = {"CLAUDE.md": "Earlier text described ruleset 21131040 with ALLGREEN\n"
+                               "grouping. Retracted 2026-09-12; the id returns 404."}
+    controls.append(("  control: a retracted id is not a claim", claimed_ids(retraction) == {}))
+
+    mixed = {"CLAUDE.md": "The queue runs under ruleset 30000001.\n\n"
+                          "Ruleset 21131040 is retracted 2026-09-12."}
+    controls.append(("  control: a live id beside a retracted one survives",
+                     claimed_ids(mixed) == {30000001: ["CLAUDE.md"]}))
+
+    controls.append(("  control: deleting the retraction makes it live again",
+                     claimed_ids({"CLAUDE.md": "The queue runs under ruleset 21131040."})
+                     == {21131040: ["CLAUDE.md"]}))
 
     claims = {21131040: ["CLAUDE.md"]}
     controls.append(("a present ruleset passes",

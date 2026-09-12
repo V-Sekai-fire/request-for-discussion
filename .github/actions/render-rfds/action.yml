@@ -1,7 +1,7 @@
 name: Render the RFD sources
 description: >-
-  Install the BEAM and render rfd/*.exs and SERIALS*.exs into the Markdown and
-  .usda files the gates read. Those files are build
+  Install the BEAM and render rfd/*.exs, SERIALS*.exs and the apparatus plan
+  sources into the Markdown and .usda files the gates read. Those files are build
   artifacts (RFD 2232), so every job that reads the tree renders first.
 runs:
   using: composite
@@ -13,4 +13,6 @@ runs:
     - run: mix local.hex --force && mix local.rebar --force && mix deps.get
       shell: bash
     - run: mix rfd.render
+      shell: bash
+    - run: mix rfd.plan
       shell: bash
