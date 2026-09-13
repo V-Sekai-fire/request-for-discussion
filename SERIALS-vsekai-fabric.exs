@@ -202,6 +202,8 @@ defmodule Serials.VSekaiFabric do
       serial 2244, "one-deformation-operator"
       serial 2245, "webgpu-allowed-inside-godot-engine"
       serial 2246, "editscore-omnigen-bootstrap-for-unmapped-parts"
+      serial 2248, "the-avatar-body-is-a-closed-solid"
+      serial 2249, "cloth-by-vertex-block-descent", flight_level: :l2
     end
 
     deleted do
