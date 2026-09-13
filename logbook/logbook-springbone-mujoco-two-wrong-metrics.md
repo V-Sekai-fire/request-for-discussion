@@ -46,25 +46,50 @@ Along `-Y` all three arms read the same number, including one built to bend:
 says it exists to stop the harness "reading integrator noise -- or rigid transport -- as
 dynamics", which is the thing it was doing.
 
-## Underneath both, the chain is welded
+## Underneath both, the rig generated no force at all
 
 With a correct metric and a horizontal chain, a loose 8-bone chain at `pull=0.01` under full
-gravity bends about **5e-11 rad**. Capsule masses are around 1e-2 kg against joint stiffness
-around 3 N*m/rad, so neither gravity nor carrier acceleration moves the joints.
+gravity bends about **5e-11 rad**, and a fully frozen one bends 1.0e-07 rad. Both are zero.
 
-The module's `UNCALIBRATED` block already recorded this and named the fix: drive a known
-spring-bone chain in the editor's play mode, record tip deflection and settling time per
-parameter, and fit the constants to that. Nothing here calibrates anything, and no number
-above is a claim about the platform's solver. Until that measurement exists, Tier 1 is the
-only sound output of the module, because it is combinatorial and runs no simulation.
+**Retracted 2026-09-12, and the reading above it is what was wrong.** This entry first said
+capsule masses of around 1e-2 kg against joint stiffness of around 3 N*m/rad were why
+nothing moved, repeating the module's own `UNCALIBRATED` block. That is not the cause. The
+editor sweep that followed measured chains reading **exactly 0.0 deg at every setting**,
+which a stiffness ratio does not produce: it would scale the deflection down, not delete it.
 
-`test_gravity_articulates_a_loose_chain` is `xfail(strict=True)` against that. Strict so
-that calibration landing turns the marker red and forces its removal, rather than leaving a
-passing test quietly marked as expected to fail.
+The cause is that imposed kinematics generate no force. `simulate` wrote the carrier's
+`qpos` each step, which teleports it, and then wrote `qvel`, which clobbers the velocity
+rather than producing an acceleration. A parent moving at constant velocity exerts nothing
+on its children, so the chains were never driven at all. The fix is a position actuator and
+a driver with real mass. This is the same root cause as the retracted collision-check
+numbers.
+
+The stiffness story was not merely incomplete. It named a plausible mechanism, which is
+worse than naming none, because it reads as a diagnosis and it sent the next question at
+the constants rather than at the rig.
+
+**And the constants are wrong in more places than one.** The same sweep drove 17 chains from
+one root with a 0.15 m step, varying one knob at a time:
+
+| knob | measured | mapped as | verdict |
+| --- | --- | --- | --- |
+| `pull` | settling 5.00s to 0.10s across 0.05..0.8 | stiffness (`K_PULL`) | it is damping |
+| `stiffness` | peak 58.721 to 58.722 deg, settling flat | stiffness (`K_STIFF`) | no measurable effect |
+| `immobile` | peak 58.7 to 9.9 deg, settling flat at 1.18s | damping (`C_IMMOBILE`) | it is a forcing gain |
+
+Three of five constants are misassigned rather than unfitted. The `UNCALIBRATED` block read
+as "these need fitting"; the measurement says the mapping is wrong, which is a different
+repair and a larger one.
 
 ## What is not settled
 
-Whether the two Tier 2 and Tier 3 numbers mean anything. They are scored with the corrected
-metric now, but they are scored on a welded chain, so they rank candidates by almost
-nothing. The reduction tiers stay unsafe to trust in the same way the module already says
-they are.
+Whether the Tier 2 and Tier 3 numbers mean anything. They are scored with the corrected
+metric, and the driven rig replaces the one that produced no force, but the parameter
+mapping is still three constants wrong, so what they rank is not yet what the platform
+does. Tier 1 is combinatorial and runs no simulation, so it is unaffected throughout.
+
+`test_gravity_articulates_a_loose_chain` was `xfail(strict=True)` while the chain read zero.
+The marker is gone: the driven rig makes the chain bend, strict turned it red as intended,
+and it was deleted in the commit that landed the calibrated mapping. The suite reads 14
+passed. A marker that outlives its condition is the failure the strict flag exists to
+prevent, and here it did not get the chance.
